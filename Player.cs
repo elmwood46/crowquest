@@ -16,6 +16,7 @@ public partial class Player : CharacterBody3D
 	private Node3D _camera_gimbal;
 	private float _cameraXRotation = 0.0f;
 	private float _camera_zoom;
+	private Vector3 _default_camera_rotation;
     private Camera3D _camera_3d;
 	private Node3D _player_model;
 	private AnimationTree _anim_tree;
@@ -43,9 +44,10 @@ public partial class Player : CharacterBody3D
 		_angle_label = GetNode<Label>("%AngleLabel");
 
 		_camera_gimbal = GetNode<Node3D>("%CameraGimbal");
-		_camera_zoom = (MinCameraSize+MaxCameraSize)/2;
+		_camera_zoom = (MinCameraSize+MaxCameraSize)/3;
 		_camera_3d = GetNode<Camera3D>("%CameraGimbal/Camera3D");
 		_camera_3d.Size = _camera_zoom;
+		_default_camera_rotation = _camera_gimbal.Rotation;
 		_player_model = GetNode<Node3D>("gobot");
 
 		_anim_tree = GetNode<AnimationTree>("AnimationTree");
@@ -177,6 +179,11 @@ public partial class Player : CharacterBody3D
 		MoveAndSlide();
 
 		HandleAnimations();
+
+		if (Input.IsActionPressed("ResetCameraZoom"))
+		{
+			ResetCameraZoom();
+		}
 	}
 
 	public void HandleAnimations()
@@ -209,6 +216,13 @@ public partial class Player : CharacterBody3D
 			_anim_tree.Set("parameters/Run/blend_position", new Vector2(Velocity.X, Velocity.Z)/(MoveSpeed*SprintFactor));
 			_anim_tree.Set("parameters/Run/blend_amount", vel_length/(MoveSpeed*SprintFactor));
 		}
+	}
+
+	public void ResetCameraZoom()
+	{
+		_camera_zoom = (MinCameraSize+MaxCameraSize)/3;
+		_camera_3d.Size = _camera_zoom;
+		//_camera_gimbal.Rotation = _default_camera_rotation;
 	}
 
 	public void SetChunkMaxHeight(float val_changed)
