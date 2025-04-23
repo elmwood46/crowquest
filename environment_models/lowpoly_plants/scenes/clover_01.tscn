@@ -1,0 +1,48 @@
+[gd_scene load_steps=5 format=4 uid="uid://c8d1xnva2cspl"]
+
+[ext_resource type="Texture2D" uid="uid://c0r44l8ihbur2" path="res://environment_models/lowpoly_plants/source/shapespark-low-poly-plants-kit_clover-05.png" id="1_4v0fe"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gko2j"]
+resource_name = "clover-01"
+transparency = 4
+cull_mode = 2
+albedo_texture = ExtResource("1_4v0fe")
+roughness = 0.5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_4wlep"]
+_surfaces = [{
+"aabb": AABB(-0.757521, -0.0114668, -0.783109, 1.60858, 0.0688008, 1.60858),
+"format": 34896613377,
+"index_count": 15,
+"index_data": PackedByteArray("AwACAAUAAQADAAUAAAABAAUAAgAAAAUAAgAEAAAA"),
+"lods": [0.0884419, PackedByteArray("AAABAAIAAQADAAIAAgAEAAAA")],
+"name": "clover-01",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 6,
+"vertex_data": PackedByteArray("//8AAAYCAAD//wAA//8AAAAAAAAAAAAAAAAAAP//AAD//wAAAAAAAC9t///EcAAA")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_inqo5"]
+resource_name = "shapespark-low-poly-plants-kit_Plane_575"
+_surfaces = [{
+"aabb": AABB(-0.757521, -0.0114668, -0.783109, 1.60858, 0.0688008, 1.60858),
+"attribute_data": PackedByteArray("+P3//wAA/////wAAAAAAAP////86jy9t+P3//wAA//86jy9t//8AADqPL20AAAAAOo8vbQ=="),
+"format": 34896613399,
+"index_count": 15,
+"index_data": PackedByteArray("AwACAAUABgAHAAgACQAAAAoACQAEAAAAAQALAAwA"),
+"lods": [0.0884419, PackedByteArray("AAABAAIAAQADAAIAAgAEAAAA")],
+"material": SubResource("StandardMaterial3D_gko2j"),
+"name": "clover-01",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 13,
+"vertex_data": PackedByteArray("//8AAAYCmdf//wAA//+P0wAAAAAAALjXAAAAAP//uNf//wAAAACa1y9t///EcLjX//8AAAYCmdP//wAA//+Z0y9t///EcJnTAAAAAAAAmdcvbf//xHCZ1wAAAAD//4/TL23//8Rwj9P30/8rbtaQKSDYECwg2BAs99P/KyDYECwv05cpL9OXKS/Tlyn30/8r99P/K27WkClu1pAp")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_4wlep")
+
+[node name="Clover-01" type="MeshInstance3D"]
+mesh = SubResource("ArrayMesh_inqo5")
+skeleton = NodePath("")

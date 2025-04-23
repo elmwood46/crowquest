@@ -1,0 +1,48 @@
+[gd_scene load_steps=5 format=4 uid="uid://cp1amupmosndu"]
+
+[ext_resource type="Texture2D" uid="uid://b46oklm102vp1" path="res://environment_models/lowpoly_plants/source/shapespark-low-poly-plants-kit_flowers-02.png" id="1_x8t5o"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1b7ed"]
+resource_name = "flowers-01.002"
+transparency = 4
+cull_mode = 2
+albedo_texture = ExtResource("1_x8t5o")
+roughness = 0.5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_rd002"]
+_surfaces = [{
+"aabb": AABB(-0.796919, 0.0163785, -0.829921, 1.60858, 0.157774, 1.60858),
+"format": 34896613377,
+"index_count": 48,
+"index_data": PackedByteArray("AAAKAAIAAwACAAoAAAABAAoAAwAKAAsACAADAAsABwAIAAsAAQAMAAoACwAKAAwAAQAEAAwABAAGAAwACwAMAA0ABgANAAwABwALAA0ABgAFAA0ABQAHAA0ABQAJAAcA"),
+"lods": [0.161935, PackedByteArray("AAABAAIAAwACAAEAAwABAAQAAwAEAAUABgAFAAQABwADAAUABwAIAAMABQAJAAcA")],
+"name": "flowers-01.002",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 14,
+"vertex_data": PackedByteArray("AAAAAP//AAAAAAAATaoAAPZSAAD//wAAUrEAAP//AAAAAAAA8VIAAMWtAAAAAAAAFUgAAAAAAAD//wAAh3QAAP//AAA7ugAA//8AAAAAAADNQt2CCqwAAEW7ZmiJvgAA/Ev//5pXAABcqx0n5EoAAA==")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_eyvdx"]
+resource_name = "shapespark-low-poly-plants-kit_Plane_164"
+_surfaces = [{
+"aabb": AABB(-0.796919, 0.0163785, -0.829921, 1.60858, 0.157774, 1.60858),
+"attribute_data": PackedByteArray("AAD//wAATar2Uv//UrH//wAA8VLFrQAAFUgAAP//h3T//zu6//8AAM1CCqwAAE2qFUgAAFyr5Er8S5pXxa0AAP//O7pSsf//RbuJvvxLmlfNQgqsAADxUv//h3RFu4m+XKvkSvxLmldFu4m+/EuaV1yr5ErNQgqsXKvkSs1CCqxFu4m+9lL//w=="),
+"format": 34896613399,
+"index_count": 48,
+"index_data": PackedByteArray("AAAKAAIAAAALAAoADAANAA4ADAAPAA0AEAARABIAAQATABQAAQAVABMAFgAXABgAFgAIABcABAAGABkAGgAbABwAGgAdABsABQAHAB4ABQAJAAcAAwAfACAAAwAhAB8A"),
+"lods": [0.161935, PackedByteArray("AAABAAIAAwACAAEAAwABAAQAAwAEAAUABgAFAAQABwADAAUABwAIAAMABQAJAAcA")],
+"material": SubResource("StandardMaterial3D_1b7ed"),
+"name": "flowers-01.002",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 34,
+"vertex_data": PackedByteArray("AAAAAP//rrwAAAAATap8vvZSAAD//6u8UrEAAP//wLkAAAAA8VIXy8WtAAAAAM7AFUgAAAAAF8v//wAAh3TOwP//AAA7utnB//8AAAAAzsDNQt2CCqyuvAAAAABNqrK8FUgAAAAAQcdcqx0n5EpDx/xL//+aVzzHxa0AAAAASsf//wAAO7obuVKxAAD//xu5RbtmaIm+G7n8S///mld9vs1C3YIKrHe+AAAAAPFSgb7//wAAh3TawUW7ZmiJvtrBXKsdJ+RK28H8S///mlcXy0W7ZmiJvhW//Ev//5pXFb9cqx0n5EoWv81C3YIKrBO/XKsdJ+RKzsDNQt2CCqzAuUW7ZmiJvsC59lIAAP//wLnk+piKsvJMm336kIrr/yqAk/BWm438Qn6T8FabjfxBfl308XmO/Et++fqaim37ooqW9T16n/V5enj1dnnB9VV78+xRd/PsUXfz7FF3u/JMm4byS5vi8kybXvQNel70CXpf9B56k/BWmzXzsHk186x5NfPVeTbzhnmN/DV+6v8qgO7/K4Dn/yqA")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_rd002")
+
+[node name="Flowers-02" type="MeshInstance3D"]
+mesh = SubResource("ArrayMesh_eyvdx")
+skeleton = NodePath("")

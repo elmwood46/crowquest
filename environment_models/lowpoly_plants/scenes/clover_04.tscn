@@ -1,0 +1,46 @@
+[gd_scene load_steps=5 format=4 uid="uid://h7i2nxsdhyvc"]
+
+[ext_resource type="Texture2D" uid="uid://dexy6n3uktx33" path="res://environment_models/lowpoly_plants/source/shapespark-low-poly-plants-kit_clover-02.png" id="1_8srct"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_w1cmy"]
+resource_name = "clover-04"
+transparency = 4
+cull_mode = 2
+albedo_texture = ExtResource("1_8srct")
+roughness = 0.5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_xs814"]
+_surfaces = [{
+"aabb": AABB(-0.838585, 0.00665807, -0.843464, 1.60858, 0.111887, 1.60858),
+"format": 34896613377,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAwACAAEAAQAAAAQABAADAAEA"),
+"name": "clover-04",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 5,
+"vertex_data": PackedByteArray("//8AAP//AABJm///K58AAP//AAAAAAAAAAAAAAAAAAAAAAAA//8AAA==")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_avkkl"]
+resource_name = "shapespark-low-poly-plants-kit_Plane_578"
+_surfaces = [{
+"aabb": AABB(-0.838585, 0.00665807, -0.843464, 1.60858, 0.111887, 1.60858),
+"attribute_data": PackedByteArray("AAD//9NgSZv/////AAAAAP//AADTYEmb02BJmwAA//8AAAAA//8AAP/////TYEmb"),
+"format": 34896613399,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAwAEAAUABgAHAAgACQAKAAsA"),
+"material": SubResource("StandardMaterial3D_w1cmy"),
+"name": "clover-04",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 12,
+"vertex_data": PackedByteArray("//8AAP//V9FJm///K59X0f//AAAAAFfRAAAAAP//ENgAAAAAAAAQ2Emb//8rnxDYSZv//yufMNH//wAA//8w0QAAAAD//zDRAAAAAAAA/9f//wAAAAD/10mb//8rn//XMNAYKDDQGCgw0BgohdhCLIXYQiyF2EIsAdj9JwHY/ScB2P0nxdM5LMXTOSzF0zks")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_xs814")
+
+[node name="Clover-04" type="MeshInstance3D"]
+mesh = SubResource("ArrayMesh_avkkl")
+skeleton = NodePath("")
