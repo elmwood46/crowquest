@@ -16,6 +16,7 @@ public partial class Player : CharacterBody3D
 	private Node3D _camera_gimbal;
 	private float _cameraXRotation = 0.0f;
 	private float _camera_zoom;
+	private float _default_camera_zoom => (MinCameraSize + MaxCameraSize)/2.5f;
 	private Vector3 _default_camera_rotation;
     private Camera3D _camera_3d;
 	private Node3D _player_model;
@@ -44,7 +45,7 @@ public partial class Player : CharacterBody3D
 		_angle_label = GetNode<Label>("%AngleLabel");
 
 		_camera_gimbal = GetNode<Node3D>("%CameraGimbal");
-		_camera_zoom = (MinCameraSize+MaxCameraSize)/3;
+		_camera_zoom = _default_camera_zoom;
 		_camera_3d = GetNode<Camera3D>("%CameraGimbal/Camera3D");
 		_camera_3d.Size = _camera_zoom;
 		_default_camera_rotation = _camera_gimbal.Rotation;
@@ -220,7 +221,7 @@ public partial class Player : CharacterBody3D
 
 	public void ResetCameraZoom()
 	{
-		_camera_zoom = (MinCameraSize+MaxCameraSize)/3;
+		_camera_zoom = _default_camera_zoom;
 		_camera_3d.Size = _camera_zoom;
 		//_camera_gimbal.Rotation = _default_camera_rotation;
 	}
@@ -235,12 +236,11 @@ public partial class Player : CharacterBody3D
 
 	public void SetChunkResolution(float val_changed)
 	{
-		GD.Print(val_changed);
-		var inv_chunk_size = 1.0f/ChunkManager.Instance.ChunkSize;
-		var resolution_amt = val_changed/50.0f;
-		ChunkManager.Instance.PlaneResolution = Math.Max(inv_chunk_size,Mathf.RoundToInt(resolution_amt/inv_chunk_size)*inv_chunk_size);
-		GD.Print($"Resolution: {ChunkManager.Instance.PlaneResolution}");
 		var res_node = GetNode<Label>("Control/PanelContainer/VBoxContainer/HBoxContainer2/Label");
-		res_node.Text = $"Resolution: {ChunkManager.Instance.PlaneResolution }";
+		var res_slider = GetNode<Slider>("Control/PanelContainer/VBoxContainer/HBoxContainer2/HSlider");
+		var inv_chunk_size = 1.0f/ChunkManager.Instance.ChunkSize;
+		var resolution_amt = val_changed/res_slider.MaxValue;
+		ChunkManager.Instance.PlaneResolution = Math.Max(inv_chunk_size,Mathf.RoundToInt(resolution_amt/inv_chunk_size)*inv_chunk_size);		
+		res_node.Text = $"Resolution: {val_changed}%, {ChunkManager.Instance.PlaneResolution }";
 	}
 }

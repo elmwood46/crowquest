@@ -90,7 +90,7 @@ mesh = SubResource("ArrayMesh_danok")
 skeleton = NodePath("")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00357056, -0.00524903, -0.000488281)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 2.22045e-13, 1, -0.00357056, -0.00524903, -0.000488281)
 shape = SubResource("BoxShape3D_oqggw")
 
 [node name="Wall_01_Concrete_0" type="MeshInstance3D" parent="StaticBody3D"]

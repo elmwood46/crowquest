@@ -42,10 +42,10 @@ public partial class ChunkManager : Node
     }
     [Export] public Noise NoiseTexture { get; set; }
 
+    public float InverseResolution => 1.0f / _planeResolution;
     private int _chunkSize = 32;
     private float _max_height = 20.0f;
     private float _planeResolution = 0.25f;
-    public float InverseResolution => 1.0f / _planeResolution;
 
     private readonly ConcurrentDictionary<ChunkPlane, Vector2I> _chunkToPosition = new();
 	private readonly ConcurrentDictionary<Vector2I, ChunkPlane> _positionToChunk = new();

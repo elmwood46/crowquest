@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=3 uid="uid://dcmunnlgiudp4"]
+
+[ext_resource type="Material" uid="uid://0bxg658br6c1" path="res://terrain_generator/brick_shader.tres" id="1_0g6h4"]
+[ext_resource type="ArrayMesh" uid="uid://1qkea5d3rriw" path="res://terrain_generator/brick_surfaced.obj" id="1_jbn7h"]
+[ext_resource type="Material" uid="uid://byrcedi0oq67j" path="res://terrain_generator/brick_shader_gutters.tres" id="3_fh56j"]
+
+[node name="BrickMesh" type="MeshInstance3D"]
+mesh = ExtResource("1_jbn7h")
+skeleton = NodePath("")
+surface_material_override/0 = ExtResource("1_0g6h4")
+surface_material_override/1 = ExtResource("3_fh56j")
+surface_material_override/2 = ExtResource("3_fh56j")
+surface_material_override/3 = ExtResource("3_fh56j")
+surface_material_override/4 = ExtResource("3_fh56j")
+surface_material_override/5 = ExtResource("1_0g6h4")
+surface_material_override/6 = ExtResource("1_0g6h4")

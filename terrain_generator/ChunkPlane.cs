@@ -6,28 +6,26 @@ public partial class ChunkPlane : StaticBody3D
 {
     [Export] public MeshInstance3D MeshInstance { get; set; }
     [Export] public CollisionShape3D CollisionShape { get; set; }
-    private static readonly StandardMaterial3D _ground_material = GD.Load<StandardMaterial3D>("res://terrain_generator/ground_material.tres");
 
-    public static readonly Vector3[] QuadVertices = [
+    private static readonly StandardMaterial3D _ground_material = GD.Load<StandardMaterial3D>("res://terrain_generator/ground_material.tres");
+    private static readonly Vector3[] QuadVertices = [
         new (0, 0, 0),
         new (1, 0, 0),
         new (0, 0, 1),
         new (1, 0, 1)
     ];
-
-    public static readonly Vector2[] QuadUVs = [
+    private static readonly Vector2[] QuadUVs = [
         new (0, 0),
         new (1, 0),
         new (0, 1),
         new (1, 1)
     ];
-
-    public static readonly int[,] QuadTris = {
+    private static readonly int[,] QuadTris = {
         { 0, 1, 2 },
         { 1, 3, 2 }
     };
 
-    private ArrayMesh GenerateHeightmapMesh(Vector2I chunk_position)
+    private static ArrayMesh GenerateHeightmapMesh(Vector2I chunk_position)
     {
         var noise = ChunkManager.Instance.NoiseTexture;
         var chunkSize = ChunkManager.Instance.ChunkSize;
@@ -52,7 +50,6 @@ public partial class ChunkPlane : StaticBody3D
                 }
 
                 var tris = new Vector3[6];
-                
                 var uvtris = new Vector2[6];
 
                 for (int i = 0; i < 6; i++)
