@@ -1,0 +1,111 @@
+[gd_scene load_steps=11 format=3 uid="uid://cpianwctgnxj"]
+
+[ext_resource type="Curve3D" uid="uid://dfw3f706y00gk" path="res://terrain_generator/procedural_brick_wall/resources/3d_path.tres" id="1_5bmgp"]
+[ext_resource type="Script" uid="uid://b5fsnmsd4qi0t" path="res://terrain_generator/procedural_brick_wall/brick_gen_test.cs" id="1_cnf4a"]
+[ext_resource type="PackedScene" uid="uid://dwnxmwyxjtiyl" path="res://terrain_generator/procedural_brick_wall/multi_brick.tscn" id="2_5bmgp"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_rysnt"]
+size = Vector3(0.32, 0.4, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_kcdm5"]
+size = Vector3(0.32, 0.4, 4.12311)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_843rv"]
+size = Vector3(0.32, 0.4, 9)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_idlvw"]
+size = Vector3(0.32, 0.4, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_21bkb"]
+size = Vector3(0.32, 0.4, 96)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_yg66m"]
+size = Vector3(0.32, 0.4, 50.04)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_fm80l"]
+size = Vector3(0.32, 0.4, 50.04)
+
+[node name="Node3D" type="Node3D"]
+
+[node name="Path3D" type="Path3D" parent="."]
+curve = ExtResource("1_5bmgp")
+script = ExtResource("1_cnf4a")
+WallRows = 1
+BrickPrefab = ExtResource("2_5bmgp")
+
+[node name="@StaticBody3D@67611" parent="Path3D" instance=ExtResource("2_5bmgp")]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
+DesiredLength = 4.0
+WallBrickRows = 1
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="Path3D/@StaticBody3D@67611"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -2)
+shape = SubResource("BoxShape3D_rysnt")
+
+[node name="MultiBrickBatch2" type="Node3D" parent="Path3D/@StaticBody3D@67611"]
+
+[node name="@StaticBody3D@67612" parent="Path3D" instance=ExtResource("2_5bmgp")]
+transform = Transform3D(-1, -2.12031e-08, -8.48125e-08, 0, 0.970142, -0.242536, 8.74228e-08, -0.242536, -0.970142, 4, 0, 0)
+DesiredLength = 4.12311
+WallBrickRows = 1
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="Path3D/@StaticBody3D@67612"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -2.06155)
+shape = SubResource("BoxShape3D_kcdm5")
+
+[node name="MultiBrickBatch2" type="Node3D" parent="Path3D/@StaticBody3D@67612"]
+
+[node name="@StaticBody3D@67613" parent="Path3D" instance=ExtResource("2_5bmgp")]
+transform = Transform3D(0.447214, -0.0993808, 0.888889, 0, 0.993808, 0.111111, -0.894427, -0.0496904, 0.444444, 4, 1, 4)
+DesiredLength = 9.0
+WallBrickRows = 1
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="Path3D/@StaticBody3D@67613"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -4.5)
+shape = SubResource("BoxShape3D_843rv")
+
+[node name="MultiBrickBatch2" type="Node3D" parent="Path3D/@StaticBody3D@67613"]
+
+[node name="@StaticBody3D@67614" parent="Path3D" instance=ExtResource("2_5bmgp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 0)
+DesiredLength = 4.0
+WallBrickRows = 1
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="Path3D/@StaticBody3D@67614"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -2)
+shape = SubResource("BoxShape3D_idlvw")
+
+[node name="MultiBrickBatch2" type="Node3D" parent="Path3D/@StaticBody3D@67614"]
+
+[node name="@StaticBody3D@67615" parent="Path3D" instance=ExtResource("2_5bmgp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -4)
+DesiredLength = 96.0
+WallBrickRows = 1
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="Path3D/@StaticBody3D@67615"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -48)
+shape = SubResource("BoxShape3D_21bkb")
+
+[node name="MultiBrickBatch2" type="Node3D" parent="Path3D/@StaticBody3D@67615"]
+
+[node name="@StaticBody3D@67616" parent="Path3D" instance=ExtResource("2_5bmgp")]
+transform = Transform3D(-0.999201, 0, -0.039968, 0, 1, 0, 0.039968, 0, -0.999201, -4, 0, -100)
+DesiredLength = 50.04
+WallBrickRows = 1
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="Path3D/@StaticBody3D@67616"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -25.02)
+shape = SubResource("BoxShape3D_yg66m")
+
+[node name="MultiBrickBatch2" type="Node3D" parent="Path3D/@StaticBody3D@67616"]
+
+[node name="@StaticBody3D@67617" parent="Path3D" instance=ExtResource("2_5bmgp")]
+transform = Transform3D(-0.999201, 0, -0.039968, 0, 1, 0, 0.039968, 0, -0.999201, -2, 0, -50)
+DesiredLength = 50.04
+WallBrickRows = 1
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="Path3D/@StaticBody3D@67617"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -25.02)
+shape = SubResource("BoxShape3D_fm80l")
+
+[node name="MultiBrickBatch2" type="Node3D" parent="Path3D/@StaticBody3D@67617"]

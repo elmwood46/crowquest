@@ -16,7 +16,7 @@ public partial class Player : CharacterBody3D
 	private Node3D _camera_gimbal;
 	private float _cameraXRotation = 0.0f;
 	private float _camera_zoom;
-	private float _default_camera_zoom => (MinCameraSize + MaxCameraSize)/2.5f;
+	private float _default_camera_zoom => 25f;//(MinCameraSize + MaxCameraSize)/3f;
 	private Vector3 _default_camera_rotation;
     private Camera3D _camera_3d;
 	private Node3D _player_model;
@@ -242,5 +242,13 @@ public partial class Player : CharacterBody3D
 		var resolution_amt = val_changed/res_slider.MaxValue;
 		ChunkManager.Instance.PlaneResolution = Math.Max(inv_chunk_size,Mathf.RoundToInt(resolution_amt/inv_chunk_size)*inv_chunk_size);		
 		res_node.Text = $"Resolution: {val_changed}%, {ChunkManager.Instance.PlaneResolution }";
+	}
+
+	public void ChangeNoiseFrequency(float new_val)
+	{
+		var res_node = GetNode<Label>("Control/PanelContainer/VBoxContainer/HBoxContainer3/Label");
+		res_node.Text = $"Noise Frequency: {new_val}";
+		((FastNoiseLite)ChunkManager.Instance.NoiseTexture).Frequency = new_val;
+		ChunkManager.Instance.UpdateAllChunks();
 	}
 }

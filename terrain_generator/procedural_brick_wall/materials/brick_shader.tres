@@ -1,0 +1,18 @@
+[gd_resource type="ShaderMaterial" load_steps=5 format=3 uid="uid://0bxg658br6c1"]
+
+[ext_resource type="Shader" uid="uid://b87i4xg8y7ue0" path="res://terrain_generator/procedural_brick_wall/brick_size_multi.gdshader" id="1_o13pe"]
+[ext_resource type="Texture2D" uid="uid://cqhenytsmwvwt" path="res://textures/PaintedPlaster017_1K-JPG/PaintedPlaster017_1K-JPG_Color.jpg" id="2_83y4b"]
+[ext_resource type="Texture2D" uid="uid://duoga1tqke1y7" path="res://textures/PaintedPlaster017_1K-JPG/PaintedPlaster017_1K-JPG_NormalGL.jpg" id="3_cn7ss"]
+[ext_resource type="Texture2D" uid="uid://dwjbj4ucae0rc" path="res://textures/PaintedPlaster017_1K-JPG/PaintedPlaster017_1K-JPG_Roughness.jpg" id="4_wfehs"]
+
+[resource]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("1_o13pe")
+shader_parameter/texture_albedo = ExtResource("2_83y4b")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("4_wfehs")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("3_cn7ss")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)

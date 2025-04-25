@@ -1,6 +1,6 @@
 [gd_scene load_steps=22 format=3 uid="uid://dovgs2t1vyyy0"]
 
-[ext_resource type="Material" uid="uid://crj6jsd4bwa8n" path="res://terrain_generator/ground_material.tres" id="1_dg77c"]
+[ext_resource type="Material" uid="uid://crj6jsd4bwa8n" path="res://terrain_generator/infinite_heightmap_terrain/ground_material.tres" id="1_dg77c"]
 [ext_resource type="PackedScene" uid="uid://bjhvg8rf53fx4" path="res://Player.tscn" id="1_ig7tw"]
 [ext_resource type="PackedScene" uid="uid://deo0hqkmgg6ux" path="res://environment_models/street_lamps/streetlamp.tscn" id="3_1bvp3"]
 [ext_resource type="PackedScene" uid="uid://c4agr08o2qgr3" path="res://environment_models/halloween/scenes/wall_edge.tscn" id="3_4c57u"]
@@ -10,7 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://d2wvco20xs4i1" path="res://environment_models/halloween/scenes/wall_hole.tscn" id="4_5vw27"]
 [ext_resource type="PackedScene" uid="uid://v4emyuhn6d4i" path="res://environment_models/halloween/scenes/stone_sarcophagus.tscn" id="4_7mycd"]
 [ext_resource type="PackedScene" uid="uid://bkr6hrthqqmi1" path="res://environment_models/street_lamps/street_light.tscn" id="4_lquwl"]
-[ext_resource type="Script" uid="uid://nsjwgmlaejks" path="res://terrain_generator/ChunkManager.cs" id="4_w48qg"]
+[ext_resource type="Script" uid="uid://nsjwgmlaejks" path="res://terrain_generator/infinite_heightmap_terrain/ChunkManager.cs" id="4_w48qg"]
 [ext_resource type="PackedScene" uid="uid://dre0mth00d4xp" path="res://environment_models/halloween/scenes/wall_broken.tscn" id="5_kek77"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_0xm2m"]
@@ -59,8 +59,8 @@ skeleton = NodePath("../..")
 shape = SubResource("ConcavePolygonShape3D_0xm2m")
 
 [node name="Player" parent="." instance=ExtResource("1_ig7tw")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 20, 0)
-MinCameraSize = 5.0
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 20, 16)
+MaxCameraSize = 50.0
 
 [node name="ChunkManager" type="Node" parent="."]
 script = ExtResource("4_w48qg")
@@ -110,6 +110,3 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.3871, 0, 5.31022)
 
 [node name="street_light2" parent="." instance=ExtResource("4_lquwl")]
 transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -3.92001, 0, 8.2266)
-
-[node name="Node3D" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 13.8595)

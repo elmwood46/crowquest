@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3 uid="uid://d10kbss22qbk3"]
+
+[ext_resource type="Curve3D" uid="uid://c0knx8pmaspwn" path="res://curves/curve@Path3D@111833.tres" id="1_cxw68"]
+[ext_resource type="Material" uid="uid://b3ygie72svtqk" path="res://terrain_generator/procedural_brick_wall/materials/brick_texture.tres" id="1_gac5k"]
+
+[node name="Node3D" type="Node3D"]
+
+[node name="Path3D" type="Path3D" parent="."]
+curve = ExtResource("1_cxw68")
+
+[node name="CSGPolygon3D" type="CSGPolygon3D" parent="Path3D"]
+use_collision = true
+polygon = PackedVector2Array(0, 0, 0, 2, 0.2, 2, 0.2, 0)
+mode = 2
+path_node = NodePath("..")
+path_interval_type = 1
+path_interval = 1.0
+path_simplify_angle = 0.0
+path_rotation = 1
+path_rotation_accurate = true
+path_local = false
+path_continuous_u = false
+path_u_distance = 2.04
+path_joined = false
+material = ExtResource("1_gac5k")

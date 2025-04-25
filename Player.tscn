@@ -2041,6 +2041,9 @@ height = 1.44905
 
 [node name="Player" type="CharacterBody3D"]
 script = ExtResource("1_e80uo")
+MoveSpeed = 10.0
+MinCameraSize = 10.0
+MaxCameraSize = 30.0
 
 [node name="gobot" type="Node3D" parent="."]
 
@@ -2065,50 +2068,50 @@ bones/2/name = "Body"
 bones/2/parent = -1
 bones/2/rest = Transform3D(1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, 1, 0, 0.388826, 0)
 bones/2/enabled = true
-bones/2/position = Vector3(0, 0.349902, 0)
-bones/2/rotation = Quaternion(0.0697501, 0.0135079, -0.000944566, 0.997473)
+bones/2/position = Vector3(0, 0.357356, 0)
+bones/2/rotation = Quaternion(0.0697355, 0.0244613, -0.0017105, 0.997264)
 bones/2/scale = Vector3(1, 1, 1)
 bones/3/name = "Hips"
 bones/3/parent = 2
 bones/3/rest = Transform3D(1, 0, -1.50996e-07, 0, -1, 0, -1.50996e-07, 0, -1, 0, 0, 0)
 bones/3/enabled = true
 bones/3/position = Vector3(0, 0, 0)
-bones/3/rotation = Quaternion(1, -5.82041e-11, -7.50321e-08, 3.72531e-09)
+bones/3/rotation = Quaternion(1, -5.78035e-11, -7.50264e-08, 3.72788e-09)
 bones/3/scale = Vector3(1, 1, 1)
 bones/4/name = "UpperLeg.L"
 bones/4/parent = 3
 bones/4/rest = Transform3D(1, 1.11022e-16, 6.35179e-08, -2.64443e-09, 0.999133, 0.0416328, -6.34628e-08, -0.0416328, 0.999133, 0.0975467, 0.0688788, -6.18939e-09)
 bones/4/enabled = true
 bones/4/position = Vector3(0.0975467, 0.0688788, -6.18939e-09)
-bones/4/rotation = Quaternion(-0.502236, -0.146955, -0.0548782, 0.850383)
+bones/4/rotation = Quaternion(-0.447006, -0.139731, -0.0409445, 0.882601)
 bones/4/scale = Vector3(1, 1, 1)
 bones/5/name = "LowerLeg.L"
 bones/5/parent = 4
 bones/5/rest = Transform3D(1, 2.24914e-06, 2.2026e-06, -2.10413e-06, 0.997965, -0.063758, -2.34152e-06, 0.063758, 0.997965, 8.04412e-09, 0.0954144, -4.65661e-10)
 bones/5/enabled = true
 bones/5/position = Vector3(8.04412e-09, 0.0954144, -4.65661e-10)
-bones/5/rotation = Quaternion(0.398104, 1.03397e-06, -1.36105e-05, 0.91734)
+bones/5/rotation = Quaternion(0.299243, 1.08378e-06, -1.02255e-05, 0.954177)
 bones/5/scale = Vector3(1, 1, 1)
 bones/6/name = "UpperLeg.R"
 bones/6/parent = 3
 bones/6/rest = Transform3D(1, 1.11022e-16, 6.35179e-08, -2.64443e-09, 0.999133, 0.0416328, -6.34628e-08, -0.0416328, 0.999133, -0.0975467, 0.0688788, 6.21329e-09)
 bones/6/enabled = true
 bones/6/position = Vector3(-0.0975467, 0.0688788, 6.21329e-09)
-bones/6/rotation = Quaternion(-0.23559, 0.533371, 0.23382, 0.778037)
+bones/6/rotation = Quaternion(-0.19632, 0.552434, 0.209924, 0.782436)
 bones/6/scale = Vector3(1, 1, 1)
 bones/7/name = "LowerLeg.R"
 bones/7/parent = 6
 bones/7/rest = Transform3D(1, -2.25442e-06, -2.20226e-06, 2.10942e-06, 0.997965, -0.063758, 2.34152e-06, 0.063758, 0.997965, -6.85704e-09, 0.0954144, -4.65662e-10)
 bones/7/enabled = true
 bones/7/position = Vector3(-6.85704e-09, 0.0954144, -4.65662e-10)
-bones/7/rotation = Quaternion(0.531242, -9.53279e-07, 1.81824e-05, 0.84722)
+bones/7/rotation = Quaternion(0.46622, -1.01212e-06, 1.59527e-05, 0.884669)
 bones/7/scale = Vector3(1, 1, 1)
 bones/8/name = "UpperArm.L"
 bones/8/parent = 2
 bones/8/rest = Transform3D(0.0145381, 0.999894, 7.04782e-07, 7.15256e-07, -7.15256e-07, 1, 0.999894, -0.0145381, -7.25579e-07, 0.129051, 0.136329, 6.30673e-08)
 bones/8/enabled = true
 bones/8/position = Vector3(0.129051, 0.136329, 6.30673e-08)
-bones/8/rotation = Quaternion(-0.70082, -0.249357, -0.602, 0.290289)
+bones/8/rotation = Quaternion(-0.628901, -0.280333, -0.676785, 0.260498)
 bones/8/scale = Vector3(1, 1, 1)
 bones/9/name = "LowerArm.L"
 bones/9/parent = 8
@@ -2164,7 +2167,7 @@ bones/16/parent = 2
 bones/16/rest = Transform3D(0.0145378, -0.999894, -7.04782e-07, -7.15256e-07, -7.15256e-07, 1, -0.999894, -0.0145378, -7.25578e-07, -0.129051, 0.136329, 8.56313e-08)
 bones/16/enabled = true
 bones/16/position = Vector3(-0.129051, 0.136329, 8.56313e-08)
-bones/16/rotation = Quaternion(-0.612126, 0.286633, 0.691994, 0.25355)
+bones/16/rotation = Quaternion(-0.685856, 0.256396, 0.618995, 0.28409)
 bones/16/scale = Vector3(1, 1, 1)
 bones/17/name = "LowerArm.R"
 bones/17/parent = 16
@@ -2296,5 +2299,21 @@ layout_mode = 2
 min_value = 1.0
 value = 50.0
 
+[node name="HBoxContainer3" type="HBoxContainer" parent="Control/PanelContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Control/PanelContainer/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+text = "Noise Frequency:"
+
+[node name="HSlider" type="HSlider" parent="Control/PanelContainer/VBoxContainer/HBoxContainer3"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+min_value = 0.002
+max_value = 0.04
+step = 0.001
+value = 0.02
+
 [connection signal="value_changed" from="Control/PanelContainer/VBoxContainer/HBoxContainer/HSlider" to="." method="SetChunkMaxHeight"]
 [connection signal="value_changed" from="Control/PanelContainer/VBoxContainer/HBoxContainer2/HSlider" to="." method="SetChunkResolution"]
+[connection signal="value_changed" from="Control/PanelContainer/VBoxContainer/HBoxContainer3/HSlider" to="." method="ChangeNoiseFrequency"]
