@@ -1,0 +1,57 @@
+[gd_scene load_steps=10 format=3 uid="uid://b42tvhkkfvgg8"]
+
+[ext_resource type="Material" uid="uid://b5rwpng3d2wn5" path="res://terrain_generator/grass/dark_green.tres" id="1_8cmhd"]
+[ext_resource type="ArrayMesh" uid="uid://xo557hv2glvi" path="res://terrain_generator/grass/test_terrain_mesh.obj" id="3_0rl5y"]
+[ext_resource type="Material" uid="uid://btisftbehckgp" path="res://terrain_generator/grass/multimesh_grass_shader.tres" id="3_672sb"]
+[ext_resource type="Script" uid="uid://m1i8hrnpuku0" path="res://terrain_generator/grass/Grass.cs" id="5_wcewp"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_dxj6l"]
+sky_top_color = Color(0, 0.797805, 0.914883, 1)
+
+[sub_resource type="Sky" id="Sky_r1k1q"]
+sky_material = SubResource("ProceduralSkyMaterial_dxj6l")
+
+[sub_resource type="Environment" id="Environment_rd48j"]
+background_mode = 2
+sky = SubResource("Sky_r1k1q")
+ambient_light_source = 3
+tonemap_mode = 3
+tonemap_exposure = 2.0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_2hna0"]
+_surfaces = [{
+"aabb": AABB(-0.05, 0, 0, 0.1, 0.4, 1e-05),
+"attribute_data": PackedByteArray(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 0, 63, 0, 0, 128, 63),
+"format": 34359738391,
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 3,
+"vertex_data": PackedByteArray(205, 204, 76, 189, 0, 0, 0, 0, 0, 0, 0, 0, 205, 204, 76, 61, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 205, 204, 204, 62, 0, 0, 0, 0, 255, 127, 255, 255, 0, 0, 255, 191, 255, 127, 255, 255, 0, 0, 255, 191, 255, 127, 255, 255, 0, 0, 255, 191)
+}]
+custom_aabb = AABB(-0.5, 0, -0.5, 1, 1, 1)
+
+[sub_resource type="MultiMesh" id="MultiMesh_5syka"]
+transform_format = 1
+use_custom_data = true
+mesh = SubResource("ArrayMesh_2hna0")
+
+[node name="Node3D" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_rd48j")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = ExtResource("3_0rl5y")
+skeleton = NodePath("../WorldEnvironment")
+surface_material_override/0 = ExtResource("1_8cmhd")
+
+[node name="Grass" type="MultiMeshInstance3D" parent="MeshInstance3D"]
+material_override = ExtResource("3_672sb")
+cast_shadow = 0
+multimesh = SubResource("MultiMesh_5syka")
+script = ExtResource("5_wcewp")
+Density = 1.0
+BladeWidth = Vector2(0.5, 0.6)
+BladeHeight = Vector2(0.5, 0.6)
+SwayPitchDegrees = Vector2(1, 2)
+TerrainMesh = ExtResource("3_0rl5y")

@@ -143,6 +143,8 @@ public partial class Player : CharacterBody3D
 
 	public override void _PhysicsProcess(double delta)
 	{
+		var fps_label = GetNode<Label>("%FpsLabel");
+		fps_label.Text = $"FPS: {Engine.GetFramesPerSecond()}";
 		if (!_player_is_active) return;
 
 		var velocity = Velocity;

@@ -153,56 +153,56 @@ public partial class GeneratePathPointsTest : Node3D
 
     private static readonly Vector2I[] _upperLeftInnerCorner =
     [
-        new (-17,-8),
+        new (-16,-8),
         new (-8, -8),
-        new (-8, -17),
+        new (-8, -16),
     ];
 
     private static readonly Vector2I[] _cornerPiece =
     [
         // outer
-        new (-8, -17),
+        new (-8, -16),
         new (-8, 8),
-        new (17, 8),
+        new (16, 8),
         // inner
-        new (8, -17),
+        new (8, -16),
         new (8, -8),
-        new (17, -8),
+        new (16, -8),
     ];
 
     private static readonly Vector2I[] _straightPath =
     [
         //leftSide
-        new (-8, -17),
-        new (-8, 17),
+        new (-8, -16),
+        new (-8, 16),
         //rightSide
-        new (8, -17),
-        new (8, 17),
+        new (8, -16),
+        new (8, 16),
     ];
 
     private static readonly Vector2I[] _deadEnd =
     [
-        new (-8, -17),
+        new (-8, -16),
         new (-8, 8),
         new (8, 8),
-        new (8, -17),
+        new (8, -16),
     ];
 
     private static readonly Vector2I[] _t_junction =
     [
         // upper left corner
-        new (-17,-8),
+        new (-16,-8),
         new (-8, -8),
-        new (-8, -17),
+        new (-8, -16),
 
         // upper right corner
-        new (8, -17),
+        new (8, -16),
         new (8, -8),
-        new (17, -8),
+        new (16, -8),
 
         // horizontal base
-        new (-17, 8),
-        new (17, 8),
+        new (-16, 8),
+        new (16, 8),
     ];
 
     private static List<Vector2I> UpperLeftInnerCorner()

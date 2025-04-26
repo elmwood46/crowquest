@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://ch8qybg2e1olp"]
+
+[sub_resource type="GDScript" id="GDScript_yqx5k"]
+script/source = "extends Node
+class grass_noise_node:
+	@export var noise:Noise
+"
+
+[node name="GrassNoiseNode" type="Node"]
+script = SubResource("GDScript_yqx5k")

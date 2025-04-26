@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://d10kbss22qbk3"]
 
 [ext_resource type="Curve3D" uid="uid://c0knx8pmaspwn" path="res://curves/curve@Path3D@111833.tres" id="1_cxw68"]
-[ext_resource type="Material" uid="uid://b3ygie72svtqk" path="res://terrain_generator/procedural_brick_wall/materials/brick_texture.tres" id="1_gac5k"]
+[ext_resource type="Material" uid="uid://b3sfpwraj58wq" path="res://terrain_generator/simple_wfc/hedge_texture.tres" id="2_cxw68"]
 
 [node name="Node3D" type="Node3D"]
 
@@ -22,4 +22,4 @@ path_local = false
 path_continuous_u = false
 path_u_distance = 2.04
 path_joined = false
-material = ExtResource("1_gac5k")
+material = ExtResource("2_cxw68")

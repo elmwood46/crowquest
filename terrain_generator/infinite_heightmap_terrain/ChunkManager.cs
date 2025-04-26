@@ -7,7 +7,7 @@ using System.Threading;
 public partial class ChunkManager : Node
 {
     [Export] public bool Enabled = true;
-    [Export] public int RenderDistance = 10;
+    [Export] public int RenderDistance = 5;
     [Export (PropertyHint.Range, "1,32,1")] public int ChunkSize
     {
         get => _chunkSize;
@@ -37,7 +37,7 @@ public partial class ChunkManager : Node
     public float InverseResolution => 1.0f / _planeResolution;
     private int _chunkSize = 32;
     private float _max_height = 0.0f; //20.0f;
-    private float _planeResolution = 1.0f;//.25f;
+    private float _planeResolution = 0.25f;
 
     private readonly ConcurrentDictionary<ChunkPlane, Vector2I> _chunkToPosition = new();
 	private readonly ConcurrentDictionary<Vector2I, ChunkPlane> _positionToChunk = new();

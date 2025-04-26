@@ -4,11 +4,11 @@
 
 [node name="CSGPolygon3D" type="CSGPolygon3D"]
 use_collision = true
-polygon = PackedVector2Array(-0.625, 0, -0.625, 1.7, -0.236, 2, 0.248, 2, 0.625, 1.7, 0.625, 0)
+polygon = PackedVector2Array(-0.625, 0, -0.625, 9.7, -0.236, 10, 0.248, 10, 0.625, 9.7, 0.625, 0)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 1
-path_interval = 4.0
+path_interval = 8.0
 path_simplify_angle = 0.0
 path_rotation = 1
 path_rotation_accurate = false

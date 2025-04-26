@@ -1,0 +1,15 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://btisftbehckgp"]
+
+[ext_resource type="Shader" uid="uid://diqfj2denogbr" path="res://terrain_generator/grass/multi_mesh_grass.gdshader" id="1_fbj0s"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_fbj0s")
+shader_parameter/col_top = Color(0.265503, 0.447456, 0.255676, 1)
+shader_parameter/col_bottom = Color(0.0784314, 0.219608, 0.0117647, 1)
+shader_parameter/roughness_factor = 0.8
+shader_parameter/deg_sway_pitch_offset = 80.0
+shader_parameter/deg_sway_yaw_offset = 45.0
+shader_parameter/wind_scale = 4.0
+shader_parameter/wind_speed = 1.0
+shader_parameter/wind_direction = Vector3(0, 0, -1)

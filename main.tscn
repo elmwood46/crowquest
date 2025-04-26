@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://dovgs2t1vyyy0"]
+[gd_scene load_steps=24 format=3 uid="uid://dovgs2t1vyyy0"]
 
 [ext_resource type="Material" uid="uid://crj6jsd4bwa8n" path="res://terrain_generator/infinite_heightmap_terrain/ground_material.tres" id="1_dg77c"]
 [ext_resource type="PackedScene" uid="uid://bjhvg8rf53fx4" path="res://Player.tscn" id="1_ig7tw"]
@@ -20,9 +20,64 @@ sky_material = SubResource("ProceduralSkyMaterial_0xm2m")
 
 [sub_resource type="Environment" id="Environment_1bvp3"]
 background_mode = 2
+background_energy_multiplier = 0.0
 sky = SubResource("Sky_h2yge")
+ambient_light_source = 3
 ambient_light_color = Color(1, 1, 1, 1)
-ambient_light_energy = 0.5
+
+[sub_resource type="GDScript" id="GDScript_dg77c"]
+script/source = "extends DirectionalLight3D
+
+@export var cycle_light = true
+
+var t = 0
+var wait_t = 0
+
+var state = \"wait\"
+var getting_brighter = false
+var transition_time = 30
+var wait_time_dark = 20
+var wait_time_light = 10
+var wait_time = wait_time_light
+var first_frame = true
+
+func _ready() -> void:
+	light_energy = 1
+
+func _set_light_energy(f: float) -> void:
+	light_energy = f
+	
+func _process(delta: float) -> void:
+	if (!cycle_light):
+		return
+	if (first_frame):
+		light_energy = 1
+		first_frame = false
+	var l_label = $\"../../Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/LightEnergyLabel\"
+	l_label.text = str(light_energy)
+	l_label.text+=\"\\nstate: \"+state
+	l_label.text+=\"\\nt: \"+str(t)
+	l_label.text+=\"\\nwait_t: \"+str(wait_t)
+	if (state==\"transition\"):
+		t += delta
+		var cosval = (cos(PI*t/transition_time)+1)/2
+		light_energy = 1-cosval if getting_brighter else cosval
+		if (t >= transition_time):
+			t = 0
+			if (getting_brighter):
+				wait_time = wait_time_light
+				light_energy = 1
+			else:
+				wait_time = wait_time_dark
+				light_energy = 0
+			getting_brighter = !getting_brighter
+			state = \"wait\"
+	else:
+		wait_t+=delta
+		if (wait_t >= wait_time):
+			wait_t = 0
+			state = \"transition\"
+"
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_7dm0k"]
 material = ExtResource("1_dg77c")
@@ -30,6 +85,14 @@ size = Vector2(20, 20)
 
 [sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_0xm2m"]
 data = PackedVector3Array(10, 0, 10, -10, 0, 10, 10, 0, -10, -10, 0, 10, -10, 0, -10, 10, 0, -10)
+
+[sub_resource type="GDScript" id="GDScript_ycdy4"]
+script/source = "extends Label
+
+
+func change_label_text(f: float) -> void:
+	text = \"light energy: \"+str(f)
+"
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_w48qg"]
 
@@ -48,6 +111,8 @@ environment = SubResource("Environment_1bvp3")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment"]
 transform = Transform3D(0.403349, -0.910278, 0.0932931, 0.696466, 0.371528, 0.613924, -0.593503, -0.18265, 0.783833, 0, 1.67932, 0)
+light_energy = 0.2
+script = SubResource("GDScript_dg77c")
 
 [node name="Ground" type="StaticBody3D" parent="."]
 
@@ -60,7 +125,42 @@ shape = SubResource("ConcavePolygonShape3D_0xm2m")
 
 [node name="Player" parent="." instance=ExtResource("1_ig7tw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 20, 16)
-MaxCameraSize = 50.0
+MaxCameraSize = 40.0
+
+[node name="Control2" type="Control" parent="Player"]
+layout_mode = 3
+anchors_preset = 0
+offset_top = 142.0
+offset_right = 40.0
+offset_bottom = 182.0
+
+[node name="PanelContainer" type="PanelContainer" parent="Player/Control2"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Player/Control2/PanelContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Player/Control2/PanelContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Light Energy"
+script = SubResource("GDScript_ycdy4")
+
+[node name="HSlider" type="HSlider" parent="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+max_value = 1.0
+step = 0.01
+
+[node name="LightEnergyLabel" type="Label" parent="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
 
 [node name="ChunkManager" type="Node" parent="."]
 script = ExtResource("4_w48qg")
@@ -110,3 +210,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.3871, 0, 5.31022)
 
 [node name="street_light2" parent="." instance=ExtResource("4_lquwl")]
 transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -3.92001, 0, 8.2266)
+
+[connection signal="value_changed" from="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/HBoxContainer/HSlider" to="WorldEnvironment/DirectionalLight3D" method="_set_light_energy"]
+[connection signal="value_changed" from="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/HBoxContainer/HSlider" to="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/HBoxContainer/Label" method="change_label_text"]

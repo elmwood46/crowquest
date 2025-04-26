@@ -91,6 +91,76 @@ public static class SimpleWfc
         }
     }
 
+    public static float GetTileGenerationChance(int tile_id)
+    {
+        if (IsCorner(tile_id))            return 0.01f;
+        else if (IsTJunction(tile_id))    return 0.01f;
+        else if (IsDeadEnd(tile_id))      return 0.1f;
+        else if (IsStraight(tile_id))     return 0.0f;
+        else if (IsIntersection(tile_id)) return 0.02f;
+        else if (IsOpen(tile_id))         return 0.1f;
+        return 0.0f;
+    }
+
+    private static bool IsCorner(int tileID)
+    {
+        return tileID switch
+        {
+            (int)WallDirections.NE => true,
+            (int)WallDirections.NW => true,
+            (int)WallDirections.SW => true,
+            (int)WallDirections.ES => true,
+            _ => false
+        };
+    }
+    private static bool IsDeadEnd(int tileID)
+    {
+        return tileID switch
+        {
+            (int)WallDirections.NES => true,
+            (int)WallDirections.NEW => true,
+            (int)WallDirections.NSW => true,
+            (int)WallDirections.ESW => true,
+            _ => false
+        };
+    }
+    private static bool IsStraight(int tileID)
+    {
+        return tileID switch
+        {
+            (int)WallDirections.NS => true,
+            (int)WallDirections.EW => true,
+            _ => false
+        };
+    }
+    private static bool IsIntersection(int tileID)
+    {
+        return tileID switch
+        {
+            (int)WallDirections.None => true,
+            _ => false
+        };
+    }
+    private static bool IsTJunction(int tileID)
+    {
+        return tileID switch
+        {
+            (int)WallDirections.N => true,
+            (int)WallDirections.E => true,
+            (int)WallDirections.S => true,
+            (int)WallDirections.W => true,
+            _ => false
+        };
+    }
+    private static bool IsOpen(int tileID)
+    {
+        return tileID switch
+        {
+            (int)WallDirections.All => true,
+            _ => false
+        };
+    }
+
     private static void GenerateTile(Vector2I cell)
     {
         var cells = FindValidCells(cell);

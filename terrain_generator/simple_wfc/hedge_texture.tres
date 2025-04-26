@@ -18,3 +18,4 @@ heightmap_deep_parallax = true
 heightmap_min_layers = 8
 heightmap_max_layers = 32
 heightmap_texture = ExtResource("3_bbn6a")
+uv1_scale = Vector3(0.1, 0.8, 1)
