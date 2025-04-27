@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://be27c2kli3ed5"
+path="res://.godot/imported/12977_Daffodil_flower_v1_l2.obj-32847b0990db408c9570e3fd46e76bfa.mesh"
+
+[deps]
+
+files=["res://.godot/imported/12977_Daffodil_flower_v1_l2.obj-32847b0990db408c9570e3fd46e76bfa.mesh"]
+
+source_file="res://environment_models/Daffodil_Flower_v1_L2.123c8da1a2c3-196a-47ae-b92e-f2c8dcc6e4e3/12977_Daffodil_flower_v1_l2.obj"
+dest_files=["res://.godot/imported/12977_Daffodil_flower_v1_l2.obj-32847b0990db408c9570e3fd46e76bfa.mesh", "res://.godot/imported/12977_Daffodil_flower_v1_l2.obj-32847b0990db408c9570e3fd46e76bfa.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

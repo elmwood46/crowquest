@@ -1,0 +1,21 @@
+[gd_scene load_steps=5 format=3 uid="uid://chel8pirn16me"]
+
+[ext_resource type="ArrayMesh" uid="uid://chtnkdxdwhkbj" path="res://terrain_generator/grass/flowers_01.tres" id="1_dej4v"]
+[ext_resource type="ArrayMesh" uid="uid://40tqkofp2jng" path="res://terrain_generator/grass/grass_01.tres" id="2_64lap"]
+[ext_resource type="Script" uid="uid://ddse3ujprqc3g" path="res://terrain_generator/grass/test_multi_mesh.gd" id="2_ptgke"]
+
+[sub_resource type="MultiMesh" id="MultiMesh_ptgke"]
+transform_format = 1
+instance_count = 10
+mesh = ExtResource("2_64lap")
+buffer = PackedFloat32Array(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 2, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 4, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 6, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 8, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 10, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 12, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 14, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 16, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 18, 0, 1, 0, 0, 0, 0, 1, 0)
+
+[node name="Node3D" type="Node3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+visible = false
+mesh = ExtResource("1_dej4v")
+
+[node name="MultiMeshInstance3D" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("MultiMesh_ptgke")
+script = ExtResource("2_ptgke")

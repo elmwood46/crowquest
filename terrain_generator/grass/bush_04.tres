@@ -1,0 +1,132 @@
+[gd_resource type="ArrayMesh" load_steps=10 format=4 uid="uid://juv2meyhpqg1"]
+
+[ext_resource type="Texture2D" uid="uid://ml8vdw3dqohq" path="res://environment_models/lowpoly_plants/source/shapespark-low-poly-plants-kit_shrubbery-01.png" id="1_1dwre"]
+[ext_resource type="Texture2D" uid="uid://b4atnjgvt6egm" path="res://environment_models/lowpoly_plants/source/shapespark-low-poly-plants-kit_shrubbery-02.png" id="2_n3le1"]
+[ext_resource type="Texture2D" uid="uid://5oj1vryy10e6" path="res://environment_models/lowpoly_plants/source/shapespark-low-poly-plants-kit_shrubbery-03.png" id="3_lu3xr"]
+[ext_resource type="Texture2D" uid="uid://b6sfppp2ky5au" path="res://environment_models/lowpoly_plants/source/shapespark-low-poly-plants-kit_shrubbery-04.png" id="4_sk4t5"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pa7ik"]
+resource_name = "shrubbery-1-01"
+transparency = 4
+cull_mode = 2
+albedo_texture = ExtResource("1_1dwre")
+roughness = 0.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v46au"]
+resource_name = "shrubbery-1-02"
+transparency = 4
+cull_mode = 2
+albedo_texture = ExtResource("2_n3le1")
+roughness = 0.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_per7c"]
+resource_name = "shrubbery-1-03"
+transparency = 4
+cull_mode = 2
+albedo_texture = ExtResource("3_lu3xr")
+roughness = 0.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7fhqs"]
+resource_name = "shrubbery-1-04"
+transparency = 4
+cull_mode = 2
+albedo_texture = ExtResource("4_sk4t5")
+roughness = 0.5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_k2ka2"]
+_surfaces = [{
+"aabb": AABB(-0.563942, -0.100018, -0.532706, 1.09409, 1.01701, 0.89697),
+"format": 34896613377,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAADAAAABAAFAAMABgAHAAgABgAJAAcACgAJAAYACgALAAkA"),
+"name": "shrubbery-1-01",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 12,
+"vertex_data": PackedByteArray("8LoiBbh2AAAH6uvQ//8AAAfqIgX+/wAANrXDy+psAADwXyIFnBMAAHxUm8YAAAAAu4YAAAtgAAD/////wm8AAP//AADCbwAA7XyE+W1hAACcEwAAF5EAAAAACvPbkwAA")
+}, {
+"aabb": AABB(-0.4693, -0.100018, -0.505972, 0.933723, 0.94364, 1.0115),
+"format": 34896613377,
+"index_count": 36,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAADAAAABAAFAAMABgAHAAgABgAJAAcACgAJAAYACgALAAkADAANAA4ADAAPAA0AEAARABIAEAATABEA"),
+"name": "shrubbery-1-02",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 20,
+"vertex_data": PackedByteArray("w2gAAAKXAABf4h/9T9oAAF/iAABP2gAAw2gf/QKXAABZEQAA9S8AAFkRH/31LwAAhpQAAHGzAADICf//sNQAAMgJAACw1AAAhpT//3GzAAD//wAA41sAAP/////jWwAAOYuIBQAAAAA6bgjP/v8AADpuiAX//wAAOYsIzwAAAAB0+YgFf7kAAAAAUtF/RgAAAACIBX9GAAB0+VLRf7kAAA==")
+}, {
+"aabb": AABB(-0.518468, -0.100018, -0.591817, 1.12131, 1.01701, 1.2204),
+"format": 34896613377,
+"index_count": 84,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkACQAMAAoACQANAAwADgAPABAADgARAA8ADwASABAADwATABIAFAAVABYAFAAXABUAFQAYABYAFQAZABgAGgAbABwAGgAdABsAGwAeABwAGwAfAB4AIAAhACIAIAAjACEAIQAkACIAIQAlACQAJgAnACgAJgApACcAJwAqACgAJwArACoA"),
+"name": "shrubbery-1-03",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 44,
+"vertex_data": PackedByteArray("jHYAAJkUAAB1lP//J+gAAHWUAAAn6AAAjHb//5kUAACjyiIFtTYAAHog69DaxwAAeiAiBdrHAACjyuvQtTYAALdeqE4KKAAAxQ3xIL6AAADBitV4+m8AAIkLtyH3MQAAKWzMfhjSAABkEDdNDN0AAIjVT5NHhwAA5Zoe35YZAABLeiptb4oAACzpHt9FUAAAmB57i21WAABENB7fvhkAAKIv+VyMwQAA8r29LsbVAABTWvp+AnYAACpllTb//wAA78Sagf9YAAD//0BX5Z0AAO1TJpJbHwAAAAAYz2+EAAD7gmdxEmkAAFMMO9PnJwAA2HNui/PLAADaJDvTYdUAAF7W6lx9kQAA9KRtJ6UZAADff9aOhZAAAGnuwysnTgAAci45kfJKAADLSyxbAAAAAPg+o4n2yAAAWbvlv/LcAABGbdVl1n8AAKBozdCN+QAAPdBKgrRXAAAy/s3QT40AAA==")
+}, {
+"aabb": AABB(-0.497933, -0.100018, -0.493151, 0.99227, 1.01701, 0.937498),
+"format": 34896613377,
+"index_count": 18,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAADAAAABAAFAAMABgAHAAgABgAJAAcA"),
+"name": "shrubbery-1-04",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("BkQAAB5zAAAbLv////8AABsuAAD//wAABkT//x5zAADQkwAAAAAAANCT//8AAAAA//8iBVZzAAAAAOvQOLAAAAAAIgU4sAAA///r0FZzAAA=")
+}]
+blend_shape_mode = 0
+
+[resource]
+resource_name = "shapespark-low-poly-plants-kit_Plane_158"
+_surfaces = [{
+"aabb": AABB(-0.563942, -0.100018, -0.532706, 1.09409, 1.01701, 0.89697),
+"attribute_data": PackedByteArray("/3//////AAD//////38AAAAA////fwAA/3///wAAAAD/f/////8AAP//////fwAAAAD///9/AAD/f///AAAAAA=="),
+"format": 34896613399,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkADAANAA4ADAAPAA0A"),
+"material": SubResource("StandardMaterial3D_pa7ik"),
+"name": "shrubbery-1-01",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 16,
+"vertex_data": PackedByteArray("8LoiBbh2gK8H6uvQ//+CrwfqIgX+/3+vNrXDy+psha/wXyIFnBMRnja1w8vqbBKe8LoiBbh2EZ58VJvGAAAWnruGAAALYAKE/////8JvKoT//wAAwm/2g+18hPltYWGEnBMAABeRW43tfIT5bWFojbuGAAALYFaNAAAK89uTeo0Jgqb/ZYMa/xl/df9thUr+04Rf/JaG6fvGgiv8V4ky+4Br5PtpXjD9IHpx+qlVDv4WivwDcI7mAuaFBgX3kQYC")
+}, {
+"aabb": AABB(-0.4693, -0.100018, -0.505972, 0.933723, 0.94364, 1.0115),
+"attribute_data": PackedByteArray("/3//////AAD//////38AAAAA////fwAA/3///wAAAAD/f/////8AAP//////fwAAAAD///9/AAD/f///AAAAAAAA/////wAA/////wAAAAAAAP////8AAP////8AAAAA"),
+"format": 34896613399,
+"index_count": 36,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkADAANAA4ADAAPAA0AEAARABIAEAATABEAFAAVABYAFAAXABUA"),
+"material": SubResource("StandardMaterial3D_v46au"),
+"name": "shrubbery-1-02",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 24,
+"vertex_data": PackedByteArray("w2gAAAKXAJZf4h/9T9oAll/iAABP2gCWw2gf/QKXAJZZEQAA9S/upMNoH/0Cl+6kw2gAAAKX7qRZER/99S/upIaUAABxs6X1yAn//7DUpfXICQAAsNSl9YaU//9xs6X1//8AAONbieKGlP//cbOJ4oaUAABxs4ni/////+NbieI5i4gFAAA9xDpuCM/+/z3EOm6IBf//PcQ5iwjPAAA9xHT5iAV/uSDtAABS0X9GIO0AAIgFf0Yg7XT5UtF/uSDt/3/+//9//v//f/7//3/+//9//v//f/7//3/+//9//v//f////3////9/////f////3////9/////f////3////9//v//f/7//3/+//9//v//fwAA/38AAP9/AAD/fwAA")
+}, {
+"aabb": AABB(-0.518468, -0.100018, -0.591817, 1.12131, 1.01701, 1.2204),
+"attribute_data": PackedByteArray("AAD/////AAD/////AAAAAAAA/////wAA/////wAAAAAAAGV94XUAAB9zfLwAAAAA4XUAAP//V4ofc3y8//8AAAAAZX2JeAAAH3N8vAAAAACJeAAA//9Xih9zfLz//wAAAABlfU95AAAfc3y8AAAAAE95AAD//1eKH3N8vP//AAAAAGV9rIEAAB9zfLwAAAAArIEAAP//V4ofc3y8//8AAAAAZX2AfQAAH3N8vAAAAACAfQAA//9Xih9zfLz//wAAAABlfVqEAAAfc3y8AAAAAFqEAAD//1eKH3N8vP//AAA="),
+"format": 34896613399,
+"index_count": 84,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkADAANAA4ADAAPAA0AEAARABIAEAATABEAFAAVABYAFAAXABUAGAAZABoAGAAbABkAHAAdAB4AHAAfAB0AIAAhACIAIAAjACEAJAAlACYAJAAnACUAKAApACoAKAArACkALAAtAC4ALAAvAC0AMAAxADIAMAAzADEANAA1ADYANAA3ADUA"),
+"material": SubResource("StandardMaterial3D_per7c"),
+"name": "shrubbery-1-03",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 56,
+"vertex_data": PackedByteArray("jHYAAJkUu7p1lP//J+i7unWUAAAn6Lu6jHb//5kUu7qjyiIFtTaC4Xog69Dax4LheiAiBdrHguGjyuvQtTaC4bdeqE4KKBngxQ3xIL6Ae+DBitV4+m9w34kLtyH3MW3hxQ3xIL6AMdopbMx+GNJc2sGK1Xj6bxzbZBA3TQzdP9mI1U+TR4eF7OWaHt+WGRPsS3oqbW+KW+0s6R7fRVDd6uWaHt+WGSv7mB57i21WxPpLeiptb4rH+UQ0Ht++GZ78oi/5XIzBKtTyvb0uxtXw01Na+n4CdqbUKmWVNv//TNPyvb0uxtXV2O/EmoH/WJfYU1r6fgJ2Ftj//0BX5Z2q2e1TJpJbH9bJAAAYz2+EIcr7gmdxEmkvyVMMO9PnJxbLAAAYz2+EQb/Yc26L88ugv/uCZ3ESaX7A2iQ702HVGb5e1upcfZF6+PSkbSelGSH333/WjoWQyvpp7sMrJ05a8/SkbSelGaL6ci45kfJKgfvff9aOhZDs/ctLLFsAAAn3+D6jifbI+ahZu+W/8tzDqEZt1WXWf2KpoGjN0I35Q6hZu+W/8twfsj3QSoK0Vw2yRm3VZdZ/wLEy/s3QT42Msv9/////f////3////9/////f////3////9/////f///lxqzzdwaCc4dGhvNhRvczrQV287PFf7OSBaVzxgVGc7hdjEty3XGLe14GCzcclkv8X10KON8JSlbes8qz4FuKI8nGnBlJulw4yl8bsYibnM3MRFjGDDNY4kte2W9NMBg2T9q3wFADOB+P/fdfkAJ4qw5OtjRORfZIjr62jE5W9X4aQJbRml7WyprMlpTZ8xce9dW7NbX3uvS2Jbq+9VL7io6r18NOeFfJzxXXwY2Z2CSRt1MMkbmTIFEEE2kSKpM")
+}, {
+"aabb": AABB(-0.497933, -0.100018, -0.493151, 0.99227, 1.01701, 0.937498),
+"attribute_data": PackedByteArray("/3//////AAD//////38AAAAA////fwAA/3///wAAAAAAAP////8AAP////8AAAAA"),
+"format": 34896613399,
+"index_count": 18,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkA"),
+"material": SubResource("StandardMaterial3D_7fhqs"),
+"name": "shrubbery-1-04",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 12,
+"vertex_data": PackedByteArray("BkQAAB5zpcYbLv////+lxhsuAAD//6XGBkT//x5zpcbQkwAAAADI2QZE//8ec8jZBkQAAB5zyNnQk///AADI2f//IgVWc/32AADr0Diw/fYAACIFOLD99v//69BWc/32/3////9/////f////3////9/////f////3////9/////f////3////9/////f///")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_k2ka2")

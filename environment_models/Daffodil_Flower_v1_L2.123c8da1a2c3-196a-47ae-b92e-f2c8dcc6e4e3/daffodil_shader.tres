@@ -1,0 +1,8 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://d2ewgid5pbcxh"]
+
+[ext_resource type="Shader" uid="uid://0xfnglk11fbl" path="res://environment_models/Daffodil_Flower_v1_L2.123c8da1a2c3-196a-47ae-b92e-f2c8dcc6e4e3/daffodil_shader.gdshader" id="1_sqsqk"]
+
+[resource]
+resource_name = "01___12977_Daffodil_flower"
+render_priority = 0
+shader = ExtResource("1_sqsqk")

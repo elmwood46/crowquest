@@ -1,0 +1,72 @@
+[gd_resource type="ArrayMesh" load_steps=6 format=4 uid="uid://40tqkofp2jng"]
+
+[ext_resource type="Texture2D" uid="uid://cs4q24lj2gcbs" path="res://environment_models/lowpoly_plants/source/shapespark-low-poly-plants-kit_grass-02.png" id="1_7cbd0"]
+[ext_resource type="Texture2D" uid="uid://cpia0xxrom1o3" path="res://environment_models/lowpoly_plants/source/shapespark-low-poly-plants-kit_grass-01.png" id="2_k5v0d"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dpvre"]
+resource_name = "high-grass-1-02"
+transparency = 4
+cull_mode = 2
+albedo_texture = ExtResource("1_7cbd0")
+roughness = 0.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6kohq"]
+resource_name = "high-grass-1-01"
+transparency = 4
+cull_mode = 2
+albedo_texture = ExtResource("2_k5v0d")
+roughness = 0.5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_a655s"]
+_surfaces = [{
+"aabb": AABB(-0.508662, -0.0378588, -0.710544, 1.03157, 1.34205, 1.32966),
+"format": 34896613377,
+"index_count": 18,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkA"),
+"name": "high-grass-1-02",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 12,
+"vertex_data": PackedByteArray("dbwAANYeAAAYN0u+//8AAB1AAADE8AAAuc7m5AAAAAAwSQAA8hoAAIut//939AAAi60AAHf0AAAwSebk8hoAAP//AAD7TQAAuwG5tDfDAAAAAAAAA8QAAP//5uT7TQAA")
+}, {
+"aabb": AABB(-0.621875, -0.0378588, -0.314366, 1.25106, 1.2, 0.715652),
+"format": 34896613377,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUA"),
+"name": "high-grass-1-01",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("AAAAAKtzAACM9f//q3MAAIz1AACrcwAAAAD//6tzAADHEgAAAAAAAP//buL//wAAuOMAAHvhAADHEmfpAAAAAA==")
+}]
+blend_shape_mode = 0
+
+[resource]
+resource_name = "shapespark-low-poly-plants-kit_Plane_202"
+_surfaces = [{
+"aabb": AABB(-0.508662, -0.0378588, -0.710544, 1.03157, 1.34205, 1.32966),
+"attribute_data": PackedByteArray("AAD/////AAD/////AAAAAAAA/////wAA/////wAAAAAAAP////8AAP////8AAAAA"),
+"format": 34896613399,
+"index_count": 18,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkA"),
+"material": SubResource("StandardMaterial3D_dpvre"),
+"name": "high-grass-1-02",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 12,
+"vertex_data": PackedByteArray("dbwAANYemNEYN0u+//+T0R1AAADE8IzRuc7m5AAAq9EwSQAA8hoJsout//939Aqyi60AAHf0/rEwSebk8hoxsv//AAD7TTDquwG5tDfDLeoAAAAAA8Qm6v//5uT7TUXq7Xqt9+Z7Rfn/f///FXgB8/KHtfx7iH38/3////yPY/nheOv20Xke+P9///8qdOnw")
+}, {
+"aabb": AABB(-0.621875, -0.0378588, -0.314366, 1.25106, 1.2, 0.715652),
+"attribute_data": PackedByteArray("AAD/////AAD/////AAAAAAAA/////wAA/////wAAAAA="),
+"format": 34896613399,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUA"),
+"material": SubResource("StandardMaterial3D_6kohq"),
+"name": "high-grass-1-01",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("AAAAAKtzAICM9f//q3MAgIz1AACrcwCAAAD//6tzAIDHEgAAAACJlv//buL//4mWuOMAAHvhiJbHEmfpAACNlv9/////f////3////9///8jfxn8SX/H/P9//v+Kfmj5")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_a655s")

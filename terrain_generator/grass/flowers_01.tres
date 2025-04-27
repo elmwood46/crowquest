@@ -1,0 +1,44 @@
+[gd_resource type="ArrayMesh" load_steps=4 format=4 uid="uid://chtnkdxdwhkbj"]
+
+[ext_resource type="Texture2D" uid="uid://cmuobdlq62pov" path="res://environment_models/lowpoly_plants/source/shapespark-low-poly-plants-kit_flowers-01.png" id="1_8cidb"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0kf0o"]
+resource_name = "flowers-01.001"
+transparency = 4
+cull_mode = 2
+albedo_texture = ExtResource("1_8cidb")
+roughness = 0.5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_cw5la"]
+_surfaces = [{
+"aabb": AABB(-0.79569, 0.0163785, -0.834188, 1.60858, 0.0962081, 1.60858),
+"format": 34896613377,
+"index_count": 42,
+"index_data": PackedByteArray("AAAIAAkAAAABAAgAAgAAAAkAAQAGAAgABAACAAkABgAKAAgACgAJAAgABgAHAAoABwADAAoACgALAAkABAAJAAsAAwALAAoABAALAAUAAwAFAAsA"),
+"lods": [0.0986921, PackedByteArray("AAABAAIAAwACAAEAAwAEAAIAAwAFAAQABgADAAEABgAHAAMA")],
+"name": "flowers-01.001",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 12,
+"vertex_data": PackedByteArray("FUgAAAAAAADFrQAAAAAAAAAAAADxUgAAUrEAAP//AAAAAAAATaoAAPZSAAD//wAA//8AAId0AAD//wAAO7oAAFyrwlfkSgAA/EvWvJpXAABFu///ib4AAM1CEFMKrAAA")
+}]
+blend_shape_mode = 0
+
+[resource]
+resource_name = "shapespark-low-poly-plants-kit_Plane_163"
+_surfaces = [{
+"aabb": AABB(-0.79569, 0.0163785, -0.834188, 1.60858, 0.0962081, 1.60858),
+"attribute_data": PackedByteArray("FUgAAMWtAAAAAPFSUrH//wAATar2Uv////8waf//O7oVSAAAXKvkSvxLmlf//zu6UrH//0W7ib78S5pXzUIKrAAA8VL//zBpRbuJvlyr5Er8S5pXRbuJvvxLmldcq+RKzUIKrMWtAABcq+RKzUIKrEW7ib72Uv//AABNqs1CCqw="),
+"format": 34896613399,
+"index_count": 42,
+"index_data": PackedByteArray("CAAJAAoACAABAAkACwAMAA0ABAAOAA8ABAAQAA4AEQASABMAEQAHABIAAgAAABQAFQAWABcAFQAYABYAGQAGABoAAwAbABwAAwAdABsAHgAfAAUA"),
+"lods": [0.0986921, PackedByteArray("AAABAAIAAwACAAEAAwAEAAIAAwAFAAQABgADAAEABgAHAAMA")],
+"material": SubResource("StandardMaterial3D_0kf0o"),
+"name": "flowers-01.001",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 32,
+"vertex_data": PackedByteArray("FUgAAAAAGcXFrQAAAAAlxAAAAADxUhnFUrEAAP//dLoAAAAATarkvvZSAAD//xC9//8AAId0MsP//wAAO7rgwhVIAAAAACTEXKvCV+RKJMT8S9a8mlckxP//AAA7uj+2UrEAAP//P7ZFu///ib4/tvxL1ryaV+W+zUIQUwqs5L4AAAAA8VLlvv//AACHdDjDRbv//4m+KcNcq8JX5EqBw/xL1ryaVxnFRbv//4m+vMD8S9a8mle8wFyrwlfkSrzAzUIQUwqsu8DFrQAAAAAyw1yrwlfkSjLDzUIQUwqsc7pFu///ib53uvZSAAD//3G6AAAAAE2qEL3NQhBTCqwQvQ/49o4k/aR+D/j2joH8wodn+V6NevthieDxF4LC7+V2IP15fiH9g34d/Vp+q+QZdKvkGXSr5Bl0avlejVf5Xo14+V+NHvBdfBHwnHtU8J5/D/j2jsf+aoLF/mqC2/5qgrD+aoLg8ReC4PEXgkv8u4ff/M+H5Puth3r7YYl6+2GJ")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_cw5la")

@@ -27,51 +27,25 @@ public static class SimpleWfc
         Path3D[] ret = tileID switch
         {
             (int)WallDirections.None => [.. _tile_path_nodes.GetNode("Intersection").GetChildren().OfType<Path3D>()],
-            (int)WallDirections.N => [.. _tile_path_nodes.GetNode("TJunctions/TJunction0").GetChildren().OfType<Path3D>()],
-            (int)WallDirections.E => [.. _tile_path_nodes.GetNode("TJunctions/TJunction3").GetChildren().OfType<Path3D>()],
-            (int)WallDirections.NE => [.. _tile_path_nodes.GetNode("CornerPieces/Corner2").GetChildren().OfType<Path3D>()],
-            (int)WallDirections.S => [.. _tile_path_nodes.GetNode("TJunctions/TJunction2").GetChildren().OfType<Path3D>()],
+            (int)WallDirections.N => [.. _tile_path_nodes.GetNode("TJunctions/TJunction3").GetChildren().OfType<Path3D>()],
+            (int)WallDirections.E => [.. _tile_path_nodes.GetNode("TJunctions/TJunction1").GetChildren().OfType<Path3D>()],
+            (int)WallDirections.NE => [.. _tile_path_nodes.GetNode("CornerPieces/Corner3").GetChildren().OfType<Path3D>()],
+            (int)WallDirections.S => [.. _tile_path_nodes.GetNode("TJunctions/TJunction0").GetChildren().OfType<Path3D>()],
             (int)WallDirections.NS => [.. _tile_path_nodes.GetNode("StraightPaths/StraightPathHor").GetChildren().OfType<Path3D>()],
-            (int)WallDirections.ES => [.. _tile_path_nodes.GetNode("CornerPieces/Corner3").GetChildren().OfType<Path3D>()],
-            (int)WallDirections.NES => [dead_ends[3]],
-            (int)WallDirections.W => [.. _tile_path_nodes.GetNode("TJunctions/TJunction1").GetChildren().OfType<Path3D>()],
+            (int)WallDirections.ES => [.. _tile_path_nodes.GetNode("CornerPieces/Corner0").GetChildren().OfType<Path3D>()],
+            (int)WallDirections.NES => [dead_ends[0]],
+            (int)WallDirections.W => [.. _tile_path_nodes.GetNode("TJunctions/TJunction2").GetChildren().OfType<Path3D>()],
             (int)WallDirections.NW => [.. _tile_path_nodes.GetNode("CornerPieces/Corner1").GetChildren().OfType<Path3D>()],
             (int)WallDirections.EW => [.. _tile_path_nodes.GetNode("StraightPaths/StraightPathVert").GetChildren().OfType<Path3D>()],
-            (int)WallDirections.NEW => [dead_ends[2]],
-            (int)WallDirections.SW => [.. _tile_path_nodes.GetNode("CornerPieces/Corner0").GetChildren().OfType<Path3D>()],
-            (int)WallDirections.NSW => [dead_ends[1]],
-            (int)WallDirections.ESW => [dead_ends[0]],
+            (int)WallDirections.NEW => [dead_ends[1]],
+            (int)WallDirections.SW => [.. _tile_path_nodes.GetNode("CornerPieces/Corner2").GetChildren().OfType<Path3D>()],
+            (int)WallDirections.NSW => [dead_ends[2]],
+            (int)WallDirections.ESW => [dead_ends[3]],
             (int)WallDirections.All => [],
             _ => throw new ArgumentOutOfRangeException(nameof(tileID), tileID, null)
         };
         return ret;
     }
-
-    // public static string DebugStringTileID(int tileID)
-    // {
-    //     var dead_ends = _tile_path_nodes.GetNode("DeadEnds").GetChildren().OfType<Path3D>().ToArray();
-    //     string ret = tileID switch
-    //     {
-    //         (int)WallDirections.None => "╋",
-    //         (int)WallDirections.N => "┬",
-    //         (int)WallDirections.E => "┨",
-    //         (int)WallDirections.NE => "┓",
-    //         (int)WallDirections.S => ,
-    //         (int)WallDirections.NS => ,
-    //         (int)WallDirections.ES => ,
-    //         (int)WallDirections.NES => ,
-    //         (int)WallDirections.W => ,
-    //         (int)WallDirections.NW => ,
-    //         (int)WallDirections.EW => ,
-    //         (int)WallDirections.NEW => ,
-    //         (int)WallDirections.SW => ,
-    //         (int)WallDirections.NSW => ,
-    //         (int)WallDirections.ESW => ,
-    //         (int)WallDirections.All => " ",
-    //         _ => throw new ArgumentOutOfRangeException(nameof(tileID), tileID, null)
-    //     };
-    //     return ret;
-    // }
 
     public static Path3D[] GetTilePaths(Vector2I cell)
     {
@@ -91,7 +65,7 @@ public static class SimpleWfc
         }
     }
 
-    public static float GetTileGenerationChance(int tile_id)
+    public static float GetTileTreasureGenerationChance(int tile_id)
     {
         if (IsCorner(tile_id))            return 0.01f;
         else if (IsTJunction(tile_id))    return 0.01f;
@@ -100,6 +74,18 @@ public static class SimpleWfc
         else if (IsIntersection(tile_id)) return 0.02f;
         else if (IsOpen(tile_id))         return 0.1f;
         return 0.0f;
+    }
+
+    public static int GetTileFlowerAmount(Random rng, int tile_id)
+    {
+        var flower_base = 10;
+        if (IsCorner(tile_id))            return rng.Next(0,flower_base);
+        else if (IsTJunction(tile_id))    return rng.Next(0,flower_base);
+        else if (IsDeadEnd(tile_id))      return rng.Next(0,flower_base);
+        else if (IsStraight(tile_id))     return rng.Next(0,flower_base);
+        else if (IsIntersection(tile_id)) return rng.Next(0,flower_base);
+        else if (IsOpen(tile_id))         return rng.Next(flower_base,20);
+        return 0;
     }
 
     private static bool IsCorner(int tileID)

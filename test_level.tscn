@@ -1,0 +1,159 @@
+[gd_scene load_steps=20 format=3 uid="uid://d0s16gsoirnmr"]
+
+[ext_resource type="Material" uid="uid://crj6jsd4bwa8n" path="res://terrain_generator/infinite_heightmap_terrain/ground_material.tres" id="1_lowby"]
+[ext_resource type="PackedScene" uid="uid://dibsec7jrpe26" path="res://environment_models/tree_elm/scene.gltf" id="2_58smv"]
+[ext_resource type="PackedScene" uid="uid://c4agr08o2qgr3" path="res://environment_models/halloween/scenes/wall_edge.tscn" id="3_a25ih"]
+[ext_resource type="PackedScene" uid="uid://coeufmid8kib7" path="res://environment_models/halloween/scenes/wall_mid.tscn" id="4_38et7"]
+[ext_resource type="PackedScene" uid="uid://d2wvco20xs4i1" path="res://environment_models/halloween/scenes/wall_hole.tscn" id="5_b7ax5"]
+[ext_resource type="PackedScene" uid="uid://dre0mth00d4xp" path="res://environment_models/halloween/scenes/wall_broken.tscn" id="6_4bgwg"]
+[ext_resource type="PackedScene" uid="uid://c5eta8i7m4q80" path="res://environment_models/halloween/scenes/tree.tscn" id="7_2hfll"]
+[ext_resource type="PackedScene" uid="uid://v4emyuhn6d4i" path="res://environment_models/halloween/scenes/stone_sarcophagus.tscn" id="8_7fqlb"]
+[ext_resource type="PackedScene" uid="uid://deo0hqkmgg6ux" path="res://environment_models/street_lamps/streetlamp.tscn" id="9_e8hb2"]
+[ext_resource type="PackedScene" uid="uid://bkr6hrthqqmi1" path="res://environment_models/street_lamps/street_light.tscn" id="10_ga11v"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_0xm2m"]
+
+[sub_resource type="Sky" id="Sky_h2yge"]
+sky_material = SubResource("ProceduralSkyMaterial_0xm2m")
+
+[sub_resource type="Environment" id="Environment_1bvp3"]
+background_mode = 2
+background_energy_multiplier = 0.0
+sky = SubResource("Sky_h2yge")
+ambient_light_source = 3
+ambient_light_color = Color(1, 1, 1, 1)
+
+[sub_resource type="GDScript" id="GDScript_dg77c"]
+script/source = "extends DirectionalLight3D
+
+@export var cycle_light = true
+
+var t = 0
+var wait_t = 0
+
+var state = \"wait\"
+var getting_brighter = false
+var transition_time = 30
+var wait_time_dark = 20
+var wait_time_light = 10
+var wait_time = wait_time_light
+var first_frame = true
+
+func _ready() -> void:
+	light_energy = 1
+
+func _set_light_energy(f: float) -> void:
+	light_energy = f
+	
+func _process(delta: float) -> void:
+	if (!cycle_light):
+		return
+	if (first_frame):
+		light_energy = 1
+		first_frame = false
+	var l_label = $\"../../Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/LightEnergyLabel\"
+	l_label.text = str(light_energy)
+	l_label.text+=\"\\nstate: \"+state
+	l_label.text+=\"\\nt: \"+str(t)
+	l_label.text+=\"\\nwait_t: \"+str(wait_t)
+	if (state==\"transition\"):
+		t += delta
+		var cosval = (cos(PI*t/transition_time)+1)/2
+		light_energy = 1-cosval if getting_brighter else cosval
+		if (t >= transition_time):
+			t = 0
+			if (getting_brighter):
+				wait_time = wait_time_light
+				light_energy = 1
+			else:
+				wait_time = wait_time_dark
+				light_energy = 0
+			getting_brighter = !getting_brighter
+			state = \"wait\"
+	else:
+		wait_t+=delta
+		if (wait_t >= wait_time):
+			wait_t = 0
+			state = \"transition\"
+"
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_7dm0k"]
+material = ExtResource("1_lowby")
+size = Vector2(20, 20)
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_0xm2m"]
+data = PackedVector3Array(10, 0, 10, -10, 0, 10, 10, 0, -10, -10, 0, 10, -10, 0, -10, 10, 0, -10)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_h2yge"]
+albedo_color = Color(0, 0.752941, 1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0xm2m"]
+material = SubResource("StandardMaterial3D_h2yge")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_h2yge"]
+
+[node name="Node3D" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1bvp3")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment"]
+transform = Transform3D(0.403349, -0.910278, 0.0932931, 0.696466, 0.371528, 0.613924, -0.593503, -0.18265, 0.783833, 0, 1.67932, 0)
+light_energy = 0.2
+directional_shadow_max_distance = 40.0
+script = SubResource("GDScript_dg77c")
+cycle_light = false
+
+[node name="Ground" type="StaticBody3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
+mesh = SubResource("PlaneMesh_7dm0k")
+skeleton = NodePath("../../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
+shape = SubResource("ConcavePolygonShape3D_0xm2m")
+
+[node name="RigidBody3D" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.114074, 2.54068, 6.7105)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D"]
+mesh = SubResource("BoxMesh_0xm2m")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D"]
+shape = SubResource("BoxShape3D_h2yge")
+
+[node name="Sketchfab_Scene2" parent="." instance=ExtResource("2_58smv")]
+transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 2.41035, 0.049569, -1.14679)
+
+[node name="Wall" parent="." instance=ExtResource("3_a25ih")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -7.40485, 1.189, -2.8342)
+
+[node name="Wall2" parent="." instance=ExtResource("3_a25ih")]
+transform = Transform3D(-4.37114e-08, 1, 4.37114e-08, 0, -4.37114e-08, 1, 1, 4.37114e-08, 1.91069e-15, 4.29008, 1.189, -1.30967)
+
+[node name="Wall_01" parent="." instance=ExtResource("4_38et7")]
+transform = Transform3D(1, 0, 0, 0, -2.5134e-08, 1, 0, -0.575, -4.37114e-08, -3.93373, 1.16067, -2.83424)
+
+[node name="Wall_04" parent="." instance=ExtResource("4_38et7")]
+transform = Transform3D(1, 0, 0, 0, -2.5134e-08, 1, 0, -0.575, -4.37114e-08, 2.5494, 1.16067, -2.83049)
+
+[node name="Wall_02" parent="." instance=ExtResource("5_b7ax5")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -0.697731, 1.16163, -2.8358)
+
+[node name="Wall_03" parent="." instance=ExtResource("6_4bgwg")]
+transform = Transform3D(-4.37114e-08, 1, 4.37114e-08, 0, -4.37114e-08, 1, 1, 4.37114e-08, 1.91069e-15, 4.29164, 1.15992, 2.12452)
+
+[node name="Tree" parent="." instance=ExtResource("7_2hfll")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 5.54915, 0, 6)
+
+[node name="stone_sarcophagus" parent="." instance=ExtResource("8_7fqlb")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 3.30707, 0.238355, 0)
+
+[node name="Streetlamp" parent="." instance=ExtResource("9_e8hb2")]
+transform = Transform3D(0.106299, 0, 0.106299, 0, 0.150329, 0, -0.106299, 0, 0.106299, -4.77878, 0.231907, 0)
+
+[node name="street_light" parent="." instance=ExtResource("10_ga11v")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.3871, 0, 5.31022)
+
+[node name="street_light2" parent="." instance=ExtResource("10_ga11v")]
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -3.92001, 0, 8.2266)

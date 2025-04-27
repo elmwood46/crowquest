@@ -19,7 +19,17 @@ public partial class ChunkPlane : StaticBody3D
 
     private static readonly Noise _grass_noise = GD.Load<FastNoiseLite>("res://terrain_generator/grass/grass_fast_noise_lite.tres");
 
+    private const int MaxFlowersPerChunk = 1000;
+    private static readonly Transform3D _base_flower_transform = new(
+        Basis.Identity.Rotated(Vector3.Right, -Mathf.Pi/2).Rotated(Vector3.Up, Mathf.Pi).Scaled(Vector3.One*0.10f),
+        Vector3.Zero
+    );
+
     private Grass[] _grass_nodes;
+
+    private bool _only_generate_mesh_once = true;
+    private bool _draw_debug_meshes = false;
+    
 
     private static readonly Vector3[] QuadVertices = [
         new (0, 0, 0),
@@ -55,6 +65,18 @@ public partial class ChunkPlane : StaticBody3D
             darkgrass.TerrainMesh = mesh;
             darkgrass.Rebuild();
             _grass_nodes[1] = darkgrass;
+        }
+
+        var blue_flowers_multimesh = GetNode("BlueFlowerMultiMesh") as MultiMeshInstance3D;
+        blue_flowers_multimesh.Multimesh = blue_flowers_multimesh.Multimesh.Duplicate() as MultiMesh;
+        blue_flowers_multimesh.Multimesh.InstanceCount = MaxFlowersPerChunk;
+
+        foreach (var child in GetNode("MultiMeshes").GetChildren())
+        {
+            if (child is MultiMeshInstance3D multimesh) {
+                multimesh.Multimesh = multimesh.Multimesh.Duplicate() as MultiMesh;
+                multimesh.Multimesh.InstanceCount = MaxFlowersPerChunk;
+            }
         }
     }
 
@@ -94,9 +116,9 @@ public partial class ChunkPlane : StaticBody3D
         surftool2.Begin(Mesh.PrimitiveType.Triangles);
         surftool.SetMaterial(_ground_material);
 
-        for (float x=0;x<chunkSize;x+=unitStep)
+        for (float x=-chunkSize/2;x<chunkSize/2-1;x+=unitStep)
         {
-            for (float z=0;z<chunkSize;z+=unitStep)
+            for (float z=-chunkSize/2;z<chunkSize/2-1;z+=unitStep)
             {
                 var vertices = new Vector3[4];
                 var uvs = new Vector2[4];
@@ -105,7 +127,6 @@ public partial class ChunkPlane : StaticBody3D
                 {
                     vertices[i] = new Vector3(x + QuadVertices[i].X*unitStep, 0, z + QuadVertices[i].Z*unitStep);
                     vertices[i].Y = ChunkManager.GetNoiseHeight(new Vector2(global_xz_offset.X+vertices[i].X,global_xz_offset.Y+vertices[i].Z));
-                    //vertices[i].Y =  Mathf.RoundToInt(vertices[i].Y/unitStep)*unitStep;
                     uvs[i] = new Vector2(x+QuadUVs[i].X*unitStep, z+QuadUVs[i].Y*unitStep)/chunkSize;
                 }
 
@@ -143,17 +164,23 @@ public partial class ChunkPlane : StaticBody3D
     {
         var cent_offset = new Vector3(16,0,16);
         var chunk_pos = GetChunkPosition();
+        var is_starting_chunk = chunk_pos == Vector2I.Zero;
         var seeded_random = ChunkManager.Instance.NoiseTexture.GetNoise2D(chunk_pos.X*32,chunk_pos.Y*32);
+        var chunk_rng = new Random(GetCantorPairing(chunk_pos*Mathf.RoundToInt(seeded_random*1000)));
+        var chunk_tile_id = SimpleWfc.GetTileID(chunk_pos);
         
         // clear all children
         foreach (var child in GetChildren())
         {
             if (child is CsgPolygon3D || child is Path3D) child.QueueFree();
-            if (child is Streetlamp) child.QueueFree();
-            if (child is MeshInstance3D && child != MeshInstance) child.QueueFree();
+            else if (child is Streetlamp) child.QueueFree();
+            else if (child is MeshInstance3D && child != MeshInstance) child.QueueFree(); // remove debug mesh instances
+            else if (child is Node3D && child is not MultiMeshInstance3D && child.GetChildren().Count > 0 && child.Name != "MultiMeshes") child.QueueFree(); // remove lamps
+            //if (child is not Grass && child is MultiMeshInstance3D d) d.Multimesh.InstanceCount = 100;
         }
 
-        // generate walls
+        // ====== generate walls =====
+        //await ToSignal(GetTree(), "physics_frame");
         var chunk_offset = ChunkManager.Instance.ChunkSize * chunk_pos;
         var path_set = SimpleWfc.GetTilePaths(chunk_pos);
         var nodePaths = new List<string>();
@@ -161,104 +188,273 @@ public partial class ChunkPlane : StaticBody3D
         {
             var path_copy = path.Duplicate() as Path3D;
             path_copy.Curve = path.Curve.Duplicate() as Curve3D;
-            for (int i=0;i<path_copy.Curve.GetPointCount();i++)
-            {
-                var point = path_copy.Curve.GetPointPosition(i)+cent_offset;
-                point.Y = ChunkManager.GetNoiseHeight(new Vector2(point.X,point.Z) + chunk_offset);
-                path_copy.Curve.SetPointPosition(i,point);
-            }
+
+            // HACK no need to set y position of path points when we're just doing a flat plane
+            // for (int i=0;i<path_copy.Curve.GetPointCount();i++)
+            // {
+            //     var point = path_copy.Curve.GetPointPosition(i);
+            //     point.Y = ChunkManager.GetNoiseHeight(new Vector2(point.X,point.Z) + chunk_offset);
+            //     path_copy.Curve.SetPointPosition(i,point);
+            // }
             //ResourceSaver.Save(path_copy.Curve,$"res://curves/curve{path.Name}.tres");
             AddChild(path_copy);
+
             var wall = _csg_brick_wall_scene.Instantiate<CsgPolygon3D>();
-            if (seeded_random > 0)
+            if (seeded_random > 0 || is_starting_chunk)
             {
-                wall.PathInterval = 8.0f;
+                wall.PathInterval = 10.0f;
             }
             path_copy.AddChild(wall);
             wall.PathNode = path_copy.GetPath();
             nodePaths.Add(wall.PathNode);
             path_copy.GlobalPosition *= 0.5f; // ???? the global position is doubled for some reason
         }
-
-        //generate lamps
-        var cantor = GetCantorPairing();
-        var centerPoint = new Vector3(chunk_offset.X,0,chunk_offset.Y)+cent_offset;
-        // force y to be zero because we're not using heightmap in this build
-        // centerPoint.Y = ChunkManager.GetNoiseHeight(new Vector2(centerPoint.X,centerPoint.Z));
+        
+        //====== generate lamps =====
+        //await ToSignal(GetTree(), "physics_frame");
+        var centerPoint = new Vector3(chunk_offset.X,0,chunk_offset.Y);
         var distance_between_lamps = 16.0f;
-
-        if (seeded_random>0) for (int i=0; i<nodePaths.Count;i++)
+        var chunk_has_lamps = seeded_random > 0.2f || is_starting_chunk; 
+        var lamp_node = new Node3D();
+        AddChild(lamp_node);
+        
+        if (chunk_has_lamps) for (int i=0; i<nodePaths.Count;i++)
         {
             var path_str = nodePaths[i];
             var path_node = GetNodeOrNull<Path3D>(path_str);
             if (path_node == null) continue;
             var path_length = path_node.Curve.GetBakedLength();
-            var lamp_count = Mathf.FloorToInt(path_length / distance_between_lamps);
+            var lamp_count = 1+Mathf.FloorToInt(path_length / distance_between_lamps);
 
             for (int j=0;j<lamp_count;j++)
             {
-                var point = path_node.Curve.SampleBaked(j*distance_between_lamps);
                 var lamp = _lamp_post_scene.Instantiate<StaticBody3D>();
-                AddChild(lamp);
-                lamp.GlobalPosition = centerPoint-cent_offset+point;//+(point-centerPoint).Normalized()*lamp_distance_from_wall;
-
-                var cent_len = (centerPoint - lamp.GlobalPosition).Length()*0.8f;
-                lamp.GlobalPosition = centerPoint+cent_len*(lamp.GlobalPosition-centerPoint).Normalized()*0.8f;
-                lamp.LookAt(centerPoint, Vector3.Up);
-
-                var mesh = new BoxMesh
-                {
-                    Size = new Vector3(0.1f, 0.1f, cent_len)
-                };
-
-                var test_line = new MeshInstance3D
-                {
-                    Mesh = mesh,
-                    MaterialOverride = new StandardMaterial3D() { AlbedoColor = new Color(1.0f-cent_len/16.0f, 0.2f, 0.2f) }
-                };
-                AddChild(test_line);
-                test_line.Transform = new Transform3D(Basis.Identity, new Vector3(0.0f, 0.0f, cent_len/2));
-                test_line.GlobalPosition = lamp.GlobalPosition;
-                test_line.LookAt(centerPoint, Vector3.Up);
+                lamp_node.AddChild(lamp);
+                var point = path_node.Curve.SampleBaked(j*distance_between_lamps);
+                lamp.Position = point*0.8f;
             }
         }
 
-        // generate centre mesh
-        var test = new MeshInstance3D
+        //
+        //====== generate flowers around base of lamps at random =====
+        //await ToSignal(GetTree(), "physics_frame");
+        var blue_flowers_multimesh = GetNode("BlueFlowerMultiMesh") as FlowerMultiMesh;
+        blue_flowers_multimesh.Multimesh.VisibleInstanceCount = 0;
+        var lamp_flower_distance = new Vector2(0.5f,2.0f); // min max distance from lamp to flowers around base
+        var lamp_flower_amount = new Vector2I(1,6);
+        var flower_sway_yaw = FlowerMultiMesh.SwayYawRadians;
+        var flower_sway_pitch = FlowerMultiMesh.SwayPitchRadians;
+        foreach (var child in lamp_node.GetChildren())
         {
-            Mesh = new BoxMesh(),
-            MaterialOverride = new StandardMaterial3D() { AlbedoColor = new Color(1, 0, 0) }
-        };
-        AddChild(test);
-        test.GlobalPosition = centerPoint;
-
-        //test generate "treasure"
-        var tile_id = SimpleWfc.GetTileID(chunk_pos);
-        var gen_chance = SimpleWfc.GetTileGenerationChance(tile_id);
-        
-        if (Random.Shared.NextSingle() < gen_chance)
-        {
-            var chest = new MeshInstance3D
+            if (child is not StaticBody3D lamp) continue;
+            if (chunk_rng.NextSingle() < 0.5f)
             {
-                Mesh = new BoxMesh() {Size = Vector3.One*2},
-                MaterialOverride = new StandardMaterial3D(){AlbedoColor = new Color(1,0.1f,1)}
+                var num_flower = chunk_rng.Next(lamp_flower_amount.X,lamp_flower_amount.Y);
+
+                if (blue_flowers_multimesh.Multimesh.VisibleInstanceCount + num_flower < blue_flowers_multimesh.Multimesh.InstanceCount)
+                {
+                    blue_flowers_multimesh.Multimesh.VisibleInstanceCount += num_flower;
+                }
+                else 
+                {
+                    num_flower = blue_flowers_multimesh.Multimesh.InstanceCount - blue_flowers_multimesh.Multimesh.VisibleInstanceCount;
+                    blue_flowers_multimesh.Multimesh.VisibleInstanceCount = blue_flowers_multimesh.Multimesh.InstanceCount;
+                }
+
+                for (var k=0; k < num_flower; k++)
+                {
+                    //var flower_instance = blue_flowers_multimesh.Multimesh.GetInstanceTransform(k);
+                    var rand_angle = chunk_rng.NextSingle()*Mathf.Pi*2;
+                    var rand_dist = lamp_flower_distance.X+chunk_rng.NextSingle()*(lamp_flower_distance.Y-lamp_flower_distance.X);
+                    var transform = _base_flower_transform;
+                    transform = transform.Rotated(Vector3.Up, rand_angle);
+                    transform.Origin = lamp.Position + (Vector3.Forward * rand_dist).Rotated(Vector3.Up, rand_angle);
+
+                    var customParams = new Color( 
+                        (float)GD.RandRange(FlowerMultiMesh.BladeWidth.X,FlowerMultiMesh.BladeWidth.Y),
+                        (float)GD.RandRange(FlowerMultiMesh.BladeHeight.X,FlowerMultiMesh.BladeHeight.Y),
+                        (float)GD.RandRange(flower_sway_yaw.X, flower_sway_yaw.Y),
+                        (float)GD.RandRange(flower_sway_pitch.X, flower_sway_pitch.Y)
+                    );
+
+                    var flower_idx = blue_flowers_multimesh.Multimesh.VisibleInstanceCount-num_flower+k;
+                    blue_flowers_multimesh.Multimesh.SetInstanceTransform(flower_idx, transform);
+                    blue_flowers_multimesh.Multimesh.SetInstanceCustomData(flower_idx, customParams);
+                    blue_flowers_multimesh.Multimesh.SetInstanceColor(flower_idx, new Color(transform.Origin.Length()/16,1,1));
+                    
+                    //flower.GlobalPosition = lamp.GlobalPosition + (Vector3.Forward * rand_dist).Rotated(Vector3.Up, rand_angle);
+                // flower.Rotation = new Vector3(0, rand_angle, 0);
+                }
+            }
+        }
+
+        //====== generate flowers around center =====
+        var flower_count = SimpleWfc.GetTileFlowerAmount(chunk_rng, SimpleWfc.GetTileID(chunk_pos));
+        if (blue_flowers_multimesh.Multimesh.VisibleInstanceCount + flower_count < blue_flowers_multimesh.Multimesh.InstanceCount)
+        {
+            blue_flowers_multimesh.Multimesh.VisibleInstanceCount += flower_count;
+        }
+        else 
+        {
+            flower_count = blue_flowers_multimesh.Multimesh.InstanceCount - blue_flowers_multimesh.Multimesh.VisibleInstanceCount;
+            blue_flowers_multimesh.Multimesh.VisibleInstanceCount = blue_flowers_multimesh.Multimesh.InstanceCount;
+        }
+        for (int i=0; i<flower_count; i++)
+        {
+            var rand_angle = chunk_rng.NextSingle()*Mathf.Pi*2;
+            var rand_dist = Math.Max(chunk_rng.NextSingle(),chunk_rng.NextSingle())*16.0f;
+            var glob_pos = centerPoint + (Vector3.Forward * rand_dist).Rotated(Vector3.Up, rand_angle);
+
+            if (chunk_has_lamps)
+            {
+                foreach (var child in lamp_node.GetChildren())
+                {
+                    if (child is not StaticBody3D lamp) continue;
+                    var lamp_pos = lamp.GlobalPosition;
+                    if (glob_pos.DistanceTo(lamp_pos) < 2)
+                    {
+                        glob_pos = centerPoint + (Vector3.Forward * (rand_dist-4)).Rotated(Vector3.Up, rand_angle);
+                    }
+                }
+            }
+            var transform = _base_flower_transform;
+            transform = transform.Rotated(Vector3.Up, rand_angle);
+            transform.Origin = glob_pos - centerPoint;
+
+            var customParams = new Color( 
+                        (float)GD.RandRange(FlowerMultiMesh.BladeWidth.X,FlowerMultiMesh.BladeWidth.Y),
+                        (float)GD.RandRange(FlowerMultiMesh.BladeHeight.X,FlowerMultiMesh.BladeHeight.Y),
+                        (float)GD.RandRange(flower_sway_yaw.X, flower_sway_yaw.Y),
+                        (float)GD.RandRange(flower_sway_pitch.X, flower_sway_pitch.Y)
+                    );
+
+            var flower_idx = blue_flowers_multimesh.Multimesh.VisibleInstanceCount-flower_count+i;
+            blue_flowers_multimesh.Multimesh.SetInstanceTransform(flower_idx, transform);
+            blue_flowers_multimesh.Multimesh.SetInstanceCustomData(flower_idx, customParams);
+            blue_flowers_multimesh.Multimesh.SetInstanceColor(flower_idx, new Color(transform.Origin.Length()/16,1,1));
+        }
+
+        // generate hedges
+        // var hedge_multimesh = GetNode("HedgeMultiMesh") as MultiMeshInstance3D;
+        // hedge_multimesh.Multimesh.VisibleInstanceCount = 0;
+        // var hedge_separation = 16.0f;
+        // for (int i=0; i<nodePaths.Count;i++)
+        // {
+        //     var path_str = nodePaths[i];
+        //     var path_node = GetNodeOrNull<Path3D>(path_str);
+        //     if (path_node == null) continue;
+        //     var path_length = path_node.Curve.GetBakedLength();
+        //     var hedge_count = 1+Mathf.FloorToInt(path_length / hedge_separation);
+        //     for (int side=0;side<2;side++)
+        //     {
+        //         for (int j=0;j<hedge_count;j++,hedge_multimesh.Multimesh.VisibleInstanceCount ++)
+        //         {
+        //             if (hedge_multimesh.Multimesh.VisibleInstanceCount == hedge_multimesh.Multimesh.InstanceCount)
+        //             {
+        //                 break;
+        //             }
+                    
+        //             var transform = new Transform3D(Basis.Identity, Vector3.Zero)
+        //             {
+        //                 Origin = path_node.Curve.SampleBaked(j * hedge_separation) * (0.9f+side*0.2f),
+        //             };
+        //             transform = transform.LookingAt(centerPoint, Vector3.Up);
+        //             hedge_multimesh.Multimesh.SetInstanceTransform(hedge_multimesh.Multimesh.VisibleInstanceCount, transform);
+        //         }
+        //     }
+        // }
+
+        //====== generate some generic shrubs around center =====
+        foreach (var child in GetNode("MultiMeshes").GetChildren())
+        {
+            if (child is MultiMeshInstance3D multimesh){
+                var gen_count = chunk_rng.Next(0, 10);
+                PopulateMultimesh(multimesh, chunk_rng, gen_count);
+            }
+        }
+
+        if (_draw_debug_meshes)
+        {
+            // generate centre mesh
+            var test = new MeshInstance3D
+            {
+                Mesh = new BoxMesh(),
+                MaterialOverride = new StandardMaterial3D() { AlbedoColor = new Color(1, 0, 0) }
             };
-            AddChild(chest);
+            AddChild(test);
             test.GlobalPosition = centerPoint;
+
+            //test generate "treasure"
+            var gen_chance = SimpleWfc.GetTileTreasureGenerationChance(chunk_tile_id);
+            
+            if (Random.Shared.NextSingle() < gen_chance)
+            {
+                var chest = new MeshInstance3D
+                {
+                    Mesh = new BoxMesh() {Size = Vector3.One*2},
+                    MaterialOverride = new StandardMaterial3D(){AlbedoColor = new Color(1,0.1f,1)}
+                };
+                AddChild(chest);
+                test.GlobalPosition = centerPoint;
+            }
+        }
+    }
+
+    private static void PopulateMultimesh(MultiMeshInstance3D multimesh, Random chunk_rng, int count)
+    {
+        if (count == 0) return;
+        multimesh.Multimesh.VisibleInstanceCount = 0;
+        if (multimesh.Multimesh.VisibleInstanceCount + count < multimesh.Multimesh.InstanceCount)
+        {
+            multimesh.Multimesh.VisibleInstanceCount += count;
+        }
+        else 
+        {
+            count = multimesh.Multimesh.InstanceCount - multimesh.Multimesh.VisibleInstanceCount;
+            multimesh.Multimesh.VisibleInstanceCount = multimesh.Multimesh.InstanceCount ;
+        }
+        for (int i=0; i<count; i++)
+        {
+            var rand_angle = chunk_rng.NextSingle()*Mathf.Pi*2;
+            var rand_dist = Math.Max(chunk_rng.NextSingle(),chunk_rng.NextSingle())*16.0f;
+            var pos = (Vector3.Forward * rand_dist).Rotated(Vector3.Up, rand_angle);
+
+            var transform = new Transform3D(Basis.Identity, Vector3.Zero);
+            transform = transform.Rotated(Vector3.Up, rand_angle);
+            transform.Origin = pos;
+            transform = transform.Scaled(Vector3.One*2.0f);
+
+            var customParams = new Color( 
+                GD.RandRange(0,1),
+                GD.RandRange(0,1),
+                GD.RandRange(0,1),
+                GD.RandRange(0,1)
+            );
+
+            var mesh_idx = multimesh.Multimesh.VisibleInstanceCount-count+i;
+            multimesh.Multimesh.SetInstanceTransform(mesh_idx, transform);
+            multimesh.Multimesh.SetInstanceCustomData(mesh_idx, customParams);
         }
     }
 
     public async void UpdateMeshAndCollisionShape()
     {
-        var mesh = MeshInstance.Mesh;
-        var global_xz_offset = ChunkManager.Instance.ChunkSize * GetChunkPosition();
-        await Task.Run(() =>
+        // disable mesh generation because it's flat rn
+        if (_only_generate_mesh_once)
         {
-            mesh = GenerateHeightmapMesh(global_xz_offset);
-        });
-        MeshInstance.Mesh = mesh;
-        CollisionShape.Shape = MeshInstance.Mesh.CreateTrimeshShape();
+            _only_generate_mesh_once = false;
+            var mesh = MeshInstance.Mesh;
+            var global_xz_offset = ChunkManager.Instance.ChunkSize * GetChunkPosition();
+            await Task.Run(() =>
+            {
+                mesh = GenerateHeightmapMesh(global_xz_offset);
+            });
+            MeshInstance.Mesh = mesh;
+            CollisionShape.Shape = MeshInstance.Mesh.CreateTrimeshShape();
+        }
+
         GenerateWallsAndMeshes();
+        //CallDeferred(nameof(GenerateWallsAndMeshes));
         
         //await Task.Run(()=>ApplyGrassNoise(global_xz_offset));
     }
@@ -279,9 +475,14 @@ public partial class ChunkPlane : StaticBody3D
         UpdateMeshAndCollisionShape();
     }
 
-    private int GetCantorPairing()
+    private int GetChunkCantorPairing()
     {
         var chunk_pos = GetChunkPosition();
+        return GetCantorPairing(chunk_pos);
+    }
+
+    private static int GetCantorPairing(Vector2I chunk_pos)
+    {
         var x = chunk_pos.X;
         var y = chunk_pos.Y;
         return (x + y) * (x + y + 1) / 2 + y;

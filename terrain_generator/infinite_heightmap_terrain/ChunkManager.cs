@@ -39,8 +39,12 @@ public partial class ChunkManager : Node
     private float _max_height = 0.0f; //20.0f;
     private float _planeResolution = 0.25f;
 
+    private const int FramesPerChunkUpdate = 2;
+    private int _frame = 0;
+
     private readonly ConcurrentDictionary<ChunkPlane, Vector2I> _chunkToPosition = new();
 	private readonly ConcurrentDictionary<Vector2I, ChunkPlane> _positionToChunk = new();
+    private readonly ConcurrentQueue<(ChunkPlane,Vector2I)> _chunksToUpdate = new();
     private readonly List<ChunkPlane> _chunks = [];
     private static readonly PackedScene _chunk_scene = GD.Load<PackedScene>("res://terrain_generator/infinite_heightmap_terrain/chunk_plane.tscn");
 
@@ -83,6 +87,7 @@ public partial class ChunkManager : Node
 
     public override void _PhysicsProcess(double delta)
     {
+        
         if (Player.Instance != null)
         {
             lock (_playerPositionLock)
@@ -90,6 +95,14 @@ public partial class ChunkManager : Node
                 _playerPosition = Player.Instance.GlobalPosition;
             }
         }
+
+        if ((_frame%FramesPerChunkUpdate) == 0 && _chunksToUpdate.TryDequeue(out var chunkUpdate))
+        {
+            var (chunk, newPosition) = chunkUpdate;
+            chunk.CallDeferred(nameof(ChunkPlane.SetChunkPosition), newPosition);
+            _frame = 0;
+        }
+        else _frame++;
     }
 
     public void UpdateAllChunks()
@@ -123,8 +136,8 @@ public partial class ChunkManager : Node
             int playerChunkX, playerChunkZ;
             lock(_playerPositionLock)
             {
-                playerChunkX = Mathf.FloorToInt(_playerPosition.X / ChunkSize);
-                playerChunkZ = Mathf.FloorToInt(_playerPosition.Z / ChunkSize);
+                playerChunkX = Mathf.FloorToInt((_playerPosition.X+ChunkSize/2) / ChunkSize);
+                playerChunkZ = Mathf.FloorToInt((_playerPosition.Z+ChunkSize/2)/ ChunkSize);
             }
 
             foreach (var chunk in _chunks)
@@ -149,7 +162,7 @@ public partial class ChunkManager : Node
                     _chunkToPosition[chunk] = newPosition;
                     _positionToChunk[newPosition] = chunk;
 
-                    chunk.CallDeferred(nameof(ChunkPlane.SetChunkPosition), newPosition);
+                    _chunksToUpdate.Enqueue((chunk, newPosition));
                 }
             }
             Thread.Sleep(100);

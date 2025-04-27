@@ -1,46 +1,7 @@
-[gd_scene load_steps=5 format=4 uid="uid://bt1xgjfkhmmra"]
+[gd_scene load_steps=2 format=3 uid="uid://bt1xgjfkhmmra"]
 
-[ext_resource type="Texture2D" uid="uid://cbmghlq6b26vh" path="res://environment_models/lowpoly_plants/source/shapespark-low-poly-plants-kit_clover-04.png" id="1_j5uqi"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rig8u"]
-resource_name = "clover-02"
-transparency = 4
-cull_mode = 2
-albedo_texture = ExtResource("1_j5uqi")
-roughness = 0.5
-
-[sub_resource type="ArrayMesh" id="ArrayMesh_43js7"]
-_surfaces = [{
-"aabb": AABB(-0.822492, 0.00665807, -0.821066, 1.60858, 0.0440042, 1.60858),
-"format": 34896613377,
-"index_count": 12,
-"index_data": PackedByteArray("AAABAAIAAwACAAEAAQAAAAQABAADAAEA"),
-"name": "clover-02",
-"primitive": 3,
-"uv_scale": Vector4(0, 0, 0, 0),
-"vertex_count": 5,
-"vertex_data": PackedByteArray("//8AAP//AAB7jv//WI0AAP//AAAAAAAAAAAAAAAAAAAAAAAA//8AAA==")
-}]
-blend_shape_mode = 0
-
-[sub_resource type="ArrayMesh" id="ArrayMesh_t0ojy"]
-resource_name = "shapespark-low-poly-plants-kit_Plane_576"
-_surfaces = [{
-"aabb": AABB(-0.822492, 0.00665807, -0.821066, 1.60858, 0.0440042, 1.60858),
-"attribute_data": PackedByteArray("AAD//6Zye47/////AAAAAP//AACmcnuOpnJ7jgAA//8AAAAA//8AAP////+mcnuO"),
-"format": 34896613399,
-"index_count": 12,
-"index_data": PackedByteArray("AAABAAIAAwAEAAUABgAHAAgACQAKAAsA"),
-"material": SubResource("StandardMaterial3D_rig8u"),
-"name": "clover-02",
-"primitive": 3,
-"uv_scale": Vector4(0, 0, 0, 0),
-"vertex_count": 12,
-"vertex_data": PackedByteArray("//8AAP//5dN7jv//WI3l0///AAAAAOXTAAAAAP//ftYAAAAAAAB+1nuO//9YjX7We47//1iN6NP//wAA///o0wAAAAD//+jTAAAAAAAAgdb//wAAAACB1nuO//9YjYHWj9PHKY/TxymP08cpt9ZbK7fWWyu31lsrNNbKKTTWyik01sopodRdK6HUXSuh1F0r")
-}]
-blend_shape_mode = 0
-shadow_mesh = SubResource("ArrayMesh_43js7")
+[ext_resource type="ArrayMesh" uid="uid://x3llc6n7lpsu" path="res://terrain_generator/grass/clover_02.tres" id="1_j5uqi"]
 
 [node name="Clover-02" type="MeshInstance3D"]
-mesh = SubResource("ArrayMesh_t0ojy")
+mesh = ExtResource("1_j5uqi")
 skeleton = NodePath("")

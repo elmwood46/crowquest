@@ -1,17 +1,8 @@
-[gd_scene load_steps=24 format=3 uid="uid://dovgs2t1vyyy0"]
+[gd_scene load_steps=20 format=3 uid="uid://dovgs2t1vyyy0"]
 
-[ext_resource type="Material" uid="uid://crj6jsd4bwa8n" path="res://terrain_generator/infinite_heightmap_terrain/ground_material.tres" id="1_dg77c"]
 [ext_resource type="PackedScene" uid="uid://bjhvg8rf53fx4" path="res://Player.tscn" id="1_ig7tw"]
-[ext_resource type="PackedScene" uid="uid://deo0hqkmgg6ux" path="res://environment_models/street_lamps/streetlamp.tscn" id="3_1bvp3"]
-[ext_resource type="PackedScene" uid="uid://c4agr08o2qgr3" path="res://environment_models/halloween/scenes/wall_edge.tscn" id="3_4c57u"]
-[ext_resource type="PackedScene" uid="uid://coeufmid8kib7" path="res://environment_models/halloween/scenes/wall_mid.tscn" id="3_272bh"]
-[ext_resource type="PackedScene" uid="uid://dibsec7jrpe26" path="res://environment_models/tree_elm/scene.gltf" id="3_h2yge"]
-[ext_resource type="PackedScene" uid="uid://c5eta8i7m4q80" path="res://environment_models/halloween/scenes/tree.tscn" id="3_lquwl"]
-[ext_resource type="PackedScene" uid="uid://d2wvco20xs4i1" path="res://environment_models/halloween/scenes/wall_hole.tscn" id="4_5vw27"]
-[ext_resource type="PackedScene" uid="uid://v4emyuhn6d4i" path="res://environment_models/halloween/scenes/stone_sarcophagus.tscn" id="4_7mycd"]
-[ext_resource type="PackedScene" uid="uid://bkr6hrthqqmi1" path="res://environment_models/street_lamps/street_light.tscn" id="4_lquwl"]
+[ext_resource type="Material" uid="uid://ctx4tpghicm8h" path="res://textures/Marble012_1K-JPG/marble.tres" id="3_h2yge"]
 [ext_resource type="Script" uid="uid://nsjwgmlaejks" path="res://terrain_generator/infinite_heightmap_terrain/ChunkManager.cs" id="4_w48qg"]
-[ext_resource type="PackedScene" uid="uid://dre0mth00d4xp" path="res://environment_models/halloween/scenes/wall_broken.tscn" id="5_kek77"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_0xm2m"]
 
@@ -20,10 +11,11 @@ sky_material = SubResource("ProceduralSkyMaterial_0xm2m")
 
 [sub_resource type="Environment" id="Environment_1bvp3"]
 background_mode = 2
-background_energy_multiplier = 0.0
 sky = SubResource("Sky_h2yge")
 ambient_light_source = 3
 ambient_light_color = Color(1, 1, 1, 1)
+reflected_light_source = 2
+tonemap_mode = 1
 
 [sub_resource type="GDScript" id="GDScript_dg77c"]
 script/source = "extends DirectionalLight3D
@@ -35,14 +27,15 @@ var wait_t = 0
 
 var state = \"wait\"
 var getting_brighter = false
-var transition_time = 30
-var wait_time_dark = 20
-var wait_time_light = 10
+@export var transition_time = 30
+@export var wait_time_dark = 20
+@export var wait_time_light = 10
 var wait_time = wait_time_light
 var first_frame = true
 
 func _ready() -> void:
 	light_energy = 1
+	wait_time = wait_time_light
 
 func _set_light_energy(f: float) -> void:
 	light_energy = f
@@ -53,8 +46,9 @@ func _process(delta: float) -> void:
 	if (first_frame):
 		light_energy = 1
 		first_frame = false
-	var l_label = $\"../../Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/LightEnergyLabel\"
+	var l_label = $\"../../Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/VBoxContainer/LightEnergyLabel\"
 	l_label.text = str(light_energy)
+	l_label.text += str($\"..\".environment.sky.sky_material.energy_multiplier)
 	l_label.text+=\"\\nstate: \"+state
 	l_label.text+=\"\\nt: \"+str(t)
 	l_label.text+=\"\\nwait_t: \"+str(wait_t)
@@ -72,19 +66,13 @@ func _process(delta: float) -> void:
 				light_energy = 0
 			getting_brighter = !getting_brighter
 			state = \"wait\"
+		$\"..\".environment.sky.sky_material.energy_multiplier = light_energy
 	else:
 		wait_t+=delta
 		if (wait_t >= wait_time):
 			wait_t = 0
 			state = \"transition\"
 "
-
-[sub_resource type="PlaneMesh" id="PlaneMesh_7dm0k"]
-material = ExtResource("1_dg77c")
-size = Vector2(20, 20)
-
-[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_0xm2m"]
-data = PackedVector3Array(10, 0, 10, -10, 0, 10, 10, 0, -10, -10, 0, 10, -10, 0, -10, 10, 0, -10)
 
 [sub_resource type="GDScript" id="GDScript_ycdy4"]
 script/source = "extends Label
@@ -94,15 +82,55 @@ func change_label_text(f: float) -> void:
 	text = \"light energy: \"+str(f)
 "
 
+[sub_resource type="GDScript" id="GDScript_w48qg"]
+script/source = "extends HSlider
+
+func _change_camera_max(f:float) -> void:
+	$\"../../../../../..\".MaxCameraSize = f
+	$\"../Label\".text = \"Max Camera Size: \"+str(f)
+"
+
+[sub_resource type="GDScript" id="GDScript_0xm2m"]
+script/source = "extends Label
+
+func _process(delta:float) ->void:
+	var compass = $\"../../../../../..\".CameraFacedDirection()
+	text = \"faced direction: \"+compass
+"
+
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_w48qg"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_h2yge"]
-albedo_color = Color(0, 0.752941, 1, 1)
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0xm2m"]
+albedo_color = Color(1.73271e-06, 0.864354, 0.856392, 1)
 
-[sub_resource type="BoxMesh" id="BoxMesh_0xm2m"]
-material = SubResource("StandardMaterial3D_h2yge")
+[sub_resource type="BoxMesh" id="BoxMesh_1bvp3"]
+material = SubResource("StandardMaterial3D_0xm2m")
+size = Vector3(0.5, 0.5, 10)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_h2yge"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lquwl"]
+albedo_color = Color(0.952738, 0, 0.101958, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_h2yge"]
+material = SubResource("StandardMaterial3D_lquwl")
+size = Vector3(0.5, 0.5, 10)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_1bvp3"]
+material = ExtResource("3_h2yge")
+top_radius = 12.0
+bottom_radius = 12.0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_lquwl"]
+material = ExtResource("3_h2yge")
+top_radius = 8.0
+bottom_radius = 8.0
+height = 1.0
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_h2yge"]
+radius = 12.0
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_1bvp3"]
+height = 1.0
+radius = 8.0
 
 [node name="Main" type="Node3D"]
 
@@ -112,20 +140,16 @@ environment = SubResource("Environment_1bvp3")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment"]
 transform = Transform3D(0.403349, -0.910278, 0.0932931, 0.696466, 0.371528, 0.613924, -0.593503, -0.18265, 0.783833, 0, 1.67932, 0)
 light_energy = 0.2
+directional_shadow_max_distance = 40.0
 script = SubResource("GDScript_dg77c")
-
-[node name="Ground" type="StaticBody3D" parent="."]
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
-mesh = SubResource("PlaneMesh_7dm0k")
-skeleton = NodePath("../..")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
-shape = SubResource("ConcavePolygonShape3D_0xm2m")
+cycle_light = false
+transition_time = 1
+wait_time_dark = 5
+wait_time_light = 5
 
 [node name="Player" parent="." instance=ExtResource("1_ig7tw")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 20, 16)
-MaxCameraSize = 40.0
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+MaxCameraSize = 50.0
 
 [node name="Control2" type="Control" parent="Player"]
 layout_mode = 3
@@ -145,71 +169,85 @@ layout_mode = 2
 [node name="VBoxContainer" type="VBoxContainer" parent="Player/Control2/PanelContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/HBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 text = "Light Energy"
 script = SubResource("GDScript_ycdy4")
 
-[node name="HSlider" type="HSlider" parent="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/HBoxContainer"]
+[node name="HSlider" type="HSlider" parent="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 max_value = 1.0
 step = 0.01
 
-[node name="LightEnergyLabel" type="Label" parent="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer"]
+[node name="LightEnergyLabel" type="Label" parent="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/VBoxContainer"]
 layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Max Camera Size"
+
+[node name="HSlider" type="HSlider" parent="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+min_value = 10.0
+max_value = 300.0
+step = 10.0
+value = 20.0
+script = SubResource("GDScript_w48qg")
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+text = "Faced Direction:"
+script = SubResource("GDScript_0xm2m")
 
 [node name="ChunkManager" type="Node" parent="."]
 script = ExtResource("4_w48qg")
 NoiseTexture = SubResource("FastNoiseLite_w48qg")
 
-[node name="RigidBody3D" type="RigidBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.114074, 2.54068, 6.7105)
+[node name="Axis_markers" type="Node3D" parent="."]
+visible = false
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D"]
-mesh = SubResource("BoxMesh_0xm2m")
+[node name="neg_z_axis" type="MeshInstance3D" parent="Axis_markers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5)
+mesh = SubResource("BoxMesh_1bvp3")
+skeleton = NodePath("../..")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D"]
-shape = SubResource("BoxShape3D_h2yge")
+[node name="pos_x_axis" type="MeshInstance3D" parent="Axis_markers"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 5, 0, 0)
+mesh = SubResource("BoxMesh_h2yge")
+skeleton = NodePath("../..")
 
-[node name="Sketchfab_Scene2" parent="." instance=ExtResource("3_h2yge")]
-transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 2.41035, 0.049569, -1.14679)
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
 
-[node name="Wall" parent="." instance=ExtResource("3_4c57u")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -7.40485, 1.189, -2.8342)
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
+mesh = SubResource("CylinderMesh_1bvp3")
+skeleton = NodePath("../..")
 
-[node name="Wall2" parent="." instance=ExtResource("3_4c57u")]
-transform = Transform3D(-4.37114e-08, 1, 4.37114e-08, 0, -4.37114e-08, 1, 1, 4.37114e-08, 1.91069e-15, 4.29008, 1.189, -1.30967)
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+mesh = SubResource("CylinderMesh_lquwl")
+skeleton = NodePath("../..")
 
-[node name="Wall_01" parent="." instance=ExtResource("3_272bh")]
-transform = Transform3D(1, 0, 0, 0, -2.5134e-08, 1, 0, -0.575, -4.37114e-08, -3.93373, 1.16067, -2.83424)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("CylinderShape3D_h2yge")
 
-[node name="Wall_04" parent="." instance=ExtResource("3_272bh")]
-transform = Transform3D(1, 0, 0, 0, -2.5134e-08, 1, 0, -0.575, -4.37114e-08, 2.5494, 1.16067, -2.83049)
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_1bvp3")
 
-[node name="Wall_02" parent="." instance=ExtResource("4_5vw27")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -0.697731, 1.16163, -2.8358)
-
-[node name="Wall_03" parent="." instance=ExtResource("5_kek77")]
-transform = Transform3D(-4.37114e-08, 1, 4.37114e-08, 0, -4.37114e-08, 1, 1, 4.37114e-08, 1.91069e-15, 4.29164, 1.15992, 2.12452)
-
-[node name="Tree" parent="." instance=ExtResource("3_lquwl")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 5.54915, 0, 6)
-
-[node name="stone_sarcophagus" parent="." instance=ExtResource("4_7mycd")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 3.30707, 0.238355, 0)
-
-[node name="Streetlamp" parent="." instance=ExtResource("3_1bvp3")]
-transform = Transform3D(0.106299, 0, 0.106299, 0, 0.150329, 0, -0.106299, 0, 0.106299, -4.77878, 0.231907, 0)
-
-[node name="street_light" parent="." instance=ExtResource("4_lquwl")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.3871, 0, 5.31022)
-
-[node name="street_light2" parent="." instance=ExtResource("4_lquwl")]
-transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -3.92001, 0, 8.2266)
-
-[connection signal="value_changed" from="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/HBoxContainer/HSlider" to="WorldEnvironment/DirectionalLight3D" method="_set_light_energy"]
-[connection signal="value_changed" from="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/HBoxContainer/HSlider" to="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/HBoxContainer/Label" method="change_label_text"]
+[connection signal="value_changed" from="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer/HSlider" to="WorldEnvironment/DirectionalLight3D" method="_set_light_energy"]
+[connection signal="value_changed" from="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer/HSlider" to="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer/Label" method="change_label_text"]
+[connection signal="value_changed" from="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/HBoxContainer/HSlider" to="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/HBoxContainer/HSlider" method="_change_camera_max"]

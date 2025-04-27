@@ -1,4 +1,0 @@
-[gd_scene format=3 uid="uid://capoj3kb7r0um"]
-
-[node name="Candle_03" type="Node3D"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)

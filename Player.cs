@@ -10,7 +10,7 @@ public partial class Player : CharacterBody3D
 	[Export] public float Gravity {get;set;} = ProjectSettings.GetSetting("physics/3d/default_gravity").AsSingle();
 	[Export] public float MouseSensitivity = 0.3f;
 	[Export] public float MinCameraSize {get; set;} = 20.0f;
-	[Export] public float MaxCameraSize {get; set;} = 50.0f;
+	[Export] public float MaxCameraSize {get; set;} = 40.0f;
 
 	private bool _player_is_active = true;
 	private Node3D _camera_gimbal;
@@ -32,6 +32,11 @@ public partial class Player : CharacterBody3D
 	private Label _angle_label;
 	private bool _lock_camera_angle = false;
     public static Player Instance { get; private set; }
+
+	public string CameraFacedDirection() {
+		var faced_vec = Vector3.Forward.Rotated(Vector3.Up, _camera_gimbal.Rotation.Y);
+		return $"Camera Facing: {-faced_vec}";
+	}
 
     public override void _Ready() 
     {
@@ -75,6 +80,7 @@ public partial class Player : CharacterBody3D
 
 	public override void _Input(InputEvent @event)
 	{
+		
 		if (@event is InputEventKey)
 		{
 			var keyEvent = @event as InputEventKey;
@@ -106,6 +112,8 @@ public partial class Player : CharacterBody3D
 				_lock_camera_angle = !_lock_camera_angle;
 			}
 		}
+
+		if (!_player_is_active) return;
 
 		if (@event is InputEventMouseMotion)
 		{
