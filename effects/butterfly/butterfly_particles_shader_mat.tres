@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" load_steps=3 format=3 uid="uid://f3fs0fvd238x"]
+
+[ext_resource type="Shader" uid="uid://ctumyucsgdqs6" path="res://effects/butterfly/butterfly_effect.gdshader" id="1_68hl2"]
+[ext_resource type="Texture2D" uid="uid://v41ttrk2r0i8" path="res://effects/butterfly/butterfly.png" id="2_bguys"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_68hl2")
+shader_parameter/tex = ExtResource("2_bguys")
+shader_parameter/color1 = Color(1, 1, 1, 1)
+shader_parameter/color2 = Color(1, 1, 1, 1)
+shader_parameter/displ_amnt = 0.8
+shader_parameter/displ_speed = 20.0
+shader_parameter/force_alpha_value = 1.0

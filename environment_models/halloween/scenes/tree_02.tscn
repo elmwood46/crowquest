@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://cyy07d8m156vd"]
+[gd_scene format=3 uid="uid://dk32dihafbdlh"]
 
 [node name="Tree_02" type="Node3D"]
 transform = Transform3D(0.25, 0, 0, 0, -1.09278e-08, 0.25, 0, -0.25, -1.09278e-08, 0, 0, 0)

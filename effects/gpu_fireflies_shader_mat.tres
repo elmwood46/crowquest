@@ -1,0 +1,79 @@
+[gd_resource type="ShaderMaterial" load_steps=8 format=3 uid="uid://7fqa8oeor4dp"]
+
+[ext_resource type="Shader" uid="uid://c74vghncp628n" path="res://effects/gpu_fireflies_shader.gdshader" id="1_ji7aa"]
+
+[sub_resource type="Gradient" id="Gradient_dxywc"]
+offsets = PackedFloat32Array(0, 0.791246, 1)
+colors = PackedColorArray(0, 0, 0, 1, 0.79798, 0.79798, 0.79798, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_iobdu"]
+gradient = SubResource("Gradient_dxywc")
+
+[sub_resource type="Curve" id="Curve_6t4xs"]
+_limits = [0.0, 100.0, 0.0, 1.0]
+_data = [Vector2(0, 100), 0.0, 0.0, 0, 0, Vector2(1, 0), -331.082, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_oo78e"]
+curve = SubResource("Curve_6t4xs")
+
+[sub_resource type="Curve" id="Curve_6eb0j"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -3.45717, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_dih03"]
+curve = SubResource("Curve_6eb0j")
+
+[resource]
+shader = ExtResource("1_ji7aa")
+shader_parameter/direction = Vector3(1, 0, 0)
+shader_parameter/spread = 45.0
+shader_parameter/flatness = 0.0
+shader_parameter/inherit_emitter_velocity_ratio = 0.0
+shader_parameter/initial_linear_velocity_min = 1.0
+shader_parameter/initial_linear_velocity_max = 2.0
+shader_parameter/directional_velocity_min = 1.0
+shader_parameter/directional_velocity_max = 1.0
+shader_parameter/angular_velocity_min = 30.0
+shader_parameter/angular_velocity_max = 60.0
+shader_parameter/orbit_velocity_min = 0.0
+shader_parameter/orbit_velocity_max = 0.0
+shader_parameter/radial_velocity_min = 0.0
+shader_parameter/radial_velocity_max = 0.0
+shader_parameter/linear_accel_min = 0.0
+shader_parameter/linear_accel_max = 0.0
+shader_parameter/radial_accel_min = 0.0
+shader_parameter/radial_accel_max = 0.0
+shader_parameter/tangent_accel_min = 0.0
+shader_parameter/tangent_accel_max = 0.0
+shader_parameter/damping_min = 0.0
+shader_parameter/damping_max = 0.0
+shader_parameter/initial_angle_min = 0.0
+shader_parameter/initial_angle_max = 0.0
+shader_parameter/scale_min = 0.2
+shader_parameter/scale_max = 0.2
+shader_parameter/hue_variation_min = 0.0
+shader_parameter/hue_variation_max = 0.0
+shader_parameter/anim_speed_min = 0.0
+shader_parameter/anim_speed_max = 0.0
+shader_parameter/anim_offset_min = 0.0
+shader_parameter/anim_offset_max = 0.0
+shader_parameter/lifetime_randomness = 0.0
+shader_parameter/emission_shape_offset = Vector3(0, 0, 0)
+shader_parameter/emission_shape_scale = Vector3(1, 1, 1)
+shader_parameter/velocity_pivot = Vector3(0, 0, 0)
+shader_parameter/emission_box_extents = Vector3(1, 1, 1)
+shader_parameter/color_value = Color(0.842909, 0.848746, 0.727137, 1)
+shader_parameter/gravity = Vector3(0, -1e-06, 0)
+shader_parameter/color_ramp = SubResource("GradientTexture1D_iobdu")
+shader_parameter/emission_curve = SubResource("CurveTexture_oo78e")
+shader_parameter/scale_curve = SubResource("CurveTexture_dih03")
+shader_parameter/turbulence_noise_strength = 1.0
+shader_parameter/turbulence_noise_scale = -0.636414
+shader_parameter/turbulence_influence_min = 0.1
+shader_parameter/turbulence_influence_max = 0.1
+shader_parameter/turbulence_initial_displacement_min = 0.0
+shader_parameter/turbulence_initial_displacement_max = 0.0
+shader_parameter/turbulence_noise_speed_random = 0.2
+shader_parameter/turbulence_noise_speed = Vector3(0, 0, 0)
+shader_parameter/force_alpha_value = 1.0

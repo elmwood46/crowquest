@@ -1,0 +1,53 @@
+[gd_scene load_steps=8 format=3 uid="uid://b7v1ph4sf6sjy"]
+
+[ext_resource type="Material" uid="uid://f3fs0fvd238x" path="res://effects/butterfly/butterfly_particles_shader_mat.tres" id="1_wf3bf"]
+[ext_resource type="ArrayMesh" uid="uid://d0rv45d8cvj2k" path="res://effects/butterfly/butterfly.obj" id="2_lru3h"]
+
+[sub_resource type="Gradient" id="Gradient_wf3bf"]
+colors = PackedColorArray(0, 1, 1, 1, 0.231373, 0.741176, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_lru3h"]
+gradient = SubResource("Gradient_wf3bf")
+
+[sub_resource type="Curve" id="Curve_pib5k"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.0597938, 1), 0.0, 0.0, 0, 0, Vector2(0.880412, 0.954625), 0.0, 0.0, 0, 0, Vector2(0.995876, 0), -2.873, 0.0, 0, 0]
+point_count = 4
+
+[sub_resource type="CurveTexture" id="CurveTexture_eovqu"]
+curve = SubResource("Curve_pib5k")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_gw2b4"]
+lifetime_randomness = 1.0
+particle_flag_align_y = true
+emission_shape = 3
+emission_box_extents = Vector3(10, 1, 10)
+spread = 0.0
+radial_velocity_min = 0.599978
+radial_velocity_max = 2.49998
+gravity = Vector3(0, 0, 0)
+scale_min = 0.5
+scale_max = 0.5
+scale_curve = SubResource("CurveTexture_eovqu")
+color_initial_ramp = SubResource("GradientTexture1D_lru3h")
+hue_variation_min = -2.23517e-08
+hue_variation_max = 0.05
+turbulence_enabled = true
+turbulence_noise_strength = 9.75
+turbulence_noise_scale = 2.109
+
+[node name="ButterflyParticles" type="Node3D"]
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.01592, 0)
+layers = 2
+material_override = ExtResource("1_wf3bf")
+cast_shadow = 0
+amount = 10
+lifetime = 10.0
+process_material = SubResource("ParticleProcessMaterial_gw2b4")
+draw_pass_1 = ExtResource("2_lru3h")
+
+[node name="GPUParticlesAttractorSphere3D" type="GPUParticlesAttractorSphere3D" parent="."]
+strength = 2.28
+cull_mask = 4294967294
+radius = 25.6798

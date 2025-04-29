@@ -1,0 +1,35 @@
+[gd_scene load_steps=5 format=3 uid="uid://b1uxh750j4e0h"]
+
+[ext_resource type="Texture2D" uid="uid://5l4f6nmnxoxl" path="res://textures/2d_particle/circle_05.png" id="1_oq7op"]
+[ext_resource type="Material" uid="uid://7fqa8oeor4dp" path="res://effects/gpu_fireflies_shader_mat.tres" id="1_y080j"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cx7df"]
+transparency = 1
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("1_oq7op")
+emission_enabled = true
+emission = Color(1, 1, 0.333333, 1)
+emission_energy_multiplier = 11.79
+billboard_mode = 3
+billboard_keep_scale = true
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_odglh"]
+material = SubResource("StandardMaterial3D_cx7df")
+size = Vector2(0.5, 0.5)
+
+[node name="FireflyParticles" type="Node3D"]
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+amount = 5
+lifetime = 5.0
+randomness = 1.0
+process_material = ExtResource("1_y080j")
+draw_pass_1 = SubResource("QuadMesh_odglh")
+
+[node name="GPUParticlesAttractorSphere3D" type="GPUParticlesAttractorSphere3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.88139, 0)
+strength = -56.21
+radius = 4.51664

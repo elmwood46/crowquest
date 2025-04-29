@@ -88,6 +88,11 @@ public static class SimpleWfc
         return 0;
     }
 
+    public static bool ChunkHasNoWalls(int tile_id)
+    {
+        return IsOpen(tile_id);
+    }
+
     private static bool IsCorner(int tileID)
     {
         return tileID switch

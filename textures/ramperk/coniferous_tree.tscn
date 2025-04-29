@@ -1,0 +1,31 @@
+[gd_scene load_steps=5 format=3 uid="uid://ik8o6busla73"]
+
+[ext_resource type="Texture2D" uid="uid://g8cke3mv0wve" path="res://textures/ramperk/CONIA0.png" id="1_wx5k1"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_l7xot"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+cull_mode = 2
+albedo_texture = ExtResource("1_wx5k1")
+
+[sub_resource type="QuadMesh" id="QuadMesh_l83bn"]
+material = SubResource("StandardMaterial3D_l7xot")
+size = Vector2(2.38, 5.77)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_eykax"]
+size = Vector3(0.15524, 4.13095, 0.156934)
+
+[node name="ConiferousTree" type="StaticBody3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.115164, 2.87336, 0.00630212)
+mesh = SubResource("QuadMesh_l83bn")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -0.0151636, 2.87336, 0.00630212)
+mesh = SubResource("QuadMesh_l83bn")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0461304, 2.06765, -0.0622864)
+shape = SubResource("BoxShape3D_eykax")

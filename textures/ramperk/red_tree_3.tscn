@@ -1,0 +1,31 @@
+[gd_scene load_steps=5 format=3 uid="uid://ccetmkjvexydf"]
+
+[ext_resource type="Texture2D" uid="uid://cn4qsvrlg2nyp" path="res://textures/ramperk/TR38A0.png" id="1_ra87q"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vkx01"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+cull_mode = 2
+albedo_texture = ExtResource("1_ra87q")
+
+[sub_resource type="QuadMesh" id="QuadMesh_kjbig"]
+material = SubResource("StandardMaterial3D_vkx01")
+size = Vector2(1.72, 2.58)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_62n0o"]
+size = Vector3(0.15524, 1.01955, 0.156934)
+
+[node name="RedTree3" type="StaticBody3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0259247, 1.29804, -0.00761175)
+mesh = SubResource("QuadMesh_kjbig")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0.0259247, 1.29804, -0.00761175)
+mesh = SubResource("QuadMesh_kjbig")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00124099, 0.511952, -0.00932577)
+shape = SubResource("BoxShape3D_62n0o")

@@ -1,5 +1,6 @@
 [gd_scene load_steps=20 format=3 uid="uid://dovgs2t1vyyy0"]
 
+[ext_resource type="Script" uid="uid://5t4dyh7n4e26" path="res://effects/control_global_light.gd" id="1_1bvp3"]
 [ext_resource type="PackedScene" uid="uid://bjhvg8rf53fx4" path="res://Player.tscn" id="1_ig7tw"]
 [ext_resource type="Material" uid="uid://ctx4tpghicm8h" path="res://textures/Marble012_1K-JPG/marble.tres" id="3_h2yge"]
 [ext_resource type="Script" uid="uid://nsjwgmlaejks" path="res://terrain_generator/infinite_heightmap_terrain/ChunkManager.cs" id="4_w48qg"]
@@ -16,63 +17,6 @@ ambient_light_source = 3
 ambient_light_color = Color(1, 1, 1, 1)
 reflected_light_source = 2
 tonemap_mode = 1
-
-[sub_resource type="GDScript" id="GDScript_dg77c"]
-script/source = "extends DirectionalLight3D
-
-@export var cycle_light = true
-
-var t = 0
-var wait_t = 0
-
-var state = \"wait\"
-var getting_brighter = false
-@export var transition_time = 30
-@export var wait_time_dark = 20
-@export var wait_time_light = 10
-var wait_time = wait_time_light
-var first_frame = true
-
-func _ready() -> void:
-	light_energy = 1
-	wait_time = wait_time_light
-
-func _set_light_energy(f: float) -> void:
-	light_energy = f
-	
-func _process(delta: float) -> void:
-	if (!cycle_light):
-		return
-	if (first_frame):
-		light_energy = 1
-		first_frame = false
-	var l_label = $\"../../Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/VBoxContainer/LightEnergyLabel\"
-	l_label.text = str(light_energy)
-	l_label.text += str($\"..\".environment.sky.sky_material.energy_multiplier)
-	l_label.text+=\"\\nstate: \"+state
-	l_label.text+=\"\\nt: \"+str(t)
-	l_label.text+=\"\\nwait_t: \"+str(wait_t)
-	if (state==\"transition\"):
-		t += delta
-		var cosval = (cos(PI*t/transition_time)+1)/2
-		light_energy = 1-cosval if getting_brighter else cosval
-		if (t >= transition_time):
-			t = 0
-			if (getting_brighter):
-				wait_time = wait_time_light
-				light_energy = 1
-			else:
-				wait_time = wait_time_dark
-				light_energy = 0
-			getting_brighter = !getting_brighter
-			state = \"wait\"
-		$\"..\".environment.sky.sky_material.energy_multiplier = light_energy
-	else:
-		wait_t+=delta
-		if (wait_t >= wait_time):
-			wait_t = 0
-			state = \"transition\"
-"
 
 [sub_resource type="GDScript" id="GDScript_ycdy4"]
 script/source = "extends Label
@@ -141,11 +85,7 @@ environment = SubResource("Environment_1bvp3")
 transform = Transform3D(0.403349, -0.910278, 0.0932931, 0.696466, 0.371528, 0.613924, -0.593503, -0.18265, 0.783833, 0, 1.67932, 0)
 light_energy = 0.2
 directional_shadow_max_distance = 40.0
-script = SubResource("GDScript_dg77c")
-cycle_light = false
-transition_time = 1
-wait_time_dark = 5
-wait_time_light = 5
+script = ExtResource("1_1bvp3")
 
 [node name="Player" parent="." instance=ExtResource("1_ig7tw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)

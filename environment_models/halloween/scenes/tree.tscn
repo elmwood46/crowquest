@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=4 uid="uid://c5eta8i7m4q80"]
+[gd_scene load_steps=10 format=4 uid="uid://c5eta8i7m4q80"]
 
 [ext_resource type="Texture2D" uid="uid://ctbnipvqq46px" path="res://environment_models/halloween/textures/BarkDecidious_baseColor.jpeg" id="1_t3735"]
 [ext_resource type="Texture2D" uid="uid://7x6kghbmyvv6" path="res://environment_models/halloween/textures/Tree_baseColor.png" id="2_1hunn"]
@@ -82,7 +82,10 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_rtyjp")
 
-[node name="Tree" type="Node3D"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_t3735"]
+size = Vector3(0.223572, 0.235847, 3.00497)
+
+[node name="Tree" type="StaticBody3D"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
 
 [node name="Tree_BarkDecidious_0" type="MeshInstance3D" parent="."]
@@ -92,3 +95,7 @@ skeleton = NodePath("")
 [node name="Tree_Tree_0" type="MeshInstance3D" parent="."]
 mesh = SubResource("ArrayMesh_qhulw")
 skeleton = NodePath("")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00527954, -0.00529099, 1.35155)
+shape = SubResource("BoxShape3D_t3735")

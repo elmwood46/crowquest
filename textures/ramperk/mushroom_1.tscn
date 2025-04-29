@@ -1,0 +1,35 @@
+[gd_scene load_steps=5 format=3 uid="uid://bm5hw4t2ew6tb"]
+
+[ext_resource type="Texture2D" uid="uid://djrtmdcjggyht" path="res://textures/ramperk/ELMMA0.png" id="1_5qnfa"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rlmml"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+cull_mode = 2
+albedo_texture = ExtResource("1_5qnfa")
+
+[sub_resource type="QuadMesh" id="QuadMesh_15jnk"]
+material = SubResource("StandardMaterial3D_rlmml")
+size = Vector2(1.58, 1.62)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8wjq1"]
+size = Vector3(0.396476, 1.01955, 0.396411)
+
+[node name="Mushroom1" type="StaticBody3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.026, 0.81, -0.008)
+mesh = SubResource("QuadMesh_15jnk")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, 0.026, 0.81, -0.008)
+mesh = SubResource("QuadMesh_15jnk")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, 0.026, 0.81, -0.008)
+mesh = SubResource("QuadMesh_15jnk")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0119468, 0.511952, 0.0331913)
+shape = SubResource("BoxShape3D_8wjq1")
