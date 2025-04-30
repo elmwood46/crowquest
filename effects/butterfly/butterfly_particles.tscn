@@ -44,6 +44,7 @@ material_override = ExtResource("1_wf3bf")
 cast_shadow = 0
 amount = 10
 lifetime = 10.0
+transform_align = 2
 process_material = SubResource("ParticleProcessMaterial_gw2b4")
 draw_pass_1 = ExtResource("2_lru3h")
 

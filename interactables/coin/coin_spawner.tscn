@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cs77x0s2jn8iy"]
+
+[ext_resource type="Script" path="res://props/treasure/coin/TreasureSpawner.cs" id="1_j6im1"]
+
+[node name="Node3D" type="Node3D"]
+script = ExtResource("1_j6im1")

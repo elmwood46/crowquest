@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://d10kbss22qbk3"]
 
-[ext_resource type="Curve3D" uid="uid://c0knx8pmaspwn" path="res://curves/curve@Path3D@111833.tres" id="1_cxw68"]
+[ext_resource type="Curve3D" uid="uid://c0knx8pmaspwn" path="res://0maze_curves/curve@Path3D@111833.tres" id="1_cxw68"]
 [ext_resource type="Material" uid="uid://b3sfpwraj58wq" path="res://terrain_generator/simple_wfc/hedge_texture.tres" id="2_cxw68"]
 
 [node name="Node3D" type="Node3D"]

@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://bm4hi8ucboxxs"]
+
+[ext_resource type="ArrayMesh" uid="uid://bripkpis7kr3u" path="res://environment_models/treasure/magic_chest/chest_base.tres" id="1_yg0bo"]
+[ext_resource type="ArrayMesh" uid="uid://rvl8kux563g" path="res://environment_models/treasure/magic_chest/chest_detail.tres" id="2_ysyk0"]
+[ext_resource type="ArrayMesh" uid="uid://yupxjvufxvw4" path="res://environment_models/treasure/magic_chest/chest_roots.tres" id="3_yid5w"]
+
+[node name="MagicChest" type="Node3D"]
+
+[node name="Base" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
+mesh = ExtResource("1_yg0bo")
+
+[node name="Detail" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
+mesh = ExtResource("2_ysyk0")
+
+[node name="Extra_roots" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
+mesh = ExtResource("3_yid5w")

@@ -1,0 +1,17 @@
+[gd_resource type="StandardMaterial3D" load_steps=6 format=3 uid="uid://cglcw4wgjehbb"]
+
+[ext_resource type="Texture2D" uid="uid://bitw6td1i2ffy" path="res://environment_models/treasure/chest_big/part2/1024x1024/chest2_base.png" id="1_vn2cq"]
+[ext_resource type="Texture2D" uid="uid://57hmaq55uv02" path="res://environment_models/treasure/chest_big/part2/1024x1024/chest2_occlusion.bmp" id="2_fcxqw"]
+[ext_resource type="Texture2D" uid="uid://d4ajal60qdgfx" path="res://environment_models/treasure/chest_big/part2/1024x1024/chest2_metallic.png" id="3_vwv43"]
+[ext_resource type="Texture2D" uid="uid://buli8t3dgkvdh" path="res://environment_models/treasure/chest_big/part2/1024x1024/chest2_normals.bmp" id="4_cn26y"]
+[ext_resource type="Texture2D" uid="uid://iosgg2w33dnx" path="res://environment_models/treasure/chest_big/part2/1024x1024/chest2_roughness.png" id="5_kch34"]
+
+[resource]
+albedo_texture = ExtResource("1_vn2cq")
+metallic = 1.0
+metallic_texture = ExtResource("3_vwv43")
+roughness_texture = ExtResource("5_kch34")
+normal_enabled = true
+normal_texture = ExtResource("4_cn26y")
+ao_enabled = true
+ao_texture = ExtResource("2_fcxqw")

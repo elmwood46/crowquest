@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://dgffeqe036jlp"
+path="res://.godot/imported/2025-03-08 20-44-04.ogg-e0f5ca517da0ddbca69bef435772c32d.oggvorbisstr"
+
+[deps]
+
+source_file="res://audio/footsteps/grass/2025-03-08 20-44-04.ogg"
+dest_files=["res://.godot/imported/2025-03-08 20-44-04.ogg-e0f5ca517da0ddbca69bef435772c32d.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=3 uid="uid://uldj30cvurdk"]
+
+[ext_resource type="Script" uid="uid://cyuufrdh5hifk" path="res://interactables/coin/Coin.cs" id="1_xg0dk"]
+[ext_resource type="ArrayMesh" uid="uid://sn1uqs16pe74" path="res://interactables/coin/coin.mesh" id="2_whk3t"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_as7ab"]
+bounce = 0.2
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_km0rm"]
+size = Vector3(2, 0.5, 2)
+
+[node name="coin" type="RigidBody3D"]
+physics_material_override = SubResource("PhysicsMaterial_as7ab")
+gravity_scale = 2.0
+contact_monitor = true
+max_contacts_reported = 1
+script = ExtResource("1_xg0dk")
+Bus = 0
+
+[node name="Coin_tris" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, 0)
+mesh = ExtResource("2_whk3t")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(-8.74228e-09, 0.2, -8.74228e-09, 0, -8.74228e-09, -0.2, -0.2, -8.74228e-09, 3.82137e-16, -0.0014801, 0.00195408, 0.00824166)
+shape = SubResource("BoxShape3D_km0rm")

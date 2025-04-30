@@ -67,9 +67,9 @@ public static class SimpleWfc
 
     public static float GetTileTreasureGenerationChance(int tile_id)
     {
-        if (IsCorner(tile_id))            return 0.01f;
+        if (IsCorner(tile_id))            return 0.005f;
         else if (IsTJunction(tile_id))    return 0.01f;
-        else if (IsDeadEnd(tile_id))      return 0.1f;
+        else if (IsDeadEnd(tile_id))      return 0.3f;
         else if (IsStraight(tile_id))     return 0.0f;
         else if (IsIntersection(tile_id)) return 0.02f;
         else if (IsOpen(tile_id))         return 0.1f;

@@ -1,12 +1,17 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 public partial class ChunkPlane : StaticBody3D
 {
     [Export] public MeshInstance3D MeshInstance { get; set; }
     [Export] public CollisionShape3D CollisionShape { get; set; }
+    [Export] public bool DisableWallGeneration { get; set; } = false;
+    [Export] public bool DisableLampGeneration { get; set; } = false;
+    [Export] public bool DisableSarcophagusGeneration { get; set; } = false;
+    [Export] public bool DrawDebugMeshes = false;
 
     // private static readonly StandardMaterial3D _ground_material = GD.Load<StandardMaterial3D>("res://terrain_generator/infinite_heightmap_terrain/ground_material.tres");
     // private static readonly StandardMaterial3D _ground_material_2 = GD.Load<StandardMaterial3D>("res://terrain_generator/infinite_heightmap_terrain/ground_light_material.tres");
@@ -31,6 +36,15 @@ public partial class ChunkPlane : StaticBody3D
         GD.Load<PackedScene>("res://textures/ramperk/mushroom_1.tscn")
     ];
 
+    private static readonly PackedScene[] _treasure_chests = 
+    [
+        GD.Load<PackedScene>("res://interactables/chest_scenes/big_chest.tscn"),
+    ];
+
+    private static readonly HashSet<Vector3> _opened_chests = []; 
+
+    private static readonly PackedScene _sarco_scene = GD.Load<PackedScene>("res://interactables/chest_scenes/stone_sarcophagus.tscn");
+
     private static readonly PackedScene _firefly_particle_scene = GD.Load<PackedScene>("res://effects/gpu_particle_fireflies.tscn");
     private static readonly PackedScene _butterfly_particle_scene = GD.Load<PackedScene>("res://effects/butterfly/butterfly_particles.tscn");
 
@@ -43,8 +57,9 @@ public partial class ChunkPlane : StaticBody3D
     private Grass[] _grass_nodes;
 
     private bool _only_generate_mesh_once = true;
-    private bool _draw_debug_meshes = true;
     
+
+
 
     private static readonly Vector3[] QuadVertices = [
         new (0, 0, 0),
@@ -96,9 +111,10 @@ public partial class ChunkPlane : StaticBody3D
     }
 
     /// <summary>
+    /// NOT IMLPEMENTED due to performance issues
     /// // HACK This only works because we have y-value locked to zero
-    /// This is also massively slow and doesn't work.
-    /// Innefficient due to sampling the noise for every grass blade
+    /// This is also massively slow and lags the game.
+    /// Innefficient due to sampling the noise for every grass blade and updating the transform
     /// </summary>
     /// <param name="global_xz_offset"></param>
     public void ApplyGrassNoise(Vector2 global_xz_offset)
@@ -175,9 +191,36 @@ public partial class ChunkPlane : StaticBody3D
         return mesh;
     }
 
+    public static void SetChestOpened(TreasureChest chest)
+    {
+        _opened_chests.Add(chest.GlobalPosition);
+    }
+
+    private void ClearGeneratedObjects()
+    {
+        // clear all children
+        foreach (var child in GetChildren())
+        {
+            if (child is CsgPolygon3D || child is Path3D) child.QueueFree();
+            else if (child is MeshInstance3D && child != MeshInstance) child.QueueFree(); // remove debug mesh instances
+            else if (child is Node3D && child is not MultiMeshInstance3D && child is not CollisionShape3D && child != MeshInstance)
+            {
+                switch(child.Name)
+                {
+                    case "MultiMeshes":
+                        break;
+                    default:
+                        child.QueueFree();
+                        break;
+                }
+            }
+        }
+    }
+
     private void GenerateWallsAndMeshes()
     {
-        var cent_offset = new Vector3(16,0,16);
+        ClearGeneratedObjects();
+
         var chunk_pos = GetChunkPosition();
         var is_starting_chunk = chunk_pos == Vector2I.Zero;
         var seeded_random = ChunkManager.Instance.NoiseTexture.GetNoise2D(chunk_pos.X*32,chunk_pos.Y*32);
@@ -185,18 +228,7 @@ public partial class ChunkPlane : StaticBody3D
         seeded_random = seeded_random * 0.5f + 0.5f; // remap to 0-1
         var chunk_tile_id = SimpleWfc.GetTileID(chunk_pos);
         
-        // clear all children
-        foreach (var child in GetChildren())
-        {
-            if (child is CsgPolygon3D || child is Path3D) child.QueueFree();
-            else if (child is Streetlamp) child.QueueFree();
-            else if (child is MeshInstance3D && child != MeshInstance) child.QueueFree(); // remove debug mesh instances
-            else if (child is Node3D && child is not MultiMeshInstance3D && child.GetChildren().Count > 0 && child.Name != "MultiMeshes") child.QueueFree(); // remove lamps
-            //if (child is not Grass && child is MultiMeshInstance3D d) d.Multimesh.InstanceCount = 100;
-        }
-
         // ====== generate walls =====
-        //await ToSignal(GetTree(), "physics_frame");
         var chunk_offset = ChunkManager.Instance.ChunkSize * chunk_pos;
         var path_set = SimpleWfc.GetTilePaths(chunk_pos);
         var nodePaths = new List<string>();
@@ -215,6 +247,12 @@ public partial class ChunkPlane : StaticBody3D
             //ResourceSaver.Save(path_copy.Curve,$"res://curves/curve{path.Name}.tres");
             AddChild(path_copy);
 
+            if (DisableWallGeneration)
+            {
+                nodePaths.Add(path_copy.GetPath());
+                continue;
+            }
+
             var wall = _csg_brick_wall_scene.Instantiate<CsgPolygon3D>();
             if (seeded_random < 0.5 || is_starting_chunk)
             {
@@ -227,15 +265,14 @@ public partial class ChunkPlane : StaticBody3D
         }
         
         //====== generate lamps =====
-        //await ToSignal(GetTree(), "physics_frame");
         var centerPoint = new Vector3(chunk_offset.X,0,chunk_offset.Y);
         var distance_between_lamps = 16.0f;
-        var chunk_has_lamps = seeded_random < 0.6f || is_starting_chunk; 
+        var chunk_has_lamps = seeded_random < 0.4f || is_starting_chunk; 
         var lamp_node = new Node3D();
         AddChild(lamp_node);
         lamp_node.Name = "Lamps";
         
-        if (chunk_has_lamps) for (int i=0; i<nodePaths.Count;i++)
+        if (chunk_has_lamps && !DisableLampGeneration) for (int i=0; i<nodePaths.Count;i++)
         {
             var path_str = nodePaths[i];
             var path_node = GetNodeOrNull<Path3D>(path_str);
@@ -261,9 +298,39 @@ public partial class ChunkPlane : StaticBody3D
             }
         }
 
-        //
+        //====== generate sarcophagi =====
+        var has_sarco = seeded_random < (chunk_has_lamps ? 0.2f : 0.5f);
+        var treasure_node = new Node3D
+        {
+            Name = "treasure_spawns"
+        };
+        AddChild(treasure_node);
+        void add_chest(TreasureChest chest, Transform3D transform)
+        {
+            chest.Transform = transform;
+            treasure_node.AddChild(chest);
+            if (_opened_chests.Contains(chest.GlobalPosition))
+            {
+                chest.ForceStateOpen();
+            }
+        }
+        if (has_sarco && !is_starting_chunk && !DisableSarcophagusGeneration)
+        {
+            var sarco_count = chunk_rng.Next(0,2) + (chunk_has_lamps ? 0 : chunk_rng.Next(0,2));
+            {
+                for (int j=0;j<sarco_count;j++)
+                {
+                    var sarco = _sarco_scene.Instantiate<TreasureChest>();
+                    var rand_angle = chunk_rng.NextSingle()*Mathf.Pi*2;
+                    var rand_dist = 2.0f+Math.Max(chunk_rng.NextSingle(),chunk_rng.NextSingle())*14.0f;
+                    var pos = (Vector3.Forward * rand_dist).Rotated(Vector3.Up, rand_angle);
+                    var transform = new Transform3D(Basis.Identity.Rotated(Vector3.Up, rand_angle), pos);
+                    add_chest(sarco, transform);
+                }
+            }
+        }
+        
         //====== generate flowers around base of lamps at random =====
-        //await ToSignal(GetTree(), "physics_frame");
         var blue_flowers_multimesh = GetNode("BlueFlowerMultiMesh") as FlowerMultiMesh;
         blue_flowers_multimesh.Multimesh.VisibleInstanceCount = 0;
         var lamp_flower_distance = new Vector2(0.5f,2.0f); // min max distance from lamp to flowers around base
@@ -309,7 +376,7 @@ public partial class ChunkPlane : StaticBody3D
                     blue_flowers_multimesh.Multimesh.SetInstanceColor(flower_idx, new Color(transform.Origin.Length()/16,1,1));
                     
                     //flower.GlobalPosition = lamp.GlobalPosition + (Vector3.Forward * rand_dist).Rotated(Vector3.Up, rand_angle);
-                // flower.Rotation = new Vector3(0, rand_angle, 0);
+                    // flower.Rotation = new Vector3(0, rand_angle, 0);
                 }
             }
         }
@@ -360,36 +427,6 @@ public partial class ChunkPlane : StaticBody3D
             blue_flowers_multimesh.Multimesh.SetInstanceColor(flower_idx, new Color(transform.Origin.Length()/16,1,1));
         }
 
-        // generate hedges
-        // var hedge_multimesh = GetNode("HedgeMultiMesh") as MultiMeshInstance3D;
-        // hedge_multimesh.Multimesh.VisibleInstanceCount = 0;
-        // var hedge_separation = 16.0f;
-        // for (int i=0; i<nodePaths.Count;i++)
-        // {
-        //     var path_str = nodePaths[i];
-        //     var path_node = GetNodeOrNull<Path3D>(path_str);
-        //     if (path_node == null) continue;
-        //     var path_length = path_node.Curve.GetBakedLength();
-        //     var hedge_count = 1+Mathf.FloorToInt(path_length / hedge_separation);
-        //     for (int side=0;side<2;side++)
-        //     {
-        //         for (int j=0;j<hedge_count;j++,hedge_multimesh.Multimesh.VisibleInstanceCount ++)
-        //         {
-        //             if (hedge_multimesh.Multimesh.VisibleInstanceCount == hedge_multimesh.Multimesh.InstanceCount)
-        //             {
-        //                 break;
-        //             }
-                    
-        //             var transform = new Transform3D(Basis.Identity, Vector3.Zero)
-        //             {
-        //                 Origin = path_node.Curve.SampleBaked(j * hedge_separation) * (0.9f+side*0.2f),
-        //             };
-        //             transform = transform.LookingAt(centerPoint, Vector3.Up);
-        //             hedge_multimesh.Multimesh.SetInstanceTransform(hedge_multimesh.Multimesh.VisibleInstanceCount, transform);
-        //         }
-        //     }
-        // }
-
         //====== generate some generic shrubs around center =====
         foreach (var child in GetNode("MultiMeshes").GetChildren())
         {
@@ -399,14 +436,13 @@ public partial class ChunkPlane : StaticBody3D
             }
         }
 
-        // generate trees
+        //====== generate trees =====
         var has_walls = !SimpleWfc.ChunkHasNoWalls(chunk_tile_id);
         var hasTree = !is_starting_chunk && (seeded_random < 0.3f + (has_walls ? 0 : 1) * 0.5f);
         var num_trees = chunk_rng.Next(1, 2);
         if (SimpleWfc.ChunkHasNoWalls(chunk_tile_id)) num_trees += 3;
         if (hasTree) for (var t=0;t<num_trees;t++) // && SimpleWfc.ChunkHasNoWalls(chunk_tile_id))
         {
-            GD.Print("making tree");
             var tree_scene = _tree_scenes[chunk_rng.Next(0, _tree_scenes.Length)];
             var tree = tree_scene.Instantiate<StaticBody3D>();
             var rand_angle = chunk_rng.NextSingle() * Mathf.Pi * 2;
@@ -441,7 +477,19 @@ public partial class ChunkPlane : StaticBody3D
             }
         }
 
-        if (_draw_debug_meshes)
+        //====== generate treasure =====
+        var treasure_gen_chance = SimpleWfc.GetTileTreasureGenerationChance(chunk_tile_id);
+        if (chunk_rng.NextSingle() < treasure_gen_chance)
+        {
+            var idx = 0;
+            var rerolls = 3;
+            for (int i=0;i<rerolls;i++) idx = Math.Min(idx, chunk_rng.Next(0, _treasure_chests.Length));
+            var chest = _treasure_chests[idx].Instantiate<TreasureChest>();
+            var transform = new Transform3D(Basis.Identity.Rotated(Vector3.Up,chunk_rng.Next(4) * Mathf.Pi/2), Vector3.Zero).Scaled(Vector3.One*0.5f);
+            add_chest(chest, transform);
+        }
+
+        if (DrawDebugMeshes)
         {
             // generate centre mesh
             var test = new MeshInstance3D
@@ -453,8 +501,6 @@ public partial class ChunkPlane : StaticBody3D
             test.GlobalPosition = centerPoint;
 
             //test generate "treasure"
-            var treasure_gen_chance = SimpleWfc.GetTileTreasureGenerationChance(chunk_tile_id);
-            
             if (chunk_rng.NextSingle() < treasure_gen_chance)
             {
                 var chest = new MeshInstance3D

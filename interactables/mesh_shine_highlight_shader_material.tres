@@ -1,0 +1,15 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://choys7akyahpf"]
+
+[ext_resource type="Shader" uid="uid://bj7t038yqpn75" path="res://interactables/mesh_shine_highlighter.gdshader" id="1_y5ouc"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_y5ouc")
+shader_parameter/shine_color = Color(1, 1, 1, 1)
+shader_parameter/cycle_interval = 1.1
+shader_parameter/shine_speed = 3.0
+shader_parameter/shine_width = 400.0
+shader_parameter/shine_angle_x = 0.0
+shader_parameter/shine_angle_y = 75.0
+shader_parameter/shine_angle_z = -45.0
+shader_parameter/progress = 0.0

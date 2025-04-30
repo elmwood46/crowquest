@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://ck8vellw0f4mx"
+path="res://.godot/imported/Audio 8.ogg-3506b033b4c44a1a2025ddfdf0f7931a.oggvorbisstr"
+
+[deps]
+
+source_file="res://audio/footsteps/grass/Audio 8.ogg"
+dest_files=["res://.godot/imported/Audio 8.ogg-3506b033b4c44a1a2025ddfdf0f7931a.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

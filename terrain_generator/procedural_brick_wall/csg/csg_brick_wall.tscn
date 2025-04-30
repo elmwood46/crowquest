@@ -4,7 +4,7 @@
 
 [node name="CSGPolygon3D" type="CSGPolygon3D"]
 use_collision = true
-polygon = PackedVector2Array(-0.625, 0, -0.625, 9.7, -0.236, 10, 0.248, 10, 0.625, 9.7, 0.625, 0)
+polygon = PackedVector2Array(-0.625, 0, -0.625, 4.7, -0.236, 5, 0.248, 5, 0.625, 4.7, 0.625, 0)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 1

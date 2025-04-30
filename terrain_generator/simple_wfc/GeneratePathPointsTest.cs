@@ -6,7 +6,6 @@ using System.Linq;
 [Tool]
 public partial class GeneratePathPointsTest : Node3D
 {
-
     [Export] public bool Init
     {
         get => false;

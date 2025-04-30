@@ -1,9 +1,12 @@
-[gd_scene load_steps=20 format=3 uid="uid://dovgs2t1vyyy0"]
+[gd_scene load_steps=23 format=3 uid="uid://dovgs2t1vyyy0"]
 
 [ext_resource type="Script" uid="uid://5t4dyh7n4e26" path="res://effects/control_global_light.gd" id="1_1bvp3"]
-[ext_resource type="PackedScene" uid="uid://bjhvg8rf53fx4" path="res://Player.tscn" id="1_ig7tw"]
+[ext_resource type="PackedScene" uid="uid://bjhvg8rf53fx4" path="res://player/Player.tscn" id="1_ig7tw"]
+[ext_resource type="Script" uid="uid://iq32r0tv8rwy" path="res://audio/AudioManager.cs" id="2_7mycd"]
 [ext_resource type="Material" uid="uid://ctx4tpghicm8h" path="res://textures/Marble012_1K-JPG/marble.tres" id="3_h2yge"]
+[ext_resource type="PackedScene" uid="uid://c5lo71g6a13l6" path="res://interactables/chest_scenes/big_chest.tscn" id="4_272bh"]
 [ext_resource type="Script" uid="uid://nsjwgmlaejks" path="res://terrain_generator/infinite_heightmap_terrain/ChunkManager.cs" id="4_w48qg"]
+[ext_resource type="PackedScene" uid="uid://cbosg6usncinx" path="res://interactables/chest_scenes/stone_sarcophagus.tscn" id="5_lquwl"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_0xm2m"]
 
@@ -37,9 +40,9 @@ func _change_camera_max(f:float) -> void:
 [sub_resource type="GDScript" id="GDScript_0xm2m"]
 script/source = "extends Label
 
-func _process(delta:float) ->void:
+func _process(_delta:float) ->void:
 	var compass = $\"../../../../../..\".CameraFacedDirection()
-	text = \"faced direction: \"+compass
+	text = \"faced direction: \"+str(compass)
 "
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_w48qg"]
@@ -62,12 +65,16 @@ size = Vector3(0.5, 0.5, 10)
 material = ExtResource("3_h2yge")
 top_radius = 12.0
 bottom_radius = 12.0
+radial_segments = 16
+rings = 0
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_lquwl"]
 material = ExtResource("3_h2yge")
 top_radius = 8.0
 bottom_radius = 8.0
 height = 1.0
+radial_segments = 16
+rings = 0
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_h2yge"]
 radius = 12.0
@@ -86,10 +93,14 @@ transform = Transform3D(0.403349, -0.910278, 0.0932931, 0.696466, 0.371528, 0.61
 light_energy = 0.2
 directional_shadow_max_distance = 40.0
 script = ExtResource("1_1bvp3")
+cycle_light = false
+
+[node name="AudioManager" type="Node" parent="."]
+script = ExtResource("2_7mycd")
 
 [node name="Player" parent="." instance=ExtResource("1_ig7tw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
-MaxCameraSize = 50.0
+MaxCameraSize = 300.0
 
 [node name="Control2" type="Control" parent="Player"]
 layout_mode = 3
@@ -153,6 +164,15 @@ layout_mode = 2
 text = "Faced Direction:"
 script = SubResource("GDScript_0xm2m")
 
+[node name="BigChest" parent="." instance=ExtResource("4_272bh")]
+transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, 5.53947, 2.00326, 0)
+
+[node name="BigChest3" parent="." instance=ExtResource("4_272bh")]
+transform = Transform3D(0.464363, 0, 0.185384, 0, 0.5, 0, -0.185384, 0, 0.464363, 4.34957, 2.00326, -3.58811)
+
+[node name="BigChest2" parent="." instance=ExtResource("4_272bh")]
+transform = Transform3D(1.43992, 0, -1.38804, 0, 2, 0, 1.38804, 0, 1.43992, 5.53947, 2.00326, 5.06722)
+
 [node name="ChunkManager" type="Node" parent="."]
 script = ExtResource("4_w48qg")
 NoiseTexture = SubResource("FastNoiseLite_w48qg")
@@ -187,6 +207,15 @@ shape = SubResource("CylinderShape3D_h2yge")
 [node name="CollisionShape3D2" type="CollisionShape3D" parent="StaticBody3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 shape = SubResource("CylinderShape3D_1bvp3")
+
+[node name="StoneSarcophagus" parent="." instance=ExtResource("5_lquwl")]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 2.9886, 6.25061)
+
+[node name="StoneSarcophagus2" parent="." instance=ExtResource("5_lquwl")]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, -2.84984, 2.9886, 6.25061)
+
+[node name="StoneSarcophagus3" parent="." instance=ExtResource("5_lquwl")]
+transform = Transform3D(-1.81262, 0.845237, -3.69465e-08, 0, -8.74228e-08, -2, -0.845237, -1.81262, 7.92319e-08, -5.03204, 4.3886, 6.25061)
 
 [connection signal="value_changed" from="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer/HSlider" to="WorldEnvironment/DirectionalLight3D" method="_set_light_energy"]
 [connection signal="value_changed" from="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer/HSlider" to="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer/Label" method="change_label_text"]

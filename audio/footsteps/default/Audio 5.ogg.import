@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://djh6dy5o7lw7w"
+path="res://.godot/imported/Audio 5.ogg-fed2e25b593f8d121c171d677a74517e.oggvorbisstr"
+
+[deps]
+
+source_file="res://audio/footsteps/default/Audio 5.ogg"
+dest_files=["res://.godot/imported/Audio 5.ogg-fed2e25b593f8d121c171d677a74517e.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
