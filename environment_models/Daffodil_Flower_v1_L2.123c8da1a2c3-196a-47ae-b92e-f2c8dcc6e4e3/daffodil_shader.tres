@@ -4,7 +4,7 @@
 
 [resource]
 resource_name = "01___12977_Daffodil_flower"
-render_priority = 0
+render_priority = -1
 shader = ExtResource("1_sqsqk")
 shader_parameter/albedo = Color(0, 0, 0, 1)
 shader_parameter/albedo_texture_size = Vector2i(0, 0)

@@ -4,6 +4,7 @@
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1b7ed"]
 resource_name = "flowers-01.002"
+render_priority = -1
 transparency = 4
 cull_mode = 2
 albedo_texture = ExtResource("1_minll")

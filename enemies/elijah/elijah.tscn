@@ -139,13 +139,13 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_hbco3"]
 _data = {
-"RESET": SubResource("Animation_uax0s"),
-"base_die": SubResource("Animation_g55dy"),
-"base_idle": SubResource("Animation_esvcp"),
-"base_move": SubResource("Animation_yt1tc"),
-"base_pain": SubResource("Animation_sylfp"),
-"scratch": SubResource("Animation_8icjf"),
-"windup_scratch": SubResource("Animation_gnj1d")
+&"RESET": SubResource("Animation_uax0s"),
+&"base_die": SubResource("Animation_g55dy"),
+&"base_idle": SubResource("Animation_esvcp"),
+&"base_move": SubResource("Animation_yt1tc"),
+&"base_pain": SubResource("Animation_sylfp"),
+&"scratch": SubResource("Animation_8icjf"),
+&"windup_scratch": SubResource("Animation_gnj1d")
 }
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_prn0g"]
@@ -155,15 +155,15 @@ height = 0.9
 [node name="Elijah" type="Node3D"]
 
 [node name="Enemy" parent="." node_paths=PackedStringArray("AnimTree", "Sprite", "CollisionShape") instance=ExtResource("1_et8eb")]
-PainSounds = [ExtResource("2_u1rpk")]
-DeathSounds = [ExtResource("2_u1rpk")]
-IdleSounds = [ExtResource("3_mamhs")]
-SeeSound = [ExtResource("3_mamhs")]
+PainSounds = Array[AudioStream]([ExtResource("2_u1rpk")])
+DeathSounds = Array[AudioStream]([ExtResource("2_u1rpk")])
+IdleSounds = Array[AudioStream]([ExtResource("3_mamhs")])
+SeeSound = Array[AudioStream]([ExtResource("3_mamhs")])
 AnimTree = NodePath("AnimationTree")
 Sprite = NodePath("AnimatedSprite3D")
 CollisionShape = NodePath("CollisionShape3D")
 PainChance = 1.0
-AttacksList = [&"Scratch"]
+AttacksList = Array[String](["Scratch"])
 
 [node name="AnimationTree" type="AnimationTree" parent="Enemy"]
 root_node = NodePath(".")
@@ -177,7 +177,7 @@ parameters/base_pain/blend_position = Vector2(-0.0312057, 0.607929)
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Enemy"]
 root_node = NodePath("../AnimationTree")
 libraries = {
-"": SubResource("AnimationLibrary_hbco3")
+&"": SubResource("AnimationLibrary_hbco3")
 }
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Enemy"]
@@ -185,9 +185,10 @@ transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0.95, 0)
 shape = SubResource("CapsuleShape3D_prn0g")
 
 [node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="Enemy"]
-transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0.95, 0)
+transform = Transform3D(4, 0, 0, 0, 2.4, 0, 0, 0, 4, 0, 1.0093, 0)
 billboard = 2
 texture_filter = 0
+render_priority = 1
 sprite_frames = ExtResource("2_2140p")
 animation = &"base_idle"
 

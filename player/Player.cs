@@ -108,7 +108,6 @@ public partial class Player : CharacterBody3D, IHurtable
 				_player_is_active = false;
                 GD.Print("Player died");
 				ResetCameraZoom();
-				SetCameraSize(_camera_zoom);
             }
         }
 	}
@@ -144,6 +143,7 @@ public partial class Player : CharacterBody3D, IHurtable
 		ResetCameraZoom();
 		SetCameraSize(_camera_zoom);
 		_camera_gimbal.Rotation = _default_camera_rotation;
+		_lock_camera_angle = false;
 		
 		// reset player model
 		//WeaponManager.Instance.CurrentWeapon = GD.Load("res://fpscontroller/weaponmanager/weapons/p90/p90.tres") as WeaponResource;
@@ -330,7 +330,13 @@ public partial class Player : CharacterBody3D, IHurtable
 
     public override void _Process(double delta)
     {
-		if (IsDead) _timeSinceDeath += (float)delta;
+		if (IsDead) 
+		{
+			_timeSinceDeath += (float)delta;
+			LerpCameraSize(_camera_zoom);
+			_lock_camera_angle = true;
+			_camera_gimbal.RotateY(Mathf.DegToRad(0.5f));
+		}
 
 		InteractableComponent interactable = GetInteractableComponentAtShapecast();
 		if (interactable != null) {
