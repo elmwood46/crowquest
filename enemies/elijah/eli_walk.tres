@@ -1,0 +1,61 @@
+[gd_resource type="SpriteFrames" load_steps=6 format=3 uid="uid://bpu0paevpvhdt"]
+
+[ext_resource type="Texture2D" uid="uid://dredauacn14eg" path="res://enemies/elijah/eli_pain.png" id="1_3r43g"]
+[ext_resource type="Texture2D" uid="uid://bngmfqawlw3sw" path="res://enemies/elijah/eli_walk_2.png" id="2_2egpi"]
+[ext_resource type="Texture2D" uid="uid://djpwrnq4defuj" path="res://enemies/elijah/eli_walk_1.png" id="3_jsk6c"]
+[ext_resource type="Texture2D" uid="uid://d17ix1hh00s8v" path="res://enemies/elijah/eli_scratch.png" id="4_jm3rx"]
+[ext_resource type="Texture2D" uid="uid://bntfx5iioyl3c" path="res://enemies/elijah/eli_windup.png" id="5_kfg68"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_3r43g")
+}],
+"loop": true,
+"name": &"base_die",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_2egpi")
+}],
+"loop": false,
+"name": &"base_idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_jsk6c")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_2egpi")
+}],
+"loop": true,
+"name": &"base_move",
+"speed": 3.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_3r43g")
+}],
+"loop": true,
+"name": &"base_pain",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_jm3rx")
+}],
+"loop": true,
+"name": &"hit_attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_kfg68")
+}],
+"loop": true,
+"name": &"hit_windup",
+"speed": 5.0
+}]

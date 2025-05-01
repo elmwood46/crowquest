@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://dovgs2t1vyyy0"]
+[gd_scene load_steps=24 format=3 uid="uid://dovgs2t1vyyy0"]
 
 [ext_resource type="Script" uid="uid://5t4dyh7n4e26" path="res://effects/control_global_light.gd" id="1_1bvp3"]
 [ext_resource type="PackedScene" uid="uid://bjhvg8rf53fx4" path="res://player/Player.tscn" id="1_ig7tw"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://c5lo71g6a13l6" path="res://interactables/chest_scenes/big_chest.tscn" id="4_272bh"]
 [ext_resource type="Script" uid="uid://nsjwgmlaejks" path="res://terrain_generator/infinite_heightmap_terrain/ChunkManager.cs" id="4_w48qg"]
 [ext_resource type="PackedScene" uid="uid://cbosg6usncinx" path="res://interactables/chest_scenes/stone_sarcophagus.tscn" id="5_lquwl"]
+[ext_resource type="Script" uid="uid://bcfs86hg1i20j" path="res://enemies/EnemySpawner.cs" id="8_5vw27"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_0xm2m"]
 
@@ -18,8 +19,6 @@ background_mode = 2
 sky = SubResource("Sky_h2yge")
 ambient_light_source = 3
 ambient_light_color = Color(1, 1, 1, 1)
-reflected_light_source = 2
-tonemap_mode = 1
 
 [sub_resource type="GDScript" id="GDScript_ycdy4"]
 script/source = "extends Label
@@ -104,10 +103,12 @@ MaxCameraSize = 300.0
 
 [node name="Control2" type="Control" parent="Player"]
 layout_mode = 3
-anchors_preset = 0
-offset_top = 142.0
-offset_right = 40.0
-offset_bottom = 182.0
+anchor_left = 0.21
+anchor_right = 0.21
+offset_left = 0.0799866
+offset_top = 3.0
+offset_right = 323.08
+offset_bottom = 43.0
 
 [node name="PanelContainer" type="PanelContainer" parent="Player/Control2"]
 layout_mode = 0
@@ -216,6 +217,10 @@ transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, -2.84984, 2.9886, 6.25061)
 
 [node name="StoneSarcophagus3" parent="." instance=ExtResource("5_lquwl")]
 transform = Transform3D(-1.81262, 0.845237, -3.69465e-08, 0, -8.74228e-08, -2, -0.845237, -1.81262, 7.92319e-08, -5.03204, 4.3886, 6.25061)
+
+[node name="EnemySpawner" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.19044, 0)
+script = ExtResource("8_5vw27")
 
 [connection signal="value_changed" from="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer/HSlider" to="WorldEnvironment/DirectionalLight3D" method="_set_light_energy"]
 [connection signal="value_changed" from="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer/HSlider" to="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer/Label" method="change_label_text"]

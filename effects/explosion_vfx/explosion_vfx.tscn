@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://dl00n8xpud012"]
+
+[ext_resource type="PackedScene" uid="uid://frc7u3le3uo7" path="res://effects/explosion_vfx/vfx_explosion_mid.tscn" id="1_3w7op"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_18043"]
+size = Vector2(10, 10)
+
+[node name="ExplosionEffect" type="Node3D"]
+
+[node name="floor" type="MeshInstance3D" parent="."]
+mesh = SubResource("PlaneMesh_18043")
+
+[node name="vfx_explosion_mid" parent="." instance=ExtResource("1_3w7op")]

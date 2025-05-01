@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://ddfcvp2sjb4bp"
+path="res://.godot/imported/enemy_compute_shader.glsl-a52c453f4d6f8d257fd10fff93624ec9.res"
+
+[deps]
+
+source_file="res://enemies/enemy_compute_shader.glsl"
+dest_files=["res://.godot/imported/enemy_compute_shader.glsl-a52c453f4d6f8d257fd10fff93624ec9.res"]
+
+[params]
+

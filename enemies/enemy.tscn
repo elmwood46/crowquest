@@ -1,0 +1,36 @@
+[gd_scene load_steps=3 format=3 uid="uid://b0orkkctg2j5s"]
+
+[ext_resource type="Script" path="res://enemies/Enemy.cs" id="1_2tyyd"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_ni3r6"]
+friction = 0.0
+
+[node name="Enemy" type="RigidBody3D" node_paths=PackedStringArray("GroundRay", "SlopeCheckRay", "WallCheckRay", "RayGimbal")]
+collision_layer = 256
+collision_mask = 271
+axis_lock_angular_x = true
+axis_lock_angular_z = true
+physics_material_override = SubResource("PhysicsMaterial_ni3r6")
+lock_rotation = true
+linear_damp = 1.0
+script = ExtResource("1_2tyyd")
+Speed = 10.0
+GroundRay = NodePath("GroundRay")
+SlopeCheckRay = NodePath("RayGimbal/SlopeCheckRay")
+WallCheckRay = NodePath("RayGimbal/WallCheckRay")
+RayGimbal = NodePath("RayGimbal")
+CoinDropDiceAmount = 0
+
+[node name="GroundRay" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.365, 0)
+target_position = Vector3(0, -0.5, 0)
+
+[node name="RayGimbal" type="Node3D" parent="."]
+
+[node name="SlopeCheckRay" type="RayCast3D" parent="RayGimbal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+target_position = Vector3(0, 0, -0.75)
+
+[node name="WallCheckRay" type="RayCast3D" parent="RayGimbal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+target_position = Vector3(0, 0, -1)

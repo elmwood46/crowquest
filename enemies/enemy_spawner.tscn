@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://dpu141indhhox"]
+
+[ext_resource type="Script" path="res://enemies/EnemySpawner.cs" id="1_2lyri"]
+
+[node name="EnemySpawner" type="Node3D"]
+script = ExtResource("1_2lyri")
+EnemyCount = 100
+SpawnBoxDimensions = Vector3(1, 1, 1)

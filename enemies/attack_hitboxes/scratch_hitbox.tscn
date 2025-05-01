@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3 uid="uid://iqbljanuovni"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_5arr6"]
+size = Vector3(1, 1.36664, 0.805908)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ny11c"]
+transparency = 1
+albedo_color = Color(0, 1, 1, 0.701961)
+
+[sub_resource type="BoxMesh" id="BoxMesh_w3h74"]
+material = SubResource("StandardMaterial3D_ny11c")
+size = Vector3(1, 1.36664, 0.805908)
+
+[node name="ScratchHitbox" type="Node3D"]
+
+[node name="Area3D" type="Area3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0134706, 0.832011, -0.413178)
+shape = SubResource("BoxShape3D_5arr6")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0134706, 0.832011, -0.413178)
+mesh = SubResource("BoxMesh_w3h74")

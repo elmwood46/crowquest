@@ -434,7 +434,7 @@ void process() {
 	CUSTOM.x = base_angle * degree_to_rad;
 	COLOR = params.color;
 	COLOR.w = min(COLOR.w,force_alpha_value);
-	
+
 	TRANSFORM[0].xyz = normalize(TRANSFORM[0].xyz);
 	TRANSFORM[1].xyz = normalize(TRANSFORM[1].xyz);
 	TRANSFORM[2].xyz = normalize(TRANSFORM[2].xyz);

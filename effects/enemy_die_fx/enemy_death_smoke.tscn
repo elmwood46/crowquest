@@ -1,0 +1,69 @@
+[gd_scene load_steps=14 format=3 uid="uid://bkbxmgloye8sx"]
+
+[ext_resource type="Material" uid="uid://bue7ddlto0dci" path="res://effects/explosion_vfx/m_explosive_ball.tres" id="1_pglqb"]
+
+[sub_resource type="Curve" id="Curve_www4k"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.542005, 0), 0.0, 0.0, 0, 0, Vector2(1, 1), 3.51524, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_5gvwn"]
+curve = SubResource("Curve_www4k")
+
+[sub_resource type="Gradient" id="Gradient_aok1k"]
+offsets = PackedFloat32Array(0.263666, 0.607717)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_wl70m"]
+gradient = SubResource("Gradient_aok1k")
+
+[sub_resource type="Curve" id="Curve_3smeb"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.536585, 0.353293), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_6fxyn"]
+curve = SubResource("Curve_3smeb")
+
+[sub_resource type="Curve" id="Curve_43tut"]
+_data = [Vector2(0, 0.272455), 0.0, 2.20958, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_6r8m1"]
+curve = SubResource("Curve_43tut")
+
+[sub_resource type="Curve" id="Curve_w1eht"]
+max_value = 3.0
+_data = [Vector2(0.00181819, 0.491403), 0.0, 0.0, 0, 0, Vector2(0.978182, 1.59902), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_uxynu"]
+curve = SubResource("Curve_w1eht")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_fq78d"]
+emission_shape = 1
+emission_sphere_radius = 0.2
+direction = Vector3(0, 0, -1)
+spread = 180.0
+flatness = 1.0
+initial_velocity_min = 0.4
+initial_velocity_max = 0.4
+radial_velocity_curve = SubResource("CurveTexture_6fxyn")
+gravity = Vector3(0, 0, 0)
+scale_min = 0.5
+scale_max = 0.6
+scale_curve = SubResource("CurveTexture_6r8m1")
+scale_over_velocity_curve = SubResource("CurveTexture_uxynu")
+color_ramp = SubResource("GradientTexture1D_wl70m")
+alpha_curve = SubResource("CurveTexture_5gvwn")
+
+[sub_resource type="SphereMesh" id="SphereMesh_i2nnm"]
+
+[node name="vfx_smokeballs" type="GPUParticles3D"]
+material_override = ExtResource("1_pglqb")
+emitting = false
+amount = 128
+lifetime = 4.0
+one_shot = true
+speed_scale = 3.5
+explosiveness = 1.0
+fixed_fps = 60
+process_material = SubResource("ParticleProcessMaterial_fq78d")
+draw_pass_1 = SubResource("SphereMesh_i2nnm")

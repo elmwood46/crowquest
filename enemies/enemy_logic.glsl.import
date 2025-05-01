@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://v6erkys4d4lj"
+path="res://.godot/imported/enemy_logic.glsl-bb35e7bb7eb801122c042b2ebcd0ef4d.res"
+
+[deps]
+
+source_file="res://enemies/enemy_logic.glsl"
+dest_files=["res://.godot/imported/enemy_logic.glsl-bb35e7bb7eb801122c042b2ebcd0ef4d.res"]
+
+[params]
+

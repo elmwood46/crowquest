@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" load_steps=3 format=3 uid="uid://cyfer8kmngmxe"]
+
+[ext_resource type="Shader" path="res://enemies/enemy_hit_flash.gdshader" id="1_lrq0m"]
+[ext_resource type="Texture2D" uid="uid://bngmfqawlw3sw" path="res://enemies/elijah/eli_walk_2.png" id="2_l6hve"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_lrq0m")
+shader_parameter/flash_color = Color(1, 1, 1, 1)
+shader_parameter/intensity = 1.0
+shader_parameter/enabled = true
+shader_parameter/pulse_mode = true
+shader_parameter/pulse_frequency = 10.0
+shader_parameter/tex = ExtResource("2_l6hve")

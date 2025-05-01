@@ -1,0 +1,10 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://bue7ddlto0dci"]
+
+[ext_resource type="Shader" uid="uid://cem286q7uei8w" path="res://effects/enemy_die_fx/enemy_smokeball.tres" id="1_fs5vy"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_fs5vy")
+shader_parameter/CloudSpeed = Vector2(0, 1)
+shader_parameter/CloudIntensity = 0.584
+shader_parameter/ExplosionColour = Color(1, 0.898868, 0.892217, 1)

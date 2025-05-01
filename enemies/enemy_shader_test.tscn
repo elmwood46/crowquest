@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://50ji13gppt38"]
+
+[ext_resource type="Script" path="res://enemies/EnemyShader.cs" id="1_yegaq"]
+
+[node name="Node3D" type="Node3D"]
+
+[node name="Node" type="Node" parent="."]
+script = ExtResource("1_yegaq")

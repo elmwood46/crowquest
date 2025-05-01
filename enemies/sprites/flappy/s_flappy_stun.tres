@@ -1,0 +1,18 @@
+[gd_resource type="SpriteFrames" load_steps=3 format=3 uid="uid://vjyr1wrfu2id"]
+
+[ext_resource type="Texture2D" uid="uid://y3p4xgd7rbmg" path="res://enemies/sprites/flappy/got hit/frame-1.png" id="1_m33ir"]
+[ext_resource type="Texture2D" uid="uid://bjm3dn1vn283t" path="res://enemies/sprites/flappy/got hit/frame-2.png" id="2_wbaau"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_m33ir")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_wbaau")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]

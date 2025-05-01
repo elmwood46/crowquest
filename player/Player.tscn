@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=4 uid="uid://bjhvg8rf53fx4"]
+[gd_scene load_steps=35 format=4 uid="uid://bjhvg8rf53fx4"]
 
 [ext_resource type="Script" uid="uid://5t1nwwrdxlah" path="res://player/Player.cs" id="1_e80uo"]
 [ext_resource type="Texture2D" uid="uid://bt5o0sr6peltq" path="res://character_models/gdquest_gobot/model/gobot_gobot_diffuse.png" id="1_kne1u"]
@@ -7,7 +7,10 @@
 [ext_resource type="AnimationNodeStateMachine" uid="uid://qjxoq2tva757" path="res://character_models/gdquest_gobot/animation_tree.tres" id="5_cxr5p"]
 [ext_resource type="Texture2D" uid="uid://dq675fmt1rg8c" path="res://character_models/gdquest_gobot/textures/open_eye.png" id="5_tdg3f"]
 [ext_resource type="Material" uid="uid://div0enqs04w5j" path="res://character_models/gdquest_gobot/materials/eye_mat.tres" id="6_dtqjt"]
+[ext_resource type="Shader" uid="uid://cja85qwokwus2" path="res://effects/damage_and_death/melt_screen.gdshader" id="7_5qrx2"]
 [ext_resource type="FontFile" uid="uid://b1urj5ltfm8of" path="res://fonts_and_themes/MSMINCHO.TTF" id="8_06mnu"]
+[ext_resource type="Script" uid="uid://dnxhhysfmwlep" path="res://effects/damage_and_death/MeltingEffect.cs" id="8_b32pr"]
+[ext_resource type="Material" uid="uid://dm5h8sv5b2ina" path="res://effects/damage_and_death/sh_player_damage_vignette.tres" id="9_hbkom"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v5kg4"]
 resource_name = "GobotMat"
@@ -2043,6 +2046,17 @@ radius = 1.7
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_kne1u"]
 height = 1.44905
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_d4g0h"]
+shader = ExtResource("7_5qrx2")
+shader_parameter/t = 0.0
+shader_parameter/y_offsets = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/melting = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_v4f8b"]
+material = ExtResource("9_hbkom")
+flip_faces = true
+size = Vector2(2, 2)
+
 [sub_resource type="GDScript" id="GDScript_06mnu"]
 script/source = "extends Label
 
@@ -2060,14 +2074,17 @@ func _process(_delta: float) -> void:
 [sub_resource type="SphereShape3D" id="SphereShape3D_06mnu"]
 radius = 1.0
 
-[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("ShapeCast", "HoverText", "CoinPickupArea")]
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("ScreenMeltEffect", "DamageVignette", "ShapeCast", "HoverText", "CoinPickupArea", "GroundCheckRay")]
 script = ExtResource("1_e80uo")
 MoveSpeed = 10.0
 MinCameraSize = 10.0
 MaxCameraSize = 30.0
+ScreenMeltEffect = NodePath("CameraGimbal/Camera3D/ColorRect")
+DamageVignette = NodePath("CameraGimbal/Camera3D/DamageVignette")
 ShapeCast = NodePath("gobot/ShapeCast3D")
 HoverText = NodePath("Label3D")
 CoinPickupArea = NodePath("CoinPickupArea")
+GroundCheckRay = NodePath("gobot/RayCast3D")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.946598, 0)
@@ -2099,50 +2116,50 @@ bones/2/name = "Body"
 bones/2/parent = -1
 bones/2/rest = Transform3D(1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, 1, 0, 0.388826, 0)
 bones/2/enabled = true
-bones/2/position = Vector3(0, 0.370469, 0)
-bones/2/rotation = Quaternion(0.0697353, -0.0245826, 0.00171899, 0.997261)
+bones/2/position = Vector3(0, 0.355969, 0)
+bones/2/rotation = Quaternion(0.0697328, 0.0259862, -0.00181714, 0.997226)
 bones/2/scale = Vector3(1, 1, 1)
 bones/3/name = "Hips"
 bones/3/parent = 2
 bones/3/rest = Transform3D(1, 0, -1.50996e-07, 0, -1, 0, -1.50996e-07, 0, -1, 0, 0, 0)
 bones/3/enabled = true
 bones/3/position = Vector3(0, 0, 0)
-bones/3/rotation = Quaternion(1, 1.07178e-11, -7.62595e-08, -3.72469e-09)
+bones/3/rotation = Quaternion(1, -5.78407e-11, -7.5027e-08, 3.72765e-09)
 bones/3/scale = Vector3(1, 1, 1)
 bones/4/name = "UpperLeg.L"
 bones/4/parent = 3
 bones/4/rest = Transform3D(1, 1.11022e-16, 6.35179e-08, -2.64443e-09, 0.999133, 0.0416328, -6.34628e-08, -0.0416328, 0.999133, 0.0975467, 0.0688788, -6.18939e-09)
 bones/4/enabled = true
 bones/4/position = Vector3(0.0975467, 0.0688788, -6.18939e-09)
-bones/4/rotation = Quaternion(-0.321728, -0.193274, -0.0365725, 0.926174)
+bones/4/rotation = Quaternion(-0.457436, -0.137766, -0.041898, 0.877506)
 bones/4/scale = Vector3(1, 1, 1)
 bones/5/name = "LowerLeg.L"
 bones/5/parent = 4
 bones/5/rest = Transform3D(1, 2.24914e-06, 2.2026e-06, -2.10413e-06, 0.997965, -0.063758, -2.34152e-06, 0.063758, 0.997965, 8.04412e-09, 0.0954144, -4.65661e-10)
 bones/5/enabled = true
 bones/5/position = Vector3(8.04412e-09, 0.0954144, -4.65661e-10)
-bones/5/rotation = Quaternion(0.125772, 1.12406e-06, -4.291e-06, 0.992059)
+bones/5/rotation = Quaternion(0.315209, 1.07033e-06, -1.07539e-05, 0.949022)
 bones/5/scale = Vector3(1, 1, 1)
 bones/6/name = "UpperLeg.R"
 bones/6/parent = 3
 bones/6/rest = Transform3D(1, 1.11022e-16, 6.35179e-08, -2.64443e-09, 0.999133, 0.0416328, -6.34628e-08, -0.0416328, 0.999133, -0.0975467, 0.0688788, 6.21329e-09)
 bones/6/enabled = true
 bones/6/position = Vector3(-0.0975467, 0.0688788, 6.21329e-09)
-bones/6/rotation = Quaternion(-0.177714, 0.513355, 0.148333, 0.826366)
+bones/6/rotation = Quaternion(-0.200265, 0.552638, 0.215339, 0.779817)
 bones/6/scale = Vector3(1, 1, 1)
 bones/7/name = "LowerLeg.R"
 bones/7/parent = 6
 bones/7/rest = Transform3D(1, -2.25442e-06, -2.20226e-06, 2.10942e-06, 0.997965, -0.063758, 2.34152e-06, 0.063758, 0.997965, -6.85704e-09, 0.0954144, -4.65662e-10)
 bones/7/enabled = true
 bones/7/position = Vector3(-6.85704e-09, 0.0954144, -4.65662e-10)
-bones/7/rotation = Quaternion(0.354564, -1.05379e-06, 1.21365e-05, 0.935032)
+bones/7/rotation = Quaternion(0.477204, -1.01388e-06, 1.63345e-05, 0.878793)
 bones/7/scale = Vector3(1, 1, 1)
 bones/8/name = "UpperArm.L"
 bones/8/parent = 2
 bones/8/rest = Transform3D(0.0145381, 0.999894, 7.04782e-07, 7.15256e-07, -7.15256e-07, 1, 0.999894, -0.0145381, -7.25579e-07, 0.129051, 0.136329, 6.30673e-08)
 bones/8/enabled = true
 bones/8/position = Vector3(0.129051, 0.136329, 6.30673e-08)
-bones/8/rotation = Quaternion(-0.640131, -0.275938, -0.666173, 0.26515)
+bones/8/rotation = Quaternion(-0.635852, -0.27763, -0.670258, 0.263377)
 bones/8/scale = Vector3(1, 1, 1)
 bones/9/name = "LowerArm.L"
 bones/9/parent = 8
@@ -2198,7 +2215,7 @@ bones/16/parent = 2
 bones/16/rest = Transform3D(0.0145378, -0.999894, -7.04782e-07, -7.15256e-07, -7.15256e-07, 1, -0.999894, -0.0145378, -7.25578e-07, -0.129051, 0.136329, 8.56313e-08)
 bones/16/enabled = true
 bones/16/position = Vector3(-0.129051, 0.136329, 8.56313e-08)
-bones/16/rotation = Quaternion(-0.675409, 0.261111, 0.630378, 0.279762)
+bones/16/rotation = Quaternion(-0.679432, 0.259314, 0.62604, 0.281429)
 bones/16/scale = Vector3(1, 1, 1)
 bones/17/name = "LowerArm.R"
 bones/17/parent = 16
@@ -2274,6 +2291,9 @@ transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0.7
 shape = SubResource("SphereShape3D_gskgj")
 exclude_parent = false
 
+[node name="RayCast3D" type="RayCast3D" parent="gobot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.758601, 0)
 shape = SubResource("CapsuleShape3D_kne1u")
@@ -2286,6 +2306,25 @@ transform = Transform3D(0.816138, 0, 0.577858, 0, 1, 0, -0.577858, 0, 0.816138, 
 transform = Transform3D(-1, -8.9407e-08, 8.9407e-08, 0, 0.816138, 0.577858, -1.49012e-07, 0.577858, -0.816138, -0.019577, 95.8874, -134.816)
 projection = 1
 size = 5.0
+
+[node name="ColorRect" type="ColorRect" parent="CameraGimbal/Camera3D"]
+material = SubResource("ShaderMaterial_d4g0h")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("8_b32pr")
+XResolution = 576.0
+Duration = 1.0
+
+[node name="DamageVignette" type="MeshInstance3D" parent="CameraGimbal/Camera3D"]
+transform = Transform3D(0.707107, 0, -0.707107, -0.353553, 0.866025, -0.353553, 0.612372, 0.5, 0.612372, -0.960723, -2.02482, -8.65184)
+layers = 2
+cast_shadow = 0
+extra_cull_margin = 16384.0
+mesh = SubResource("QuadMesh_v4f8b")
+skeleton = NodePath("../..")
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
 root_node = NodePath("../gobot")
