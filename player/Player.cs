@@ -136,7 +136,6 @@ public partial class Player : CharacterBody3D, IHurtable
 		_camera_3d.Size = Mathf.Lerp(_camera_3d.Size,size,0.2f);
 	}
 
-
 	private void LoadSavedState()
 	{
 		// reset camera
@@ -157,7 +156,8 @@ public partial class Player : CharacterBody3D, IHurtable
 		ScreenMeltEffect.Melt();
 	}
 
-	private void UpdateDamageVignette() {
+	private void UpdateDamageVignette()
+	{
         _min_damage_vignette_ratio = _current_health < MaxHealth * 0.25f  ? 0.5f * (1.0f - _current_health/MaxHealth) : 0.0f;
         if (_current_health == 0) _min_damage_vignette_ratio = 1.0f;
         _damage_vignette_ratio = Mathf.Lerp(_damage_vignette_ratio, _min_damage_vignette_ratio, 0.1f);

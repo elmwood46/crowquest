@@ -425,13 +425,13 @@ public partial class Enemy : RigidBody3D, IHurtable
     public bool IsOnFloor()
     {
         var col = GroundRay.GetCollider();
-        return col != null && col is ChunkPlane;
+        return col != null && col is StaticBody3D;
     }
 
     public bool SlopeDetected()
     {
         var col = SlopeCheckRay.GetCollider();
-        return col != null && col is ChunkPlane;
+        return col != null && col is StaticBody3D;
     }
 
     public bool WallDetected()

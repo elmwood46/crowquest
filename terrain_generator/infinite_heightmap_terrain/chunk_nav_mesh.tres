@@ -1,0 +1,6 @@
+[gd_resource type="NavigationMesh" format=3 uid="uid://cdb0fnnbqfh0j"]
+
+[resource]
+sample_partition_type = 1
+geometry_source_geometry_mode = 2
+geometry_source_group_name = &"navmesh_group"

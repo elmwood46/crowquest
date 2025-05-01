@@ -6,23 +6,35 @@ using System.Threading.Tasks;
 
 public partial class ChunkPlane : StaticBody3D
 {
+    // ==================================================================
+    // ====== Editor Vars ========
+    // ==================================================================
     [Export] public MeshInstance3D MeshInstance { get; set; }
     [Export] public CollisionShape3D CollisionShape { get; set; }
+    [Export] public NavigationRegion3D NavRegion { get; set; }
     [Export] public bool DisableWallGeneration { get; set; } = false;
     [Export] public bool DisableLampGeneration { get; set; } = false;
     [Export] public bool DisableSarcophagusGeneration { get; set; } = false;
     [Export] public bool DrawDebugMeshes = false;
+    [Export] public bool DisableGrassGeneration = false;
+    private bool _only_generate_mesh_once = true;
+    private const int MAX_FLOWERS_PER_CHUNK = 1000;
 
-    // private static readonly StandardMaterial3D _ground_material = GD.Load<StandardMaterial3D>("res://terrain_generator/infinite_heightmap_terrain/ground_material.tres");
-    // private static readonly StandardMaterial3D _ground_material_2 = GD.Load<StandardMaterial3D>("res://terrain_generator/infinite_heightmap_terrain/ground_light_material.tres");
-    
-    private static readonly StandardMaterial3D _ground_material = GD.Load<StandardMaterial3D>("res://terrain_generator/grass/dark_green.tres");
-    private static readonly StandardMaterial3D _ground_material_2 = GD.Load<StandardMaterial3D>("res://terrain_generator/grass/dark_green.tres");
+    // ==================================================================
+    // ====== Navigation Regions ========
+    // ==================================================================
+    private static readonly NavigationMesh _chunk_nav_mesh = GD.Load<NavigationMesh>("res://terrain_generator/infinite_heightmap_terrain/chunk_nav_mesh.tres");
+    private const string NAV_GROUP_NAME = "navmesh_group";
+
+    // ==================================================================
+    // ====== Ground, Lamps, Trees, Grass ========
+    // ==================================================================
+    private static readonly StandardMaterial3D _ground_material = GD.Load<StandardMaterial3D>("res://terrain_generator/grass/dark_green.tres"); //GD.Load<StandardMaterial3D>("res://terrain_generator/infinite_heightmap_terrain/ground_material.tres");
+    private static readonly StandardMaterial3D _ground_material_2 = GD.Load<StandardMaterial3D>("res://terrain_generator/grass/dark_green.tres");///GD.Load<StandardMaterial3D>("res://terrain_generator/infinite_heightmap_terrain/ground_light_material.tres");
     private static readonly PackedScene _csg_brick_wall_scene = GD.Load<PackedScene>("res://terrain_generator/procedural_brick_wall/csg/csg_brick_wall.tscn");
-
     private static readonly PackedScene _lamp_post_scene = GD.Load<PackedScene>("res://environment_models/street_lamps/streetlamp_small.tscn");
-
     private static readonly Noise _grass_noise = GD.Load<FastNoiseLite>("res://terrain_generator/grass/grass_fast_noise_lite.tres");
+    private Grass[] _grass_nodes;
     private static readonly PackedScene[] _tree_scenes =
     [
         //GD.Load<PackedScene>("res://environment_models/halloween/scenes/tree.tscn"),
@@ -35,32 +47,31 @@ public partial class ChunkPlane : StaticBody3D
         GD.Load<PackedScene>("res://textures/ramperk/red_tree_3.tscn"),
         GD.Load<PackedScene>("res://textures/ramperk/mushroom_1.tscn")
     ];
-
-    private static readonly PackedScene[] _treasure_chests = 
-    [
-        GD.Load<PackedScene>("res://interactables/chest_scenes/big_chest.tscn"),
-    ];
-
-    private static readonly HashSet<Vector3> _opened_chests = []; 
-
-    private static readonly PackedScene _sarco_scene = GD.Load<PackedScene>("res://interactables/chest_scenes/stone_sarcophagus.tscn");
-
-    private static readonly PackedScene _firefly_particle_scene = GD.Load<PackedScene>("res://effects/gpu_particle_fireflies.tscn");
-    private static readonly PackedScene _butterfly_particle_scene = GD.Load<PackedScene>("res://effects/butterfly/butterfly_particles.tscn");
-
-    private const int MaxFlowersPerChunk = 1000;
-    private static readonly Transform3D _base_flower_transform = new(
+    private static readonly Transform3D _base_flower_transform = new( // transform for small transparent glowing flowers
         Basis.Identity.Rotated(Vector3.Right, -Mathf.Pi/2).Rotated(Vector3.Up, Mathf.Pi).Scaled(Vector3.One*0.10f),
         Vector3.Zero
     );
 
-    private Grass[] _grass_nodes;
+    // ==================================================================
+    // ====== Treasure ========
+    // ==================================================================
+    private static readonly HashSet<Vector3> _opened_chests = []; // keep track of which chests have been opened
+    private const int TREASURE_CHEST_REROLLS = 3;
+    private static readonly PackedScene[] _treasure_chests = // these are ordered by ascending rarity, when a chest is generated the list is rerolled TREASURE_CHEST_REROLLS times "with disadvantage"
+    [
+        GD.Load<PackedScene>("res://interactables/chest_scenes/big_chest.tscn"), // least rare
+    ];
+    private static readonly PackedScene _sarco_scene = GD.Load<PackedScene>("res://interactables/chest_scenes/stone_sarcophagus.tscn");
 
-    private bool _only_generate_mesh_once = true;
-    
+    // ==================================================================
+    // ====== Particle Effects ========
+    // ==================================================================
+    private static readonly PackedScene _firefly_particle_scene = GD.Load<PackedScene>("res://effects/gpu_particle_fireflies.tscn");
+    private static readonly PackedScene _butterfly_particle_scene = GD.Load<PackedScene>("res://effects/butterfly/butterfly_particles.tscn");
 
-
-
+    // ==================================================================
+    // ====== Heightmap Generator Constants ========
+    // ==================================================================
     private static readonly Vector3[] QuadVertices = [
         new (0, 0, 0),
         new (1, 0, 0),
@@ -78,63 +89,51 @@ public partial class ChunkPlane : StaticBody3D
         { 1, 3, 2 }
     };
 
+    // ==================================================================
+
     public override void _Ready()
     {
+        
+        // swaying multimesh grass
         _grass_nodes = new Grass[2];
         var mesh = GenerateHeightmapMesh(Vector2.Zero);
-        if (GetNode("Grass") is Grass grass)
+        if (!DisableGrassGeneration)
         {
-            grass.Position += new Vector3(1,0,1)*ChunkManager.Instance.ChunkSize/8;
-            grass.TerrainMesh = mesh;
-            grass.Rebuild();
-            _grass_nodes[0] = grass;
-        }
-        if (GetNode("DarkGrass") is Grass darkgrass)
-        {
-            darkgrass.Position = new Vector3(0,0,1)*ChunkManager.Instance.ChunkSize/8;
-            darkgrass.TerrainMesh = mesh;
-            darkgrass.Rebuild();
-            _grass_nodes[1] = darkgrass;
+            if (GetNode("Grass") is Grass grass)
+            {
+                grass.Position += new Vector3(1,0,1)*ChunkManager.Instance.ChunkSize/8;
+                grass.TerrainMesh = mesh;
+                grass.Rebuild();
+                _grass_nodes[0] = grass;
+            }
+            if (GetNode("DarkGrass") is Grass darkgrass)
+            {
+                darkgrass.Position = new Vector3(0,0,1)*ChunkManager.Instance.ChunkSize/8;
+                darkgrass.TerrainMesh = mesh;
+                darkgrass.Rebuild();
+                _grass_nodes[1] = darkgrass;
+            }
         }
 
+        // blue glowing flowers
         var blue_flowers_multimesh = GetNode("BlueFlowerMultiMesh") as MultiMeshInstance3D;
         blue_flowers_multimesh.Multimesh = blue_flowers_multimesh.Multimesh.Duplicate() as MultiMesh;
-        blue_flowers_multimesh.Multimesh.InstanceCount = MaxFlowersPerChunk;
-
+        blue_flowers_multimesh.Multimesh.InstanceCount = MAX_FLOWERS_PER_CHUNK;
+        
+        // multimesh flowers
         foreach (var child in GetNode("MultiMeshes").GetChildren())
         {
             if (child is MultiMeshInstance3D multimesh) {
                 multimesh.Multimesh = multimesh.Multimesh.Duplicate() as MultiMesh;
-                multimesh.Multimesh.InstanceCount = MaxFlowersPerChunk;
+                multimesh.Multimesh.InstanceCount = MAX_FLOWERS_PER_CHUNK;
             }
         }
-    }
 
-    /// <summary>
-    /// NOT IMLPEMENTED due to performance issues
-    /// // HACK This only works because we have y-value locked to zero
-    /// This is also massively slow and lags the game.
-    /// Innefficient due to sampling the noise for every grass blade and updating the transform
-    /// </summary>
-    /// <param name="global_xz_offset"></param>
-    public void ApplyGrassNoise(Vector2 global_xz_offset)
-    {
-        foreach (var grass in _grass_nodes)
-        {
-            for (int i=0; i<grass.Multimesh.InstanceCount; i++)
-            {
-                var transform = grass.Multimesh.GetInstanceTransform(i);
-                var noise = _grass_noise.GetNoise2D(global_xz_offset.X+transform.Origin.X, global_xz_offset.Y+transform.Origin.Z);
-                if (noise > 0.5)
-                {
-                    grass.Multimesh.SetInstanceTransform(i, new Transform3D(transform.Basis, transform.Origin - Vector3.Up*10000));
-                }
-                else
-                {
-                    grass.Multimesh.SetInstanceTransform(i, new Transform3D(transform.Basis, transform.Origin * new Vector3(1,0,1)));
-                }
-            }
-        }
+        // navigation regions
+        NavRegion.NavigationMesh = _chunk_nav_mesh.Duplicate() as NavigationMesh;
+        NavRegion.SetNavigationMap(GetWorld3D().NavigationMap);
+        NavRegion.NavigationMesh.GeometrySourceGroupName = NAV_GROUP_NAME+Name;
+        //AddToGroup(NAV_GROUP_NAME+Name);
     }
 
     private static ArrayMesh GenerateHeightmapMesh(Vector2 global_xz_offset)
@@ -198,26 +197,37 @@ public partial class ChunkPlane : StaticBody3D
 
     private void ClearGeneratedObjects()
     {
-        // clear all children
-        foreach (var child in GetChildren())
+        //var nodes_to_clear = new List<Node>();
+        foreach (var node in GetTree().GetNodesInGroup(NAV_GROUP_NAME+Name))
         {
-            if (child is CsgPolygon3D || child is Path3D) child.QueueFree();
-            else if (child is MeshInstance3D && child != MeshInstance) child.QueueFree(); // remove debug mesh instances
-            else if (child is Node3D && child is not MultiMeshInstance3D && child is not CollisionShape3D && child != MeshInstance)
+            node.RemoveFromGroup(NAV_GROUP_NAME+Name);
+            //nodes_to_clear.Add(node);
+        }
+        //foreach (var node in nodes_to_clear) node.RemoveFromGroup(NAV_GROUP_NAME+Name);
+        
+        // clear all children
+        foreach (var child in NavRegion.GetChildren())
+        {
+            child.QueueFree();
+        }
+    }
+
+    private void PopulateNavmeshGroupRecursive(Node3D node)
+    {
+        foreach (var child in node.GetChildren())
+        {
+            if (child is StaticBody3D || child is CsgShape3D)
             {
-                switch(child.Name)
-                {
-                    case "MultiMeshes":
-                        break;
-                    default:
-                        child.QueueFree();
-                        break;
-                }
+                child.AddToGroup(NAV_GROUP_NAME+Name);
+            }
+            else if (child.GetChildren().Count > 0 && child is Node3D node3d)
+            {
+                PopulateNavmeshGroupRecursive(node3d);
             }
         }
     }
 
-    private void GenerateWallsAndMeshes()
+    private void GenerateFeatures()
     {
         ClearGeneratedObjects();
 
@@ -237,15 +247,7 @@ public partial class ChunkPlane : StaticBody3D
             var path_copy = path.Duplicate() as Path3D;
             path_copy.Curve = path.Curve.Duplicate() as Curve3D;
 
-            // HACK no need to set y position of path points when we're just doing a flat plane
-            // for (int i=0;i<path_copy.Curve.GetPointCount();i++)
-            // {
-            //     var point = path_copy.Curve.GetPointPosition(i);
-            //     point.Y = ChunkManager.GetNoiseHeight(new Vector2(point.X,point.Z) + chunk_offset);
-            //     path_copy.Curve.SetPointPosition(i,point);
-            // }
-            //ResourceSaver.Save(path_copy.Curve,$"res://curves/curve{path.Name}.tres");
-            AddChild(path_copy);
+            NavRegion.AddChild(path_copy);
 
             if (DisableWallGeneration)
             {
@@ -263,13 +265,13 @@ public partial class ChunkPlane : StaticBody3D
             nodePaths.Add(wall.PathNode);
             path_copy.GlobalPosition *= 0.5f; // ???? the global position is doubled for some reason
         }
-        
+
         //====== generate lamps =====
         var centerPoint = new Vector3(chunk_offset.X,0,chunk_offset.Y);
         var distance_between_lamps = 16.0f;
         var chunk_has_lamps = seeded_random < 0.4f || is_starting_chunk; 
         var lamp_node = new Node3D();
-        AddChild(lamp_node);
+        NavRegion.AddChild(lamp_node);
         lamp_node.Name = "Lamps";
         
         if (chunk_has_lamps && !DisableLampGeneration) for (int i=0; i<nodePaths.Count;i++)
@@ -304,7 +306,7 @@ public partial class ChunkPlane : StaticBody3D
         {
             Name = "treasure_spawns"
         };
-        AddChild(treasure_node);
+        NavRegion.AddChild(treasure_node);
         void add_chest(TreasureChest chest, Transform3D transform)
         {
             chest.Transform = transform;
@@ -348,7 +350,7 @@ public partial class ChunkPlane : StaticBody3D
                 {
                     blue_flowers_multimesh.Multimesh.VisibleInstanceCount += num_flower;
                 }
-                else 
+                else
                 {
                     num_flower = blue_flowers_multimesh.Multimesh.InstanceCount - blue_flowers_multimesh.Multimesh.VisibleInstanceCount;
                     blue_flowers_multimesh.Multimesh.VisibleInstanceCount = blue_flowers_multimesh.Multimesh.InstanceCount;
@@ -465,7 +467,7 @@ public partial class ChunkPlane : StaticBody3D
             transform = transform.Rotated(Vector3.Up, rand_angle);
             tree.Transform = transform.Scaled(Vector3.One * 3.0f);
 
-            AddChild(tree);
+            NavRegion.AddChild(tree);
 
             // generate butterfly particles around trees
             if (chunk_rng.NextSingle() < 0.5f)
@@ -481,9 +483,8 @@ public partial class ChunkPlane : StaticBody3D
         var treasure_gen_chance = SimpleWfc.GetTileTreasureGenerationChance(chunk_tile_id);
         if (chunk_rng.NextSingle() < treasure_gen_chance)
         {
-            var idx = 0;
-            var rerolls = 3;
-            for (int i=0;i<rerolls;i++) idx = Math.Min(idx, chunk_rng.Next(0, _treasure_chests.Length));
+            var idx = _treasure_chests.Length-1;
+            for (int i=0;i<TREASURE_CHEST_REROLLS;i++) idx = Math.Min(idx, chunk_rng.Next(0, _treasure_chests.Length));
             var chest = _treasure_chests[idx].Instantiate<TreasureChest>();
             var transform = new Transform3D(Basis.Identity.Rotated(Vector3.Up,chunk_rng.Next(4) * Mathf.Pi/2), Vector3.Zero).Scaled(Vector3.One*0.5f);
             add_chest(chest, transform);
@@ -497,7 +498,7 @@ public partial class ChunkPlane : StaticBody3D
                 Mesh = new BoxMesh(),
                 MaterialOverride = new StandardMaterial3D() { AlbedoColor = new Color(1, 0, 0) }
             };
-            AddChild(test);
+            NavRegion.AddChild(test);
             test.GlobalPosition = centerPoint;
 
             //test generate "treasure"
@@ -508,7 +509,7 @@ public partial class ChunkPlane : StaticBody3D
                     Mesh = new BoxMesh() {Size = Vector3.One*2},
                     MaterialOverride = new StandardMaterial3D(){AlbedoColor = new Color(1,0.1f,1)}
                 };
-                AddChild(chest);
+                NavRegion.AddChild(chest);
                 test.GlobalPosition = centerPoint;
             }
         }
@@ -567,10 +568,21 @@ public partial class ChunkPlane : StaticBody3D
             CollisionShape.Shape = MeshInstance.Mesh.CreateTrimeshShape();
         }
 
-        GenerateWallsAndMeshes();
-        //CallDeferred(nameof(GenerateWallsAndMeshes));
+        // regen chunk features 
+        GenerateFeatures();
         
-        //await Task.Run(()=>ApplyGrassNoise(global_xz_offset));
+        // rebake navigation mesh afer 1ms
+        await Task.Delay(100);
+        //if (!IsInGroup(NAV_GROUP_NAME+Name)) AddToGroup(NAV_GROUP_NAME+Name);
+        PopulateNavmeshGroupRecursive(NavRegion);
+        var bigplane = new MeshInstance3D
+        {
+            Mesh = new PlaneMesh() { Size = new Vector2(33, 33) }
+        };
+        NavRegion.AddChild(bigplane);
+        bigplane.AddToGroup(NAV_GROUP_NAME+Name);
+        NavRegion.BakeNavigationMesh();
+        bigplane.QueueFree();
     }
 
     public Vector2I GetChunkPosition()
@@ -600,5 +612,32 @@ public partial class ChunkPlane : StaticBody3D
         var x = chunk_pos.X;
         var y = chunk_pos.Y;
         return (x + y) * (x + y + 1) / 2 + y;
+    }
+
+    /// <summary>
+    /// NOT IMLPEMENTED due to performance issues
+    /// // HACK This only works because we have y-value locked to zero
+    /// This is also massively slow and lags the game.
+    /// Innefficient due to sampling the noise for every grass blade and updating the transform
+    /// </summary>
+    /// <param name="global_xz_offset"></param>
+    public void ApplyGrassNoise(Vector2 global_xz_offset)
+    {
+        foreach (var grass in _grass_nodes)
+        {
+            for (int i=0; i<grass.Multimesh.InstanceCount; i++)
+            {
+                var transform = grass.Multimesh.GetInstanceTransform(i);
+                var noise = _grass_noise.GetNoise2D(global_xz_offset.X+transform.Origin.X, global_xz_offset.Y+transform.Origin.Z);
+                if (noise > 0.5)
+                {
+                    grass.Multimesh.SetInstanceTransform(i, new Transform3D(transform.Basis, transform.Origin - Vector3.Up*10000));
+                }
+                else
+                {
+                    grass.Multimesh.SetInstanceTransform(i, new Transform3D(transform.Basis, transform.Origin * new Vector3(1,0,1)));
+                }
+            }
+        }
     }
 }

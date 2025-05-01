@@ -19,6 +19,10 @@ config/icon="res://icon.svg"
 
 project/assembly_name="crowquest"
 
+[global_group]
+
+navmesh_group="This holds all the nodes which will be treated as geometry by the chunk navmesh regions."
+
 [input]
 
 MoveLeft={
