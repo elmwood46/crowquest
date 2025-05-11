@@ -1,13 +1,15 @@
-[gd_scene load_steps=27 format=3 uid="uid://dovgs2t1vyyy0"]
+[gd_scene load_steps=26 format=3 uid="uid://dovgs2t1vyyy0"]
 
 [ext_resource type="Script" uid="uid://5t4dyh7n4e26" path="res://effects/control_global_light.gd" id="1_1bvp3"]
 [ext_resource type="PackedScene" uid="uid://bjhvg8rf53fx4" path="res://player/Player.tscn" id="1_ig7tw"]
 [ext_resource type="Script" uid="uid://iq32r0tv8rwy" path="res://audio/AudioManager.cs" id="2_7mycd"]
+[ext_resource type="Script" uid="uid://d3ddw82qrorxr" path="res://enemies/bullets/BulletManager.cs" id="3_4c57u"]
 [ext_resource type="Material" uid="uid://ctx4tpghicm8h" path="res://textures/Marble012_1K-JPG/marble.tres" id="3_h2yge"]
 [ext_resource type="PackedScene" uid="uid://c5lo71g6a13l6" path="res://interactables/chest_scenes/big_chest.tscn" id="4_272bh"]
+[ext_resource type="MultiMesh" uid="uid://b78qnlijvoxe2" path="res://enemies/attack_patterns/bullet_multimesh.tres" id="4_efxa6"]
 [ext_resource type="Script" uid="uid://nsjwgmlaejks" path="res://terrain_generator/infinite_heightmap_terrain/ChunkManager.cs" id="4_w48qg"]
-[ext_resource type="PackedScene" uid="uid://cbosg6usncinx" path="res://interactables/chest_scenes/stone_sarcophagus.tscn" id="5_lquwl"]
-[ext_resource type="Script" uid="uid://2ef4ijdxnbxx" path="res://enemies/NavigationTest.cs" id="9_kek77"]
+[ext_resource type="PackedScene" uid="uid://c11gfbll20j7h" path="res://enemies/tests/navigation_test.tscn" id="8_5vw27"]
+[ext_resource type="Script" uid="uid://bcfs86hg1i20j" path="res://enemies/EnemySpawner.cs" id="9_kek77"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_0xm2m"]
 
@@ -82,17 +84,6 @@ radius = 12.0
 height = 1.0
 radius = 8.0
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5vw27"]
-albedo_color = Color(1, 0, 0, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_kek77"]
-material = SubResource("StandardMaterial3D_5vw27")
-size = Vector3(2, 4, 2)
-
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_5vw27"]
-radius = 0.985887
-height = 3.91966
-
 [node name="Main" type="Node3D"]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -104,22 +95,34 @@ light_energy = 0.2
 directional_shadow_max_distance = 40.0
 script = ExtResource("1_1bvp3")
 cycle_light = false
+day_transition_time = 30
+sky_transition_time = 60
+wait_time_dark = 20
+wait_time_light = 20
 
 [node name="AudioManager" type="Node" parent="."]
 script = ExtResource("2_7mycd")
+
+[node name="BulletManager" type="Node" parent="." node_paths=PackedStringArray("BulletMultimesh")]
+script = ExtResource("3_4c57u")
+BulletMultimesh = NodePath("MultiMeshInstance3D")
+
+[node name="MultiMeshInstance3D" type="MultiMeshInstance3D" parent="BulletManager"]
+multimesh = ExtResource("4_efxa6")
 
 [node name="Player" parent="." instance=ExtResource("1_ig7tw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
 MaxCameraSize = 300.0
 
-[node name="Control2" type="Control" parent="Player"]
+[node name="Control2" type="Control" parent="Player" groups=["debug_overlay"]]
 layout_mode = 3
-anchor_left = 0.21
-anchor_right = 0.21
-offset_left = 17.08
-offset_top = 1.0
-offset_right = 323.08
-offset_bottom = 43.0
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -21.0
+offset_right = 306.0
+offset_bottom = 21.0
+grow_vertical = 2
 
 [node name="PanelContainer" type="PanelContainer" parent="Player/Control2"]
 layout_mode = 0
@@ -176,20 +179,6 @@ layout_mode = 2
 text = "Faced Direction:"
 script = SubResource("GDScript_0xm2m")
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="label" type="Label" parent="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/HBoxContainer2"]
-layout_mode = 2
-text = "Activate Agent"
-
-[node name="CheckButton" type="CheckButton" parent="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/HBoxContainer2"]
-layout_mode = 2
-
-[node name="Button" type="Button" parent="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/HBoxContainer2"]
-layout_mode = 2
-text = "Tele Agent"
-
 [node name="BigChest" parent="." instance=ExtResource("4_272bh")]
 transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, 5.53947, 2.00326, 0)
 
@@ -234,38 +223,13 @@ shape = SubResource("CylinderShape3D_h2yge")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 shape = SubResource("CylinderShape3D_1bvp3")
 
-[node name="StoneSarcophagus" parent="." instance=ExtResource("5_lquwl")]
-transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 2.9886, 6.25061)
-
-[node name="StoneSarcophagus2" parent="." instance=ExtResource("5_lquwl")]
-transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, -2.84984, 2.9886, 6.25061)
-
-[node name="StoneSarcophagus3" parent="." instance=ExtResource("5_lquwl")]
-transform = Transform3D(-1.81262, 0.845237, -3.69465e-08, 0, -8.74228e-08, -2, -0.845237, -1.81262, 7.92319e-08, -5.03204, 4.3886, 6.25061)
-
-[node name="NavigationTest" type="CharacterBody3D" parent="."]
+[node name="NavigationTest" parent="." instance=ExtResource("8_5vw27")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.63609, -4.37714)
+
+[node name="EnemySpawner" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.55708, 0)
 script = ExtResource("9_kek77")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationTest"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.92584, 0)
-mesh = SubResource("BoxMesh_kek77")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationTest"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.92584, 0)
-shape = SubResource("CapsuleShape3D_5vw27")
-
-[node name="NavigationAgent3D" type="NavigationAgent3D" parent="NavigationTest"]
-path_max_distance = 0.51
-simplify_path = true
-simplify_epsilon = 0.5
-debug_enabled = true
-debug_use_custom = true
-debug_path_custom_color = Color(1, 0, 0.658824, 1)
-debug_path_custom_point_size = 16.0
 
 [connection signal="value_changed" from="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer/HSlider" to="WorldEnvironment/DirectionalLight3D" method="_set_light_energy"]
 [connection signal="value_changed" from="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer/HSlider" to="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer/Label" method="change_label_text"]
 [connection signal="value_changed" from="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/HBoxContainer/HSlider" to="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/HBoxContainer/HSlider" method="_change_camera_max"]
-[connection signal="toggled" from="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/HBoxContainer2/CheckButton" to="NavigationTest" method="ActivateAngent"]
-[connection signal="button_up" from="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/HBoxContainer2/Button" to="NavigationTest" method="TeleportToPlayer"]

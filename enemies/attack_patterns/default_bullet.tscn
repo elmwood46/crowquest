@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=3 uid="uid://b6dwaclv6yq5r"]
+
+[ext_resource type="Script" uid="uid://bb3ng01j6gy3i" path="res://enemies/bullets/Bullet.cs" id="1_npbhu"]
+[ext_resource type="PackedScene" uid="uid://c8wwj46p7gb81" path="res://enemies/bullets/bullet_death.tscn" id="2_34d5m"]
+[ext_resource type="PackedScene" uid="uid://cnknhjo51ddnl" path="res://enemies/bullets/bullet_trail.tscn" id="3_mpeku"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_npbhu"]
+radius = 0.1
+
+[node name="DefaultBullet" type="Node3D" node_paths=PackedStringArray("BulletShapeCast", "BulletVisual", "BulletDeathScene")]
+script = ExtResource("1_npbhu")
+BulletShapeCast = NodePath("ShapeCast3D")
+BulletVisual = NodePath("DefaultBulletTrail")
+BulletDeathScene = NodePath("DeathEffect")
+
+[node name="DeathEffect" parent="." instance=ExtResource("2_34d5m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+
+[node name="DefaultBulletTrail" parent="." instance=ExtResource("3_mpeku")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+
+[node name="ShapeCast3D" type="ShapeCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("SphereShape3D_npbhu")
+target_position = Vector3(0, 0, -1)
+collision_mask = 16777215

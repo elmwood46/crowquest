@@ -1,0 +1,72 @@
+[gd_scene load_steps=14 format=3 uid="uid://4toopbb4gs26"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7hmea"]
+albedo_color = Color(1, 0, 0, 1)
+emission_enabled = true
+emission = Color(1, 0, 0.360784, 1)
+emission_energy_multiplier = 6.06
+
+[sub_resource type="SphereMesh" id="SphereMesh_s3j0c"]
+material = SubResource("StandardMaterial3D_7hmea")
+radius = 0.25
+height = 0.5
+radial_segments = 8
+rings = 4
+
+[sub_resource type="Gradient" id="Gradient_2wvsm"]
+colors = PackedColorArray(1, 0.945098, 0, 1, 0.722751, 0, 0.0125448, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_cshkh"]
+gradient = SubResource("Gradient_2wvsm")
+
+[sub_resource type="Curve" id="Curve_v2ndr"]
+_limits = [0.0, 5.0, 0.0, 1.0]
+_data = [Vector2(0, 5), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_wrp8t"]
+curve = SubResource("Curve_v2ndr")
+
+[sub_resource type="Curve" id="Curve_7hmea"]
+_limits = [-1.0, 1.0, 0.0, 1.0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.107262), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_s3j0c"]
+curve = SubResource("Curve_7hmea")
+
+[sub_resource type="Curve" id="Curve_8jvln"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_w7rc8"]
+curve = SubResource("Curve_8jvln")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_q052s"]
+radial_velocity_min = 0.999978
+radial_velocity_max = 1.99998
+gravity = Vector3(0, 0, 0)
+scale_min = 0.5
+scale_max = 0.5
+scale_curve = SubResource("CurveTexture_w7rc8")
+color = Color(1, 0.717647, 0, 1)
+color_ramp = SubResource("GradientTexture1D_cshkh")
+emission_curve = SubResource("CurveTexture_wrp8t")
+hue_variation_curve = SubResource("CurveTexture_s3j0c")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5drad"]
+vertex_color_use_as_albedo = true
+emission_enabled = true
+
+[sub_resource type="SphereMesh" id="SphereMesh_lwpq6"]
+material = SubResource("StandardMaterial3D_5drad")
+
+[node name="Fireball" type="Node3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_s3j0c")
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+amount = 32
+process_material = SubResource("ParticleProcessMaterial_q052s")
+draw_pass_1 = SubResource("SphereMesh_lwpq6")

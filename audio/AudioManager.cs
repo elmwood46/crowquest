@@ -155,35 +155,4 @@ public partial  class AudioManager : Node
             value.QueueSound(stream, position, volumedb);
         }
     }
-
-    public static (AudioStream,float) GetFootstepSoundAndVolFromBlockPosition(Vector3 global_pos)
-    {
-        throw new NotImplementedException();
-        // var chunkpos = ChunkManager.GlobalPositionToChunkPosition(global_pos);
-
-        // if (!ChunkManager.Instance.BLOCKCACHE.TryGetValue(chunkpos, out var chunk)) return (null, 0.0f);
-        
-        // var _footstep_sound = FootstepSounds["default"][Random.Shared.Next(0, FootstepSounds["default"].Count)];
-        // var blockpos = ChunkManager.GlobalPositionToPaddedBlockPosition(global_pos);
-        // var idx = ChunkManager.BlockIndex(blockpos);
-        // var block_id = ChunkManager.GetBlockID(chunk[idx]);
-        // var volume_db = 0.0f;
-
-        // if (ChunkManager.GetBlockSpecies(block_id) == BlockSpecies.Grass || ChunkManager.GetBlockSpecies(block_id) == BlockSpecies.Leaves)
-        // {
-        //     volume_db = -10.0f;
-        //     if (Random.Shared.NextSingle() < 0.5f)
-        //         _footstep_sound = FootstepSounds["grass"][Random.Shared.Next(0, FootstepSounds["grass"].Count)];
-        //     else _footstep_sound = FootstepSounds["grass_2"][Random.Shared.Next(0, FootstepSounds["grass_2"].Count)];
-        // }
-        // if (block_id == BlockManager.BlockID("Stone"))
-        // {
-        //     _footstep_sound = FootstepSounds["stone"][Random.Shared.Next(0, FootstepSounds["stone"].Count)];
-        // }
-        // if (block_id == BlockManager.BlockID("Trunk"))
-        // {
-        //     _footstep_sound = FootstepSounds["wood"][Random.Shared.Next(0, FootstepSounds["wood"].Count)];
-        // }
-        // return (_footstep_sound,volume_db);   
-    }
 }

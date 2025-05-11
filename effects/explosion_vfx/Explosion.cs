@@ -88,7 +88,7 @@ public partial class Explosion : Node3D
 			// }
 
 			if (node is IHurtable hurtable) {
-				var damage = EnemyAttackPatterns.SphereDamageDropoff(GlobalPosition, body_position, Damage, _explosion_radius);
+				var damage = AttackManager.SphereDamageDropoff(GlobalPosition, body_position, Damage, _explosion_radius);
 				GD.Print("Damaging hurtable ", hurtable, " with ", damage, " damage");
 				hurtable.TakeDamage(damage, DamageType.Physical);
 			}

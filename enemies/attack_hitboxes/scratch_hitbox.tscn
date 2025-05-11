@@ -1,4 +1,13 @@
-[gd_scene load_steps=4 format=3 uid="uid://iqbljanuovni"]
+[gd_scene load_steps=5 format=3 uid="uid://iqbljanuovni"]
+
+[sub_resource type="GDScript" id="GDScript_vvut4"]
+script/source = "extends Node3D
+
+@export var debug_show_hitbox:bool
+
+func _ready() -> void:
+	$Area3D/MeshInstance3D.visible = debug_show_hitbox
+"
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_5arr6"]
 size = Vector3(1, 1.36664, 0.805908)
@@ -12,6 +21,8 @@ material = SubResource("StandardMaterial3D_ny11c")
 size = Vector3(1, 1.36664, 0.805908)
 
 [node name="ScratchHitbox" type="Node3D"]
+script = SubResource("GDScript_vvut4")
+debug_show_hitbox = true
 
 [node name="Area3D" type="Area3D" parent="."]
 

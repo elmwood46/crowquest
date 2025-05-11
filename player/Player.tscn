@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=4 uid="uid://bjhvg8rf53fx4"]
+[gd_scene load_steps=36 format=4 uid="uid://bjhvg8rf53fx4"]
 
 [ext_resource type="Script" uid="uid://5t1nwwrdxlah" path="res://player/Player.cs" id="1_e80uo"]
 [ext_resource type="Texture2D" uid="uid://bt5o0sr6peltq" path="res://character_models/gdquest_gobot/model/gobot_gobot_diffuse.png" id="1_kne1u"]
@@ -2068,13 +2068,20 @@ func _process(_delta: float) -> void:
 script/source = "extends Label
 
 func _process(_delta: float) -> void:
-	text = \"Money: $\"+str($\"../../../..\".GetMoney())
+	text = \"Money: 💰	$\"+str($\"../../../..\".GetMoney())
+"
+
+[sub_resource type="GDScript" id="GDScript_5qrx2"]
+script/source = "extends Label
+
+func _process(_delta: float) -> void:
+	text = \"Health: 💗\"+str($\"../../../..\".GetHealth())
 "
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_06mnu"]
 radius = 1.0
 
-[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("ScreenMeltEffect", "DamageVignette", "ShapeCast", "HoverText", "CoinPickupArea", "GroundCheckRay")]
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("ScreenMeltEffect", "DamageVignette", "ShapeCast", "HoverText", "CoinPickupArea", "GroundCheckRay", "PlayerCollisionShape")]
 script = ExtResource("1_e80uo")
 MoveSpeed = 10.0
 MinCameraSize = 10.0
@@ -2085,6 +2092,7 @@ ShapeCast = NodePath("gobot/ShapeCast3D")
 HoverText = NodePath("Label3D")
 CoinPickupArea = NodePath("CoinPickupArea")
 GroundCheckRay = NodePath("gobot/RayCast3D")
+PlayerCollisionShape = NodePath("CollisionShape3D")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.946598, 0)
@@ -2116,50 +2124,50 @@ bones/2/name = "Body"
 bones/2/parent = -1
 bones/2/rest = Transform3D(1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, 1, 0, 0.388826, 0)
 bones/2/enabled = true
-bones/2/position = Vector3(0, 0.37064, 0)
-bones/2/rotation = Quaternion(0.0697365, -0.0238677, 0.00166899, 0.997279)
+bones/2/position = Vector3(0, 0.351928, 0)
+bones/2/rotation = Quaternion(0.069732, 0.0264442, -0.00184917, 0.997213)
 bones/2/scale = Vector3(1, 1, 1)
 bones/3/name = "Hips"
 bones/3/parent = 2
 bones/3/rest = Transform3D(1, 0, -1.50996e-07, 0, -1, 0, -1.50996e-07, 0, -1, 0, 0, 0)
 bones/3/enabled = true
 bones/3/position = Vector3(0, 0, 0)
-bones/3/rotation = Quaternion(1, 4.0143e-11, -7.57882e-08, -3.72283e-09)
+bones/3/rotation = Quaternion(1, -5.79676e-11, -7.50288e-08, 3.72683e-09)
 bones/3/scale = Vector3(1, 1, 1)
 bones/4/name = "UpperLeg.L"
 bones/4/parent = 3
 bones/4/rest = Transform3D(1, 1.11022e-16, 6.35179e-08, -2.64443e-09, 0.999133, 0.0416328, -6.34628e-08, -0.0416328, 0.999133, 0.0975467, 0.0688788, -6.18939e-09)
 bones/4/enabled = true
 bones/4/position = Vector3(0.0975467, 0.0688788, -6.18939e-09)
-bones/4/rotation = Quaternion(-0.316381, -0.192907, -0.0352595, 0.928142)
+bones/4/rotation = Quaternion(-0.485965, -0.135328, -0.045789, 0.862223)
 bones/4/scale = Vector3(1, 1, 1)
 bones/5/name = "LowerLeg.L"
 bones/5/parent = 4
 bones/5/rest = Transform3D(1, 2.24914e-06, 2.2026e-06, -2.10413e-06, 0.997965, -0.063758, -2.34152e-06, 0.063758, 0.997965, 8.04412e-09, 0.0954144, -4.65661e-10)
 bones/5/enabled = true
 bones/5/position = Vector3(8.04412e-09, 0.0954144, -4.65661e-10)
-bones/5/rotation = Quaternion(0.115598, 1.12332e-06, -3.94454e-06, 0.993296)
+bones/5/rotation = Quaternion(0.360769, 1.04914e-06, -1.23289e-05, 0.932655)
 bones/5/scale = Vector3(1, 1, 1)
 bones/6/name = "UpperLeg.R"
 bones/6/parent = 3
 bones/6/rest = Transform3D(1, 1.11022e-16, 6.35179e-08, -2.64443e-09, 0.999133, 0.0416328, -6.34628e-08, -0.0416328, 0.999133, -0.0975467, 0.0688788, 6.21329e-09)
 bones/6/enabled = true
 bones/6/position = Vector3(-0.0975467, 0.0688788, 6.21329e-09)
-bones/6/rotation = Quaternion(-0.175734, 0.514336, 0.147473, 0.826334)
+bones/6/rotation = Quaternion(-0.214186, 0.549631, 0.2299, 0.774065)
 bones/6/scale = Vector3(1, 1, 1)
 bones/7/name = "LowerLeg.R"
 bones/7/parent = 6
 bones/7/rest = Transform3D(1, -2.25442e-06, -2.20226e-06, 2.10942e-06, 0.997965, -0.063758, 2.34152e-06, 0.063758, 0.997965, -6.85704e-09, 0.0954144, -4.65662e-10)
 bones/7/enabled = true
 bones/7/position = Vector3(-6.85704e-09, 0.0954144, -4.65662e-10)
-bones/7/rotation = Quaternion(0.351467, -1.05286e-06, 1.20222e-05, 0.9362)
+bones/7/rotation = Quaternion(0.508825, -9.73834e-07, 1.74184e-05, 0.86087)
 bones/7/scale = Vector3(1, 1, 1)
 bones/8/name = "UpperArm.L"
 bones/8/parent = 2
 bones/8/rest = Transform3D(0.0145381, 0.999894, 7.04782e-07, 7.15256e-07, -7.15256e-07, 1, 0.999894, -0.0145381, -7.25579e-07, 0.129051, 0.136329, 6.30673e-08)
 bones/8/enabled = true
 bones/8/position = Vector3(0.129051, 0.136329, 6.30673e-08)
-bones/8/rotation = Quaternion(-0.63732, -0.277052, -0.668862, 0.263986)
+bones/8/rotation = Quaternion(-0.661031, -0.267349, -0.645439, 0.273808)
 bones/8/scale = Vector3(1, 1, 1)
 bones/9/name = "LowerArm.L"
 bones/9/parent = 8
@@ -2215,7 +2223,7 @@ bones/16/parent = 2
 bones/16/rest = Transform3D(0.0145378, -0.999894, -7.04782e-07, -7.15256e-07, -7.15256e-07, 1, -0.999894, -0.0145378, -7.25578e-07, -0.129051, 0.136329, 8.56313e-08)
 bones/16/enabled = true
 bones/16/position = Vector3(-0.129051, 0.136329, 8.56313e-08)
-bones/16/rotation = Quaternion(-0.678057, 0.259931, 0.627529, 0.28086)
+bones/16/rotation = Quaternion(-0.654967, 0.269899, 0.651592, 0.271296)
 bones/16/scale = Vector3(1, 1, 1)
 bones/17/name = "LowerArm.R"
 bones/17/parent = 16
@@ -2331,7 +2339,7 @@ root_node = NodePath("../gobot")
 tree_root = ExtResource("5_cxr5p")
 anim_player = NodePath("../gobot/AnimationPlayer")
 
-[node name="Control" type="Control" parent="."]
+[node name="Control" type="Control" parent="." groups=["debug_overlay"]]
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
@@ -2367,39 +2375,54 @@ layout_mode = 2
 text = "Money: "
 script = SubResource("GDScript_mhpjh")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Control/PanelContainer/VBoxContainer"]
+[node name="HealthLabel" type="Label" parent="Control/PanelContainer/VBoxContainer"]
+layout_mode = 2
+text = "HEALTH: "
+script = SubResource("GDScript_5qrx2")
+
+[node name="HSeparator" type="HSeparator" parent="Control/PanelContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Control/PanelContainer/VBoxContainer/HBoxContainer"]
+[node name="PanelContainer" type="PanelContainer" parent="Control/PanelContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/PanelContainer/VBoxContainer/PanelContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/PanelContainer/VBoxContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Control/PanelContainer/VBoxContainer/PanelContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 text = "Set Max Height: "
 
-[node name="HSlider" type="HSlider" parent="Control/PanelContainer/VBoxContainer/HBoxContainer"]
+[node name="HSlider" type="HSlider" parent="Control/PanelContainer/VBoxContainer/PanelContainer/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 value = 1.0
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="Control/PanelContainer/VBoxContainer"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="Control/PanelContainer/VBoxContainer/PanelContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Control/PanelContainer/VBoxContainer/HBoxContainer2"]
+[node name="Label" type="Label" parent="Control/PanelContainer/VBoxContainer/PanelContainer/VBoxContainer/HBoxContainer2"]
 layout_mode = 2
 text = "Set Resolution: "
 
-[node name="HSlider" type="HSlider" parent="Control/PanelContainer/VBoxContainer/HBoxContainer2"]
+[node name="HSlider" type="HSlider" parent="Control/PanelContainer/VBoxContainer/PanelContainer/VBoxContainer/HBoxContainer2"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 min_value = 1.0
 value = 50.0
 
-[node name="HBoxContainer3" type="HBoxContainer" parent="Control/PanelContainer/VBoxContainer"]
+[node name="HBoxContainer3" type="HBoxContainer" parent="Control/PanelContainer/VBoxContainer/PanelContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Control/PanelContainer/VBoxContainer/HBoxContainer3"]
+[node name="Label" type="Label" parent="Control/PanelContainer/VBoxContainer/PanelContainer/VBoxContainer/HBoxContainer3"]
 layout_mode = 2
 text = "Noise Frequency:"
 
-[node name="HSlider" type="HSlider" parent="Control/PanelContainer/VBoxContainer/HBoxContainer3"]
+[node name="HSlider" type="HSlider" parent="Control/PanelContainer/VBoxContainer/PanelContainer/VBoxContainer/HBoxContainer3"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 min_value = 0.002
@@ -2428,6 +2451,6 @@ monitorable = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.606311, 0)
 shape = SubResource("SphereShape3D_06mnu")
 
-[connection signal="value_changed" from="Control/PanelContainer/VBoxContainer/HBoxContainer/HSlider" to="." method="SetChunkMaxHeight"]
-[connection signal="value_changed" from="Control/PanelContainer/VBoxContainer/HBoxContainer2/HSlider" to="." method="SetChunkResolution"]
-[connection signal="value_changed" from="Control/PanelContainer/VBoxContainer/HBoxContainer3/HSlider" to="." method="ChangeNoiseFrequency"]
+[connection signal="value_changed" from="Control/PanelContainer/VBoxContainer/PanelContainer/VBoxContainer/HBoxContainer/HSlider" to="." method="SetChunkMaxHeight"]
+[connection signal="value_changed" from="Control/PanelContainer/VBoxContainer/PanelContainer/VBoxContainer/HBoxContainer2/HSlider" to="." method="SetChunkResolution"]
+[connection signal="value_changed" from="Control/PanelContainer/VBoxContainer/PanelContainer/VBoxContainer/HBoxContainer3/HSlider" to="." method="ChangeNoiseFrequency"]

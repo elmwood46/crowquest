@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://detrvp0t5teeu"]
+
+[ext_resource type="Script" uid="uid://5k80ax4efb6e" path="res://enemies/bullets/PhysBodyTracker.cs" id="1_svhvg"]
+
+[node name="PhysBodyTracker" type="Node"]
+script = ExtResource("1_svhvg")

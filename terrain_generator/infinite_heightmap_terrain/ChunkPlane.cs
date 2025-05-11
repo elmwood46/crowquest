@@ -258,7 +258,7 @@ public partial class ChunkPlane : StaticBody3D
             var wall = _csg_brick_wall_scene.Instantiate<CsgPolygon3D>();
             if (seeded_random < 0.5 || is_starting_chunk)
             {
-                wall.PathInterval = 10.0f;
+                //wall.PathInterval = 10.0f;
             }
             path_copy.AddChild(wall);
             wall.PathNode = path_copy.GetPath();

@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://b0orkkctg2j5s"]
 
-[ext_resource type="Script" path="res://enemies/Enemy.cs" id="1_2tyyd"]
+[ext_resource type="Script" uid="uid://w6n6vagh5blr" path="res://enemies/Enemy.cs" id="1_2tyyd"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_ni3r6"]
 friction = 0.0

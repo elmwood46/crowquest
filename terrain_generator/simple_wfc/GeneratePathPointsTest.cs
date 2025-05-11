@@ -2,10 +2,28 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 [Tool]
 public partial class GeneratePathPointsTest : Node3D
 {
+    private static readonly PackedScene _csg_wall_scene = GD.Load<PackedScene>("res://terrain_generator/procedural_brick_wall/csg/csg_brick_wall.tscn"); 
+    private static readonly PackedScene _phys_body_tracker = GD.Load<PackedScene>("res://enemies/bullets/PhysBodyTracker.tscn");
+    private static readonly MeshConvexDecompositionSettings _decomp_settings = new()
+    {
+        ConvexHullApproximation = true,
+        ConvexHullDownsampling = 1u,
+        PlaneDownsampling = 1u,
+        MaxConvexHulls = 8u,
+        Resolution = 50000u,
+        MaxNumVerticesPerConvexHull = 64u,
+        MaxConcavity = 0.0f
+    };
+
+    private static Vector2 _path_mesh_dimensions = new(1.25f, 5f);
+
+    [Export] public bool CanRunMethods {get;set;} = false;
+
     [Export] public bool Init
     {
         get => false;
@@ -15,8 +33,316 @@ public partial class GeneratePathPointsTest : Node3D
         }
     }
 
+
+    [Export] public bool ClearChildNodes
+    {
+        get => false;
+        set
+        {
+            ClearChildren();
+        }
+    }
+
+    [Export] public bool ClearAllExceptIntersection
+    {
+        get => false;
+        set
+        {
+            if (!CanRunMethods) return;
+            foreach (Node n in GetChildren())
+            {
+                if (n.Name != "Intersection")
+                {
+                    n.QueueFree();
+                }
+            }
+        }
+    }
+
+    [Export] public bool AttachCSG
+    {
+        get => false;
+        set
+        {
+            GenCsgStaticBodies();
+        }
+    }
+
+    [Export] public bool ApplyTrackersAndMaterial
+    {
+        get => false;
+        set
+        {
+            if (!CanRunMethods) return;
+
+            foreach (var n in GetChildren())
+            {
+                if (n is Node3D d)
+                {
+                    bool gen_paths = true;
+                    foreach (var n2 in n.GetChildren())
+                    {
+                        if (n2 is Node3D d1 && d1 is not StaticBody3D)
+                        {
+                            gen_paths = false;
+                            foreach (var n3 in d1.GetChildren())
+                            {
+                                if (n3 is StaticBody3D sb)
+                                {
+                                    var phys_tracker = _phys_body_tracker.Instantiate<Node>();
+                                    sb.AddChild(phys_tracker);
+                                    phys_tracker.Owner = GetTree().EditedSceneRoot;
+                                }
+                            }
+                        }
+                    }
+                    if (gen_paths)
+                    {
+                        foreach (var n3 in d.GetChildren())
+                        {
+                            if (n3 is StaticBody3D sb)
+                            {
+                                var phys_tracker = _phys_body_tracker.Instantiate<Node>();
+                                sb.AddChild(phys_tracker);
+                                phys_tracker.Owner = GetTree().EditedSceneRoot;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void GenCsgStaticBodies()
+    {
+        if (!CanRunMethods) return;
+        void populate_path(Path3D path)
+        {
+            GD.Print("Generating CSG for path: ", path.Name);
+            var csg = _csg_wall_scene.Instantiate<CsgPolygon3D>();
+            csg.Name = "CsgWall"+path.Name.ToString();
+            path.AddChild(csg);
+            csg.Owner = GetTree().EditedSceneRoot;
+            csg.PathNode = path.GetPath();
+
+            // var mesh = csg.BakeStaticMesh();
+            // var mesh_i = new MeshInstance3D
+            // {
+            //     Mesh = mesh,
+            // };
+            // csg.AddChild(mesh_i);
+            // mesh_i.Owner = GetTree().EditedSceneRoot;
+            // mesh_i.CreateMultipleConvexCollisions(_decomp_settings);
+            // var static_child = mesh_i.GetChildren().OfType<StaticBody3D>().FirstOrDefault();
+            // static_child.Owner = GetTree().EditedSceneRoot;
+            // static_child.Reparent(path.GetParent());
+            // mesh_i.Reparent(static_child);
+            // csg.QueueFree();
+        }
+
+        foreach (var n in GetChildren())
+        {
+            if (n is Node3D && n is not Path3D)
+            {
+                foreach (var n2 in n.GetChildren())
+                {
+                    if (n2 is Path3D path)
+                    {
+                        populate_path(path);
+                        
+                    }
+                    else if (n2 is Node3D)
+                    {
+                        foreach (var n3 in n2.GetChildren())
+                        {
+                            if (n3 is Path3D path2)
+                            {
+                                populate_path(path2);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        Callable.From(()=>{
+            foreach (var n in GetChildren())
+            {
+                if (n is Node3D d)
+                {
+                    bool gen_paths = true;
+                    foreach (var n2 in n.GetChildren())
+                    {
+                        if (n2 is Node3D d1 && d1 is not Path3D)
+                        {
+                            gen_paths = false;
+                            GenerateOOBSAlongPath(d1);
+                        }
+                    }
+                    if (gen_paths) GenerateOOBSAlongPath(d);
+                }
+            }
+        }).CallDeferred();
+
+        // foreach (var n in GetChildren())
+        // {
+        //     if (n is Node3D)
+        //     {
+        //         foreach (var n2 in n.GetChildren())
+        //         {
+        //             if (n2 is Path3D path)
+        //             {
+        //                 path.QueueFree();
+                        
+        //             }
+        //             else if (n2 is Node3D)
+        //             {
+        //                 foreach (var n3 in n2.GetChildren())
+        //                 {
+        //                     if (n3 is Path3D path2)
+        //                     {
+        //                        path2.QueueFree();
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+    }
+
+    public static void GenerateOOBSAlongPath(Node3D path_parent)
+    {
+        var child_idx = 0;
+        foreach (var child in path_parent.GetChildren())
+        {
+            if (child is Path3D path)
+            {
+                var path_csg_node = path.GetChildren().OfType<CsgPolygon3D>().FirstOrDefault();
+                var path_interval = 1.0f;//path_csg_node?.PathInterval ?? 1.0f;
+                var oobslist = GeneratePathOBBs(path, path_interval);
+                var static_body = new StaticBody3D
+                {
+                    Name = $"PathOBB{path_parent.Name}{++child_idx}"
+                };
+                path_parent.AddChild(static_body);
+                static_body.Owner = path_parent.GetTree().EditedSceneRoot;
+                if (path_csg_node != null && path_csg_node is CsgPolygon3D csg)
+                {
+                    var mesh = csg.BakeStaticMesh();
+                    var mesh_i = new MeshInstance3D
+                    {
+                        Mesh = mesh,
+                        Name = "CsgWall"+path.Name.ToString(),
+                    };
+                    static_body.AddChild(mesh_i);
+                    mesh_i.Owner = path_parent.GetTree().EditedSceneRoot;
+                }
+                
+                var tracker_node = _phys_body_tracker.Instantiate<Node>();
+                static_body.AddChild(tracker_node);
+                tracker_node.Owner = path_parent.GetTree().EditedSceneRoot;
+
+                var i=0;
+                foreach (var (transform, size) in oobslist)
+                {
+                    //GD.Print(aabb.Position, aabb.Size);
+                    var box = new CollisionShape3D
+                    {
+                        Shape = new BoxShape3D
+                        {
+                            Size = size, // aabb.Size,
+                        }
+                    };
+
+                    if (i == 0) static_body.AddChild(box);
+                    else 
+                    {
+                        var sb = new StaticBody3D
+                        {
+                            Name = $"PathOBB{path_parent.Name}{child_idx}_{i+1}"
+                        };
+                        path_parent.AddChild(sb);
+                        sb.Owner = path_parent.GetTree().EditedSceneRoot;
+                        
+                        var trck = _phys_body_tracker.Instantiate<Node>();
+                        sb.AddChild(trck);
+                        trck.Owner = path_parent.GetTree().EditedSceneRoot;
+                        sb.AddChild(box);
+                    }
+
+                    box.GlobalTransform = transform;
+                    box.Position += transform.Basis*size*0.5f*new Vector3(-1,1,-1);
+                    box.Owner = path_parent.GetTree().EditedSceneRoot;
+                    i++;
+                }
+                path.QueueFree();
+            }
+        }
+    }
+
+    private static (Transform3D, Vector3) CreatePathOBB(Vector3 start_pos, Vector3 dir, float len)
+    {
+        var size = new Vector3(_path_mesh_dimensions.X, _path_mesh_dimensions.Y, len);
+        var rot = Basis.LookingAt(dir, Vector3.Up);
+        var offset = new Vector3(0,0,-1)*size.X*0.5f;//Vector3.Zero;//dir.Rotated(Vector3.Up, -Mathf.Pi / 2f) * size.X * 0.5f; // DEBUG fix offset
+        return (new Transform3D(rot, start_pos + rot.Rotated(Vector3.Up,-Mathf.Pi/2)*offset), size); // add offset to size
+    }
+
+    private static List<(Transform3D,Vector3)> GeneratePathOBBs(Path3D path, float path_interval)
+    {
+        //var rad_angle_cutoff = Mathf.DegToRad(deg_angle_cutoff);
+        path.Curve.BakeInterval = 1.0f;
+        var points = path.Curve.GetBakedPoints();
+        if (points.Length<=1) return [];
+
+        var selected_points = new List<Vector3>();
+
+        for (int i=0;i<points.Length-1;i+=(int)path_interval)
+        {
+            selected_points.Add(points[i]);
+        }
+        if (points.Length % path_interval != 0)
+        {
+            selected_points.Add(points[^1]);
+        }
+
+        if (selected_points.Count <= 1) return [];
+
+        var obbs = new List<(Transform3D,Vector3)>();
+        var prev_dir = selected_points[1] - selected_points[0];
+        var current_length = 0f;
+        var start_pos = path.GlobalPosition+selected_points[0];
+        for (var i=0; i<selected_points.Count-1; i++)
+        {
+            var next_dir = selected_points[i+1] - selected_points[i];
+            if (next_dir != prev_dir)
+            {
+                if (prev_dir != Vector3.Zero) obbs.Add(CreatePathOBB(start_pos, prev_dir, current_length));
+                current_length = 0f;
+                start_pos = path.GlobalPosition+selected_points[i];
+            }
+
+            current_length += (selected_points[i+1] - selected_points[i]).Length();
+            prev_dir = next_dir;
+
+            if (i==selected_points.Count-2 && prev_dir != Vector3.Zero) obbs.Add(CreatePathOBB(start_pos, prev_dir, current_length));
+        }
+        
+
+        return obbs;
+    }
+
+    public void ClearChildren()
+    {
+        foreach (Node n in GetChildren())
+        {
+            if (n is Node3D) n.QueueFree();
+        }
+    }
+
     public void RunInit()
     {
+        if (!CanRunMethods) return;
         foreach (Node n in GetChildren())
         {
             if (n is Node3D) n.QueueFree();

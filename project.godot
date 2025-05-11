@@ -22,6 +22,7 @@ project/assembly_name="crowquest"
 [global_group]
 
 navmesh_group="This holds all the nodes which will be treated as geometry by the chunk navmesh regions."
+debug_overlay="Control nodes for debug overlay"
 
 [input]
 

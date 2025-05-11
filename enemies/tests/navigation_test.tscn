@@ -1,0 +1,111 @@
+[gd_scene load_steps=5 format=3 uid="uid://c11gfbll20j7h"]
+
+[ext_resource type="Script" uid="uid://2ef4ijdxnbxx" path="res://enemies/tests/NavigationTest.cs" id="1_avsaa"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5vw27"]
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_kek77"]
+material = SubResource("StandardMaterial3D_5vw27")
+size = Vector3(1, 2, 1)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_5vw27"]
+radius = 0.503104
+height = 1.81595
+
+[node name="NavigationTest" type="CharacterBody3D" node_paths=PackedStringArray("HeadPosition", "DebugLabel")]
+script = ExtResource("1_avsaa")
+HeadPosition = NodePath("HeadPosition")
+DebugLabel = NodePath("PanelContainer/VBoxContainer/Label")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("BoxMesh_kek77")
+
+[node name="HeadPosition" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5004, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.92584, 0)
+shape = SubResource("CapsuleShape3D_5vw27")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+target_desired_distance = 2.0
+simplify_path = true
+simplify_epsilon = 0.5
+debug_enabled = true
+debug_use_custom = true
+debug_path_custom_color = Color(1, 0, 0.658824, 1)
+debug_path_custom_point_size = 16.0
+
+[node name="GroundRay" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.20959, 0)
+target_position = Vector3(0, -0.5, 0)
+
+[node name="RayGimbal" type="Node3D" parent="."]
+
+[node name="SlopeCheckRay" type="RayCast3D" parent="RayGimbal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+target_position = Vector3(0, 0, -0.75)
+
+[node name="WallCheckRay" type="RayCast3D" parent="RayGimbal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+target_position = Vector3(0, 0, -1)
+
+[node name="PanelContainer" type="PanelContainer" parent="." groups=["debug_overlay"]]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -90.0
+offset_bottom = 101.0
+grow_horizontal = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+text = "Move state:
+other info:
+other info:
+other info:"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="PanelContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+focus_mode = 0
+text = "Make Enemy Run"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Run Duration (s)"
+
+[node name="Slider" type="SpinBox" parent="PanelContainer/VBoxContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+min_value = 1.0
+max_value = 10.0
+value = 3.0
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="label" type="Label" parent="PanelContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+text = "Activate Agent"
+
+[node name="CheckButton" type="CheckButton" parent="PanelContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+text = "Tele Agent"
+
+[connection signal="button_up" from="PanelContainer/VBoxContainer/VBoxContainer/Button" to="." method="SetDebugRunTimer"]
+[connection signal="value_changed" from="PanelContainer/VBoxContainer/VBoxContainer/HBoxContainer/Slider" to="." method="SetDebugRunDuration"]
+[connection signal="toggled" from="PanelContainer/VBoxContainer/HBoxContainer2/CheckButton" to="." method="ActivateAngent"]
+[connection signal="button_up" from="PanelContainer/VBoxContainer/HBoxContainer2/Button" to="." method="TeleportToPlayer"]

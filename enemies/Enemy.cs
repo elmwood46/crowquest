@@ -32,10 +32,13 @@ public partial class Enemy : RigidBody3D, IHurtable
 {
     [Export] public int MaxHealth { get; set; } = 30;
     [Export] public string TagsString { get; set; } = "";
-    [Export] public Godot.Collections.Array<AudioStream> PainSounds { get; set; } = new();
-    [Export] public Godot.Collections.Array<AudioStream> DeathSounds { get; set; } = new();
-    [Export] public Godot.Collections.Array<AudioStream> IdleSounds { get; set; } = new();
-    [Export] public Godot.Collections.Array<AudioStream> SeeSound { get; set; } = new();
+    [Export] public DamageType TouchDamageType {get;set;} = DamageType.Physical;
+    [Export] public int TouchDamageAmount {get;set;} = 1;
+    [Export] public float TouchDamageRadius = 1.0f;
+    [Export] public Godot.Collections.Array<AudioStream> PainSounds { get; set; } = [];
+    [Export] public Godot.Collections.Array<AudioStream> DeathSounds { get; set; } = [];
+    [Export] public Godot.Collections.Array<AudioStream> IdleSounds { get; set; } = [];
+    [Export] public Godot.Collections.Array<AudioStream> SeeSound { get; set; } = [];
     [Export] public AnimationTree AnimTree { get; set; }
     [Export] public AnimatedSprite3D Sprite { get; set; }
     [Export] public float Speed { get; set; } = 5.0f;
@@ -48,12 +51,18 @@ public partial class Enemy : RigidBody3D, IHurtable
     [Export] public float StunDuration {get;set;} = 1.0f;
     [Export] public DieFace CoinDropDice {get;set;} = DieFace.d6;
     [Export] public int CoinDropDiceAmount {get;set;} = 3;
-    [Export] public Godot.Collections.Array<string> AttacksList {get;set;} = new Godot.Collections.Array<string>();
-    private List<IAttack> _attackList = new();
+    [Export] public Godot.Collections.Array<string> AttacksList {get;set;} = [];
+    private List<IAttack> _attackList = [];
     private IAttack _currentAttack = null;
+    public bool _force_zero_velocity {get;set;} = false;
 
-    // can be used by Attack class objects to time various events during attacks
-    public Timer AttackTimer = new(){WaitTime = 1.0f, Autostart = false, OneShot = true};
+    private enum MoveState
+    {
+        RUN_FROM_PLAYER,
+        PATH_TO_PLAYER,
+        NAIVE_CHASE,
+        SWITCH_STATES
+    }
 
     private Timer _deathTimer = new(){WaitTime = 1.0f, Autostart = false, OneShot = true}; 
     private Timer _footstep_timer = new(){WaitTime = 0.5f, Autostart = false, OneShot = true};
@@ -75,13 +84,13 @@ public partial class Enemy : RigidBody3D, IHurtable
 
    // [Export] public NavigationAgent3D NavAgent {get;set;}
     //[Export] public float Mass { get; set; } = 80.0f;
-    public HashSet<EnemyTag> Tags = new();
+    public HashSet<EnemyTag> Tags = [];
 
     // index of the spawned enemy
     public int Index;
     public int Health;
     public EnemyState State = EnemyState.Idle;
-    private Timer _random_walk_dir_timer = new(){WaitTime = 1, Autostart = false, OneShot = true};
+    private Timer _random_walk_dir_timer = new(){WaitTime = 1, OneShot = true};
 
     private Vector3 _prev_jump_pos = Vector3.Zero;
 
@@ -89,9 +98,10 @@ public partial class Enemy : RigidBody3D, IHurtable
 
     private float _jump_velocity = 2.5f;
 
-    private Timer _path_req_timer = new(){WaitTime = 1.0f, Autostart = false, OneShot = true};
+    private Timer _path_req_timer = new(){WaitTime = 1.0f,OneShot = true};
 
-    private Timer _stun_timer = new(){WaitTime = 1.0f, Autostart = false, OneShot = true};
+    private Timer _stun_timer = new(){WaitTime = 1.0f, OneShot = true};
+    private Timer _damage_player_timer = new(){Autostart = true, WaitTime = 0.05};
 
     // used for random walk
     private double _phys_secs = 0;
@@ -133,6 +143,11 @@ public partial class Enemy : RigidBody3D, IHurtable
         else _stun_timer.Stop();
     }
 
+    public void ForceZeroVelocity()
+    {
+        _force_zero_velocity = true;
+    }
+
     public void StopIdleSoundTimer()
     {
         _idle_sound_timer.Stop();
@@ -147,10 +162,22 @@ public partial class Enemy : RigidBody3D, IHurtable
         _base_sprite_position = Sprite.Position;
         _base_sprite_scale = Sprite.Scale;
 
-        AddChild(AttackTimer);
+        // all enemies damage player upon touch
+        ContactMonitor = true;
+        MaxContactsReported = 1;
+        BodyEntered += (body) =>
+        {
+            if (body is Player player)
+            {
+                player.TakeDamage(TouchDamageAmount, TouchDamageType);
+            }
+        };
+
         AddChild(_deathTimer);
         AddChild(_idle_sound_timer);
         AddChild(_footstep_timer);
+        AddChild(_damage_player_timer);
+
 
         _footstep_timer.Timeout += () =>
         {
@@ -168,6 +195,13 @@ public partial class Enemy : RigidBody3D, IHurtable
             }
             _idle_sound_timer.WaitTime = Random.Shared.Next(_idle_sound_wait_range.X,_idle_sound_wait_range.Y);
             _idle_sound_timer.Start();
+        };
+        _damage_player_timer.Timeout += () =>
+        {
+            if (IsPlayerInRange(TouchDamageRadius))
+            {
+                Player.Instance.TakeDamage(TouchDamageAmount, TouchDamageType);
+            }
         };
 
         if (EnemyHitFlash == null) throw new Exception($"Enemy {this} must have a EnemyHitFlash.tres in res://enemies/enemy_hit_flash.tres");
@@ -255,6 +289,16 @@ public partial class Enemy : RigidBody3D, IHurtable
         }
     }
 
+    public override void _IntegrateForces(PhysicsDirectBodyState3D state)
+    {
+        if (_force_zero_velocity)
+        {
+            state.LinearVelocity = Vector3.Zero;
+            state.AngularVelocity = Vector3.Zero;
+            _force_zero_velocity = false;
+        }
+    }
+
     public override void _PhysicsProcess(double delta)
     {
         if (Health <= 0) {
@@ -298,7 +342,8 @@ public partial class Enemy : RigidBody3D, IHurtable
         }
 
         // do attack logic and move if player is not dead
-        if (!Player.Instance.IsDead && !Deactivated && !Ambush) {
+        if (!Player.Instance.IsDead && !Deactivated && !Ambush)
+        {
             if (_currentAttack == null)
             {
                 foreach (var attack in _attackList)
@@ -326,7 +371,6 @@ public partial class Enemy : RigidBody3D, IHurtable
                     //GD.Print("Enemy is executing attack ", _currentAttack);
                 }
             }
-        
 
             // skip movement if attacking and can't move during attack
             if (_currentAttack != null && !_currentAttack.CanMoveDuring && !_currentAttack.IsFinished) return;
@@ -360,47 +404,8 @@ public partial class Enemy : RigidBody3D, IHurtable
             if (vel.LengthSquared() > 0.01f) RayGimbal.LookAt(RayGimbal.GlobalTransform.Origin + vel, Vector3.Up);
             if ((this != null)  && IsInstanceValid(this) && IsInsideTree()) ApplyCentralForce(vel.Normalized()*Speed*Mass);
 
-            // Check for collision
-            var col = WallCheckRay.GetCollider();
-            if (IsOnFloor() && col != null && (col is StaticBody3D || (col is RigidBody3D r && r.Freeze)))
-            {
-                // Apply a slight upward force to help climb slopes
-                //ApplyCentralImpulse(Vector3.Up * 5.0f);
-                Vector3 normal = WallCheckRay.GetCollisionNormal();
-                
-                // Only jump or change dir if the collision is with a wall (not a floor/slope)
-                if (normal.Dot(Vector3.Up) < 0.001f) // Mostly vertical surface
-                {
-                    if (!Tags.Contains(EnemyTag.Flying))// && IsOnFloor())
-                    {
-                        //GD.Print("Collided! Jumping...");
-                        if ((this != null) && IsInstanceValid(this) && IsInsideTree()) ApplyCentralImpulse(Vector3.Up * _jump_velocity * Mass);
-                        //LinearVelocity = new Vector3(LinearVelocity.X,_jump_velocity,LinearVelocity.Z); // Apply jump force
-                    }
-                }
-            }
-            //PushAwayRigidBodies();
-            //MoveAndSlide();
-
-            // play foostep sounds
-            // reset footstep timer, which plays footstep sound when it times out
-			if (!Tags.Contains(EnemyTag.Flying) && _footstep_timer.IsStopped())
-			{
-				if (LinearVelocity.LengthSquared() < 16)
-				{
-					_footstep_timer.WaitTime = AudioManager.FootstepWaitTimes.Z;
-				}
-				else if (LinearVelocity.LengthSquared() >= 64)
-				{
-					_footstep_timer.WaitTime = AudioManager.FootstepWaitTimes.Y;
-				}
-				else
-				{
-					_footstep_timer.WaitTime = AudioManager.FootstepWaitTimes.X;
-				}
-				
-				_footstep_timer.Start();
-			}
+            CheckForJump();
+            SetFootstepTimer();
         }
     }
 
@@ -414,6 +419,71 @@ public partial class Enemy : RigidBody3D, IHurtable
             first_set = false;
         }
     }*/
+
+    private void SetFootstepTimer()
+    {
+        // play foostep sounds
+        // reset footstep timer, which plays footstep sound when it times out
+        if (!Tags.Contains(EnemyTag.Flying) && _footstep_timer.IsStopped())
+        {
+            if (LinearVelocity.LengthSquared() < 16)
+            {
+                _footstep_timer.WaitTime = AudioManager.FootstepWaitTimes.Z;
+            }
+            else if (LinearVelocity.LengthSquared() >= 64)
+            {
+                _footstep_timer.WaitTime = AudioManager.FootstepWaitTimes.Y;
+            }
+            else
+            {
+                _footstep_timer.WaitTime = AudioManager.FootstepWaitTimes.X;
+            }
+            
+            _footstep_timer.Start();
+        }      
+    }
+
+    private void CheckForJump()
+    {
+        var col = WallCheckRay.GetCollider();
+        if (IsOnFloor() && col != null && (col is StaticBody3D || (col is RigidBody3D r && r.Freeze)))
+        {
+            // Apply a slight upward force to help climb slopes
+            //ApplyCentralImpulse(Vector3.Up * 5.0f);
+            Vector3 normal = WallCheckRay.GetCollisionNormal();
+            
+            // Only jump or change dir if the collision is with a wall (not a floor/slope)
+            if (normal.Dot(Vector3.Up) < 0.001f) // Mostly vertical surface
+            {
+                if (!Tags.Contains(EnemyTag.Flying))// && IsOnFloor())
+                {
+                    //GD.Print("Collided! Jumping...");
+                    if ((this != null) && IsInstanceValid(this) && IsInsideTree()) ApplyCentralImpulse(Vector3.Up * _jump_velocity * Mass);
+                    //LinearVelocity = new Vector3(LinearVelocity.X,_jump_velocity,LinearVelocity.Z); // Apply jump force
+                }
+            }
+        }
+    }
+
+    public void ImpulseTowardsPlayer(float impulseMagnitude)
+    {
+        if ((this != null) && IsInstanceValid(this) && IsInsideTree()
+        && Player.Instance != null && IsInstanceValid(Player.Instance) && Player.Instance.IsInsideTree()) 
+        {
+            var dir = (Player.Instance.GlobalPosition - GlobalPosition).Normalized();
+            ApplyCentralImpulse(dir * impulseMagnitude * Mass);
+        }
+    }
+
+    public void ForceTowardsPlayer(float forceMagnitude)
+    {
+        if ((this != null) && IsInstanceValid(this) && IsInsideTree()
+        && Player.Instance != null && IsInstanceValid(Player.Instance) && Player.Instance.IsInsideTree()) 
+        {
+            var dir = (Player.Instance.GlobalPosition - GlobalPosition).Normalized();
+            ApplyCentralForce(dir * forceMagnitude * Mass);
+        }
+    }
 
     public void SetStun(float duration)
     {
@@ -474,7 +544,7 @@ public partial class Enemy : RigidBody3D, IHurtable
 
     private void ProcessTagString(string tag_string)
     {
-        Tags = new HashSet<EnemyTag>();
+        Tags = [];
         foreach (var tag in tag_string.Split(","))
         {
             if (Enum.TryParse(tag, out EnemyTag tagEnum))
@@ -488,10 +558,9 @@ public partial class Enemy : RigidBody3D, IHurtable
     {
         foreach (var str in AttacksList)
         {
-            if (str == "Scratch")
+            if (AttackManager.AllAttackNamesAndTypes.TryGetValue(str, out var type))
             {
-                //GD.Print("added scratch attack to attack list");
-                _attackList.Add(new ScratchAttack());
+                _attackList.Add((IAttack)Activator.CreateInstance(type));
             }
         }
     }
@@ -503,15 +572,8 @@ public partial class Enemy : RigidBody3D, IHurtable
 
     public Vector3 GetYDirectionToPlayer()
     {
+        if ((GlobalPosition.X == Player.Instance.GlobalPosition.X) && (GlobalPosition.Z == Player.Instance.GlobalPosition.Z)) return Vector3.Forward;
         return new Vector3(GlobalPosition.X, 0.0f, GlobalPosition.Z).DirectionTo(new Vector3(Player.Instance.GlobalPosition.X, 0.0f, Player.Instance.GlobalPosition.Z));
-    }
-
-    public void ResetAttackTimer()
-    {
-        AttackTimer.Stop();
-        AttackTimer.WaitTime = 1.0f;
-        AttackTimer.OneShot = true;
-        AttackTimer.Autostart = false;
     }
 
     private void PlayFootstepSound()

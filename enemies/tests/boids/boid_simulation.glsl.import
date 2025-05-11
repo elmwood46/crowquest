@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://cp20w4a43cxbn"
+path="res://.godot/imported/boid_simulation.glsl-98eb90502ca17939507e44459916d0b0.res"
+
+[deps]
+
+source_file="res://enemies/tests/boids/boid_simulation.glsl"
+dest_files=["res://.godot/imported/boid_simulation.glsl-98eb90502ca17939507e44459916d0b0.res"]
+
+[params]
+

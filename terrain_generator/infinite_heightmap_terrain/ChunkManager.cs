@@ -45,6 +45,7 @@ public partial class ChunkManager : Node
     private readonly ConcurrentDictionary<ChunkPlane, Vector2I> _chunkToPosition = new();
 	private readonly ConcurrentDictionary<Vector2I, ChunkPlane> _positionToChunk = new();
     private readonly ConcurrentQueue<(ChunkPlane,Vector2I)> _chunksToUpdate = new();
+
     private readonly List<ChunkPlane> _chunks = [];
     private static readonly PackedScene _chunk_scene = GD.Load<PackedScene>("res://terrain_generator/infinite_heightmap_terrain/chunk_plane.tscn");
 

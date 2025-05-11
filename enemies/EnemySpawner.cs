@@ -21,13 +21,13 @@ public partial class EnemySpawner : Node3D
     [Export] int EnemyCount = 5;
     [Export] Vector3 SpawnBoxDimensions;
 
-    private PackedScene _enemy_scene = ResourceLoader.Load<PackedScene>("res://enemies/elijah/elijah.tscn");
+    private PackedScene _enemy_scene = ResourceLoader.Load<PackedScene>("res://enemies/enemy_instances/elijah/elijah.tscn");
 
-    private static readonly List<Enemy> _enemies_pool = new();
-    private static readonly List<Vector3> _enemy_directions = new();
-    private static readonly List<Timer> _enemy_random_walk = new();
+    private static readonly List<Enemy> _enemies_pool = [];
+    private static readonly List<Vector3> _enemy_directions = [];
+    private static readonly List<Timer> _enemy_random_walk = [];
 
-    private static readonly Dictionary<int, EnemyData> _enemy_data = new();
+    private static readonly Dictionary<int, EnemyData> _enemy_data = [];
 
     public override void _Ready()
     {

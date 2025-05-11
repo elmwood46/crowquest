@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=4 uid="uid://c5lo71g6a13l6"]
+[gd_scene load_steps=24 format=4 uid="uid://c5lo71g6a13l6"]
 
 [ext_resource type="Script" uid="uid://bpi4e7pxa2ajt" path="res://interactables/TreasureChest.cs" id="1_f6mvq"]
 [ext_resource type="Material" uid="uid://cglcw4wgjehbb" path="res://environment_models/treasure/chest_big/chest_lower_textures.tres" id="1_o2gru"]
@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://bbu6hm6u13piy" path="res://environment_models/treasure/chest_big/1024x1024/chest1_metallic.png" id="4_un2dn"]
 [ext_resource type="Texture2D" uid="uid://cnk15gpl50kg3" path="res://environment_models/treasure/chest_big/1024x1024/chest1_normals.bmp" id="5_tee1m"]
 [ext_resource type="Texture2D" uid="uid://cpdc1o0ancsho" path="res://environment_models/treasure/chest_big/1024x1024/chest1_roughness.png" id="6_07xlc"]
+[ext_resource type="PackedScene" uid="uid://detrvp0t5teeu" path="res://enemies/bullets/PhysBodyTracker.tscn" id="9_ehm7e"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ig2t6"]
 resource_name = "M_ChestBottom"
@@ -272,6 +273,8 @@ shape = SubResource("BoxShape3D_o2gru")
 [node name="CollisionShape3D2" type="CollisionShape3D" parent="Chest"]
 transform = Transform3D(1, 0, 0, 0, 1, 7.10543e-15, 0, -7.10543e-15, 1, -0.00270743, 0.00453839, 0.00504528)
 shape = SubResource("BoxShape3D_b77ir")
+
+[node name="PhysBodyTracker" parent="Chest" instance=ExtResource("9_ehm7e")]
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {

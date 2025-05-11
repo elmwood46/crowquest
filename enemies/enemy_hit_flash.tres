@@ -1,7 +1,7 @@
 [gd_resource type="ShaderMaterial" load_steps=3 format=3 uid="uid://cyfer8kmngmxe"]
 
-[ext_resource type="Shader" path="res://enemies/enemy_hit_flash.gdshader" id="1_lrq0m"]
-[ext_resource type="Texture2D" uid="uid://bngmfqawlw3sw" path="res://enemies/elijah/eli_walk_2.png" id="2_l6hve"]
+[ext_resource type="Shader" uid="uid://chy13dtvdb357" path="res://enemies/enemy_hit_flash.gdshader" id="1_lrq0m"]
+[ext_resource type="Texture2D" uid="uid://bngmfqawlw3sw" path="res://enemies/enemy_instances/elijah/eli_walk_2.png" id="2_l6hve"]
 
 [resource]
 render_priority = 0

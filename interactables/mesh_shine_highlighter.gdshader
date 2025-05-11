@@ -58,10 +58,10 @@ void vertex()
 }
 
 void fragment( )
-{	
+{
     mat3 rotation = rotation_matrix(shine_angle_x, shine_angle_y);
     vec3 vert = rotation * vary_vert;
-	
+
 	float width = shine_width * 0.001 * cycle_interval;
 	float frequency = floor( cos( vert.z + PI*(progress*2.0 + 1.0)) + width);
 	ALBEDO = shine_color.rgb;

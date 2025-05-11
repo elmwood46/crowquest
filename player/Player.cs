@@ -1,5 +1,7 @@
 using Godot;
 using System;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 public partial class Player : CharacterBody3D, IHurtable
 {
@@ -11,10 +13,11 @@ public partial class Player : CharacterBody3D, IHurtable
 	[Export] public float MoveLerpFactor {get;set;} = 10.0f;
 	[Export] public float Gravity {get;set;} = ProjectSettings.GetSetting("physics/3d/default_gravity").AsSingle();
 	[Export] public float MouseSensitivity = 0.3f;
-	[Export (PropertyHint.Range,"0.01,1.5,0.01")] public float MaxCameraShake = 5.0f;
+	[Export (PropertyHint.Range,"0.01,1.5,0.01")] public float MaxCameraShake = 2.0f;
 	[Export (PropertyHint.Range,"0.001,0.05,0.001")] public float CameraShakeDecay { get; private set; } = 0.05f;
 	[Export] public float MinCameraSize {get; set;} = 20.0f;
 	[Export] public float MaxCameraSize {get; set;} = 40.0f;
+	public const float PLAYER_HEIGHT = 1.32f;
 
 
 	[ExportCategory("Node References")]
@@ -24,6 +27,7 @@ public partial class Player : CharacterBody3D, IHurtable
 	[Export] public Label3D HoverText {get;set;} = null;
 	[Export] public Area3D CoinPickupArea {get;set;} = null;
 	[Export] public RayCast3D GroundCheckRay {get;set;} = null;
+	[Export] public CollisionShape3D PlayerCollisionShape {get;set;} = null;
 	
 	// =======================================================================
 	// instance vars
@@ -32,13 +36,15 @@ public partial class Player : CharacterBody3D, IHurtable
 
 	// =======================================================================
 	// damage & death vars
-	private Timer _iFramesTimer;
-	private float _iFramesWaitTime = 0.032f;
+	private readonly Stopwatch _iFramesStopwatch = new();
+	private float _iFramesWaitTime = 32L;
 	private float _timeSinceDeath = 0.0f;
 	public bool IsDead => _current_health <= 0;
 	private float _min_damage_vignette_ratio = 0.0f;
 	private float _damage_vignette_ratio = 0.0f;
 	private int _current_health;
+	private Timer _pulse_damage_timer = new(){Autostart = true,WaitTime=0.3};
+	private Vector2 _damage_pulse_time = new(0.3f,2.0f);
 
 	// =======================================================================
 	// camera vars
@@ -88,6 +94,10 @@ public partial class Player : CharacterBody3D, IHurtable
 	{
 		return Instance._money;
 	}
+	public static int GetHealth()
+	{
+		return Instance._current_health;
+	}
 
 	public static Vector3 GetCameraPosition()
 	{
@@ -97,17 +107,21 @@ public partial class Player : CharacterBody3D, IHurtable
 	public void TakeDamage(int damage, DamageType type)
 	{
         if (IsDead) return;
-		AddCameraShake(damage/MaxHealth);
-        if (_iFramesTimer.IsStopped()) {
-            _iFramesTimer.WaitTime = _iFramesWaitTime;
-            _iFramesTimer.Start();
+        if (_iFramesStopwatch.ElapsedMilliseconds > _iFramesWaitTime)
+		{
+			var damage_ratio = 1.0f*damage/MaxHealth;
+			AddCameraShake(damage_ratio);//10*damage/MaxHealth);
+            _iFramesStopwatch.Restart();
             _current_health -= damage;
-            _damage_vignette_ratio = 1.0f;//Mathf.Clamp(5.0f*damage/MaxHealth,0.0f,1.0f);
-            if (_current_health <= 0) {
+            _damage_vignette_ratio += damage_ratio;
+			_damage_vignette_ratio = Mathf.Clamp(_damage_vignette_ratio,_min_damage_vignette_ratio, 1.0f);
+            if (_current_health <= 0)
+			{
                 _current_health = 0;
 				_player_is_active = false;
                 GD.Print("Player died");
 				ResetCameraZoom();
+				UpdateDamageVignette();
             }
         }
 	}
@@ -124,7 +138,10 @@ public partial class Player : CharacterBody3D, IHurtable
         var shake = new Vector3((float)GD.RandRange(-_camera_shake_amount, _camera_shake_amount), (float)GD.RandRange(-_camera_shake_amount, _camera_shake_amount), (float)GD.RandRange(-_camera_shake_amount, _camera_shake_amount));
         _camera_gimbal.Position = shake;
         _camera_shake_amount = Mathf.Max(_camera_shake_amount - CameraShakeDecay, 0.0f);
-        if (_camera_shake_amount == 0) _camera_gimbal.Position = Vector3.Zero;
+        if (_camera_shake_amount <= 0) {
+			_camera_shake_amount = 0;
+			_camera_gimbal.Position = Vector3.Zero;
+		}
     }
 
 	private void SetCameraSize(float size)
@@ -158,7 +175,21 @@ public partial class Player : CharacterBody3D, IHurtable
 
 	private void UpdateDamageVignette()
 	{
-        _min_damage_vignette_ratio = _current_health < MaxHealth * 0.25f  ? 0.5f * (1.0f - _current_health/MaxHealth) : 0.0f;
+		// set min damage vignette
+		_pulse_damage_timer.WaitTime = _damage_pulse_time.X+1.0f*_current_health/MaxHealth*(_damage_pulse_time.Y-_damage_pulse_time.X);
+		var pulse_ratio = (float)(_pulse_damage_timer.TimeLeft/_pulse_damage_timer.WaitTime);
+		var quarter_health = MaxHealth/4;
+		var almost_dead = MaxHealth/10;
+		if (_current_health < almost_dead)
+		{
+			_min_damage_vignette_ratio = 0.1f+0.4f*pulse_ratio;
+		}
+		else if (_current_health < quarter_health)
+		{
+			_min_damage_vignette_ratio = 0.1f*pulse_ratio;
+		}
+		else _min_damage_vignette_ratio = 0.0f;
+
         if (_current_health == 0) _min_damage_vignette_ratio = 1.0f;
         _damage_vignette_ratio = Mathf.Lerp(_damage_vignette_ratio, _min_damage_vignette_ratio, 0.1f);
         ((ShaderMaterial)DamageVignette.GetActiveMaterial(0)).Set("shader_parameter/damage_ratio", _damage_vignette_ratio);
@@ -174,8 +205,9 @@ public partial class Player : CharacterBody3D, IHurtable
 
 		// health and damage
 		_current_health = MaxHealth;
-		_iFramesTimer = new Timer(){WaitTime = _iFramesWaitTime, Autostart = false, OneShot = true};
-		AddChild(_iFramesTimer);
+		_pulse_damage_timer.WaitTime = _damage_pulse_time.Y;
+		_iFramesStopwatch.Start();
+		AddChild(_pulse_damage_timer);
 
 		// set mouse mode and capture
 		Input.SetMouseMode(Input.MouseModeEnum.Captured);
@@ -274,6 +306,21 @@ public partial class Player : CharacterBody3D, IHurtable
 			else if (keyEvent.Pressed && keyEvent.Keycode == Key.F2)
 			{
 				_lock_camera_angle = !_lock_camera_angle;
+			}
+			else if (keyEvent.Pressed && keyEvent.Keycode == Key.F3)
+			{
+				var debug_overlay = GetTree().GetNodesInGroup("debug_overlay");
+				foreach (var node in debug_overlay)
+				{
+					if (node is Control debug_gui)
+					{
+						debug_gui.Visible = !debug_gui.Visible;
+					}
+				}
+			}
+			else if (keyEvent.Pressed && keyEvent.Keycode == Key.F4)
+			{
+				TakeDamage(5,DamageType.Physical);
 			}
 		}
 

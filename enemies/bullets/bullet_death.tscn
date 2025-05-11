@@ -1,0 +1,58 @@
+[gd_scene load_steps=9 format=3 uid="uid://c8wwj46p7gb81"]
+
+[sub_resource type="Curve" id="Curve_ahyo1"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.77518, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_u7tqc"]
+curve = SubResource("Curve_ahyo1")
+
+[sub_resource type="Curve" id="Curve_s02lx"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_ob8th"]
+curve = SubResource("Curve_s02lx")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_bg48b"]
+direction = Vector3(0, 5, 0)
+initial_velocity_min = 0.5
+initial_velocity_max = 2.0
+radial_velocity_min = 0.499978
+radial_velocity_max = 0.999978
+gravity = Vector3(0, -4.9, 0)
+scale_min = 0.25
+scale_max = 0.25
+scale_curve = SubResource("CurveTexture_ob8th")
+color = Color(1, 0.87451, 0, 1)
+emission_curve = SubResource("CurveTexture_u7tqc")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sh4xi"]
+vertex_color_use_as_albedo = true
+emission_enabled = true
+emission = Color(1, 0.921569, 0, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_acglr"]
+material = SubResource("StandardMaterial3D_sh4xi")
+
+[sub_resource type="GDScript" id="GDScript_u7tqc"]
+script/source = "extends GPUParticles3D
+
+func _clear_particles() -> void:
+	if (!Engine.is_editor_hint()):
+		#print(\"death effect finished!\")
+		queue_free()
+"
+
+[node name="GPUParticles3D" type="GPUParticles3D"]
+emitting = false
+amount = 3
+one_shot = true
+speed_scale = 1.5
+explosiveness = 1.0
+fixed_fps = 20
+process_material = SubResource("ParticleProcessMaterial_bg48b")
+draw_pass_1 = SubResource("SphereMesh_acglr")
+script = SubResource("GDScript_u7tqc")
+
+[connection signal="finished" from="." to="." method="_clear_particles"]

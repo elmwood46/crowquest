@@ -1,0 +1,82 @@
+[gd_scene load_steps=11 format=3 uid="uid://c182tuenjo1e7"]
+
+[ext_resource type="Script" uid="uid://c5s24go3uwwf" path="res://enemies/tests/boids/BoidManager.cs" id="1_j3khg"]
+[ext_resource type="Shader" uid="uid://devajh3obkhu8" path="res://enemies/tests/boids/boid_particle_shader.gdshader" id="2_7jb8b"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sg05p"]
+
+[sub_resource type="Sky" id="Sky_b64bs"]
+sky_material = SubResource("ProceduralSkyMaterial_sg05p")
+
+[sub_resource type="Environment" id="Environment_fcm7i"]
+sky = SubResource("Sky_b64bs")
+ambient_light_source = 3
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_k2un7"]
+shader = ExtResource("2_7jb8b")
+shader_parameter/scale = 0.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yytlg"]
+albedo_color = Color(1, 0.827451, 0, 1)
+emission_enabled = true
+emission = Color(0, 1, 1, 1)
+emission_energy_multiplier = 5.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_erseg"]
+material = SubResource("StandardMaterial3D_yytlg")
+radial_segments = 8
+rings = 4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_uhla8"]
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_o7dyx"]
+material = SubResource("StandardMaterial3D_uhla8")
+
+[node name="BoidManager" type="Node3D" node_paths=PackedStringArray("BoidParticles", "TestCamera", "TestCameraGimbal", "TestCameraContainer")]
+script = ExtResource("1_j3khg")
+NumBoids = 500
+BoidParticles = NodePath("GPUParticles3D")
+TestCamera = NodePath("CameraContainer/Swivel/Camera3D")
+TestCameraGimbal = NodePath("CameraContainer/Swivel")
+TestCameraContainer = NodePath("CameraContainer")
+MinVel = 46.49
+MaxVel = 57.154
+CohesionFactor = 11.98
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_fcm7i")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment"]
+transform = Transform3D(0.752321, 0.5788, -0.314648, 0.433533, -0.0753425, 0.897982, 0.496046, -0.811982, -0.307611, 0, 0, 0)
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+custom_aabb = AABB(-9999, -9999, -9999, 20000, 20000, 20000)
+emitting = false
+lifetime = 1e+15
+one_shot = true
+explosiveness = 1.0
+fract_delta = false
+process_material = SubResource("ShaderMaterial_k2un7")
+draw_pass_1 = SubResource("SphereMesh_erseg")
+
+[node name="CameraContainer" type="Node3D" parent="."]
+
+[node name="Swivel" type="Node3D" parent="CameraContainer"]
+
+[node name="Camera3D" type="Camera3D" parent="CameraContainer/Swivel"]
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_o7dyx")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10)
+mesh = SubResource("BoxMesh_o7dyx")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 0)
+mesh = SubResource("BoxMesh_o7dyx")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 0)
+mesh = SubResource("BoxMesh_o7dyx")

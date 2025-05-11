@@ -3,8 +3,6 @@ using System;
 
 public partial class TreasureChest : StaticBody3D
 {
-	private static readonly ShaderMaterial _shine_highlight_shadermat = GD.Load<ShaderMaterial>("res://interactables/mesh_shine_highlight_shader_material.tres");
-	private static readonly Curve _chest_light_curve = GD.Load<Curve>("res://interactables/chest_light_curve.tres");
 	[Signal] public delegate void OpenedEventHandler();
 	[Export] public Godot.Collections.Array<AudioStream> OpenSounds {get;set;}
 	[Export] public Node3D SpawnParticleLocation {get;set;}
@@ -24,6 +22,9 @@ public partial class TreasureChest : StaticBody3D
 	private Timer _animate_shine_timer;
 	private Timer _chest_light_timer;
 
+	private static readonly ShaderMaterial _shine_highlight_shadermat = GD.Load<ShaderMaterial>("res://interactables/mesh_shine_highlight_shader_material.tres");
+	private static readonly Curve _chest_light_curve = GD.Load<Curve>("res://interactables/chest_light_curve.tres");
+
 	public override void _Ready()
 	{
 		_interactableComponent = new InteractableComponent
@@ -32,6 +33,18 @@ public partial class TreasureChest : StaticBody3D
 		};
 		AddChild(_interactableComponent);
 		_interactableComponent.Interacted += Open;
+
+		if (!AnimationPlayer.HasAnimation("open"))
+		{
+			throw new Exception($"Treasure chest requires an 'open' animation. AnimationPlayer {AnimationPlayer.Name} does not have animation 'open'");
+		}
+		AnimationPlayer.AnimationFinished += (name) =>
+		{
+			if (name == "open")
+			{
+				EmitSignal(SignalName.Opened);
+			}
+		};
 	}
 
 	public void ForceStateOpen()
@@ -74,7 +87,7 @@ public partial class TreasureChest : StaticBody3D
 		AnimationPlayer.SpeedScale = AnimationPlayer.GetAnimation("open").Length/OpenTime;
 		AnimationPlayer.Play("open");
 		IsOpen = true;
-		EmitSignal(SignalName.Opened);
+		
 		_interactableComponent.QueueFree();
 
 		var chest_material = ChestMesh.MaterialOverride;
