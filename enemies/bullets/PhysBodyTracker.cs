@@ -135,19 +135,19 @@ public partial class PhysBodyTracker : Node
         // do not run in editor
         if (Engine.IsEditorHint()) return;
 
-        // skip if body is static
-        if (_parent_body is StaticBody3D) return;
-
         // basic optimization to skip every other frame
         if (Engine.GetPhysicsFrames() % 2 == 0) return;
+
+        // skip if body is static
+        if (_parent_body is StaticBody3D) return;
 
         // only characterbody and rigid bodies need to be tracked for position changes
         var parent = (PhysicsBody3D)_parent_body;
         var new_transform = parent.GlobalTransform;
         if (new_transform != _body_prev_transform)
         {
-            GD.Print($"Updating parent Body");
-            UpdateBodyAABBInGrid(parent);
+            //GD.Print($"Updating parent Body");
+            UpdateBodyInGrid(parent);
             _body_prev_transform = new_transform;
         }
     }
@@ -196,35 +196,36 @@ public partial class PhysBodyTracker : Node
 
         if (body is StaticBody3D)
         {
-            // var pts = new List<Vector3>();
-            // foreach (var child in body.GetChildren())
-            // {
-            //     if (child is CollisionShape3D shape)
-            //     {
-            //         if (shape.Shape is ConvexPolygonShape3D cps)
-            //         {
-            //             pts.AddRange(cps.Points);
-            //         }
-            //     }
-            // }
-            // if (pts.Count > 0)
-            // {
-            //     var t_points = new Vector3[pts.Count];
-            //     for (int i = 0; i < pts.Count; i++)
-            //     {
-            //         var pt = body.GlobalTransform*pts[i];
-            //         t_points[i] = new Vector3(pt.X, pt.Y, pt.Z);
-            //     }
-            //     UpdateBodyPointsInGrid(body, t_points);
-            // }
-            var shape = body.GetChildren().OfType<CollisionShape3D>().FirstOrDefault();
-            if (shape != null && shape.Shape is BoxShape3D)
+            var children = body.GetChildren();
+            var visual_instance = children.OfType<VisualInstance3D>().FirstOrDefault();
+            var shape = children.OfType<CollisionShape3D>().FirstOrDefault();
+            if (shape.Shape is ConvexPolygonShape3D conv)
             {
+                List<Vector3> pts = [];
+                foreach (var child in children)
+                {
+                    if (child is CollisionShape3D cs && cs.Shape is ConvexPolygonShape3D d)
+                    {
+                        pts.AddRange(d.Points.Select(p => cs.GlobalTransform*p));
+                    }
+                }
+                UpdateBodyPointCloudInGrid(body, pts);
+            }
+            else if (visual_instance != null)
+            {
+                // this only checks visual instances, not shapes
+                // if body has a visual instance, its AABB is used for hierarchical culling 
+                UpdateBodyAABBInGrid(body);
+            }
+            else if (shape.Shape is BoxShape3D)
+            {
+                // if a body does not have a visual instance, its first box collider is used
+                // this is because the static maze walls have static bodies with no associated mesh
                 UpdateBodyBoxInGrid(body);
             }
             else
             {
-                UpdateBodyAABBInGrid(body);
+                throw new Exception($"StaticBody3D {body.Name} does not have a visual instance or a box shape.");
             }
 
             _body_to_data.TryRemove(body, out var _);
@@ -238,7 +239,7 @@ public partial class PhysBodyTracker : Node
             }
             _body_to_data[body] = shape_data;
         }
-        else
+        else // dynamic bodies
         {
             UpdateBodyAABBInGrid(body);
 
@@ -278,12 +279,10 @@ public partial class PhysBodyTracker : Node
         }
     }
 
-    private static void UpdateBodyPointsInGrid(PhysicsBody3D body, Vector3[] points)
+    private static void UpdateBodyPointCloudInGrid(PhysicsBody3D body, List<Vector3> point_cloud)
     {
-        if (points == null || points.Length == 0) return;
-
-
         RemoveBodyFromGrid(body);
+
         if (!_body_to_gridpos.TryGetValue(body, out var gridCells))
         {
             gridCells = [];
@@ -291,9 +290,9 @@ public partial class PhysBodyTracker : Node
         }
         gridCells.Clear();
 
-        foreach (var point in points)
+        for (int i=0; i< point_cloud.Count; i++)
         {
-            var cell = WorldToCell(point);
+            var cell = WorldToCell(point_cloud[i]);
             if (!_gridpos_to_bodies.TryGetValue(cell, out var set))
             {
                 set = [];
@@ -317,7 +316,7 @@ public partial class PhysBodyTracker : Node
             }
             gridCells.Clear();
             var aabb = new Aabb(-box.Size/2f, box.Size);
-            aabb = body.GlobalTransform*aabb;
+            aabb = shape.GlobalTransform*aabb;
             var min = WorldToCell(aabb.Position);
             var max = WorldToCell(aabb.Position + aabb.Size);
             for (int x = min.X; x <= max.X; x++)

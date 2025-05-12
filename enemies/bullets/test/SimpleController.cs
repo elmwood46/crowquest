@@ -95,7 +95,7 @@ public partial class SimpleController : CharacterBody3D
             _fireTimer -= (float)delta;
             if (_fireTimer <= 0f)
             {
-				for (int i = 0; i < 10; i++)FireBullet();
+				for (int i = 0; i < 50; i++)FireBullet();
                 _fireTimer = _fireCooldown;
             }
         }

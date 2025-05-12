@@ -38,10 +38,19 @@ material = SubResource("StandardMaterial3D_sh4xi")
 [sub_resource type="GDScript" id="GDScript_u7tqc"]
 script/source = "extends GPUParticles3D
 
+var started := false
+
 func _clear_particles() -> void:
 	if (!Engine.is_editor_hint()):
 		#print(\"death effect finished!\")
 		queue_free()
+		
+func _process(delta: float) -> void:
+	if (!started && !emitting):
+		started = true
+		emitting = true
+	elif (started && !emitting):
+		_clear_particles()
 "
 
 [node name="GPUParticles3D" type="GPUParticles3D"]
@@ -50,9 +59,7 @@ amount = 3
 one_shot = true
 speed_scale = 1.5
 explosiveness = 1.0
-fixed_fps = 20
+fixed_fps = 60
 process_material = SubResource("ParticleProcessMaterial_bg48b")
 draw_pass_1 = SubResource("SphereMesh_acglr")
 script = SubResource("GDScript_u7tqc")
-
-[connection signal="finished" from="." to="." method="_clear_particles"]

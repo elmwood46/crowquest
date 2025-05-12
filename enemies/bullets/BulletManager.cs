@@ -3,6 +3,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 /// <summary>
 /// Manages the spawning of bullets, as well as the collision detection and removal of bullets.
@@ -32,7 +33,10 @@ public partial class BulletManager : Node
     private static BulletManager Instance;
     private static readonly Transform3D HIDE_DOWN = new(Basis.Identity,new Vector3(0.0f, -10000.0f, 0.0f));
     private static readonly PackedScene BulletDeathScene = ResourceLoader.Load("res://enemies/bullets/bullet_death.tscn") as PackedScene;
+    private static readonly ConvexPolygonShape3D _sphere_convex_shape = GD.Load<ConvexPolygonShape3D>("res://enemies/bullets/test/bulletConvexShape.tres");
+    private static readonly Vector3[] _sphere_convex_shape_verts = _sphere_convex_shape.Points;
     private const float BULLET_MAX_DISTANCE = 160f;
+    private const int MAX_BULLETS_DESTROYED_AT_ONCE = 10;
     private static readonly Vector3[] CUBE_VERTS = // used to collide bullet with convex hulls (bullet uses a box collision for these bc its small)
         {
             new(-0.5f, -0.5f, -0.5f),
@@ -54,64 +58,8 @@ public partial class BulletManager : Node
         BulletMultimesh.Multimesh.InstanceCount = MaxBullets;
     }
 
-    public override void _PhysicsProcess(double delta)
+    public override void _Process(double delta)
     {
-        BulletMultimesh.GlobalPosition = BulletMultimesh.GlobalPosition.Lerp(SimpleController.Instance.GlobalPosition,0.1f);
-        // performance optimization
-        if (_basic_bullets.Count==0 || Engine.GetPhysicsFrames() % 4ul == 0ul) return;
-
-        BulletMultimesh.Multimesh.VisibleInstanceCount = _basic_bullets.Count;
-        var multimesh_glob_pos = BulletMultimesh.GlobalPosition;
-        
-        for (var i=0;i<_basic_bullets.Count;i++)
-        {
-            var bullet = _basic_bullets[i];
-            var speed = (float)bullet["speed"];
-            var shot_direction = (Vector3)bullet["shot_direction"];
-            var shooter_rid = (Rid)bullet["shooter_rid"];
-
-            var exclude_bodies = new Godot.Collections.Array<Rid>();
-            if (shooter_rid.IsValid) exclude_bodies.Add(shooter_rid);
-
-            var bullet_transform = (Transform3D)bullet["transform"];
-            BulletMultimesh.Multimesh.SetInstanceTransform(i, bullet_transform.Translated(-multimesh_glob_pos));
-        
-            var len = speed * (float)delta;
-            var motion_vector = shot_direction * len;
-
-            bullet["distance_travelled"] = (float)bullet["distance_travelled"] + len;
-            if ((float)bullet["distance_travelled"] >= BULLET_MAX_DISTANCE)
-            {
-                DestroyBullet(i, bullet_transform);
-            }
-            else
-            {
-                if (!MoveAndCollide(i, bullet_transform, motion_vector, exclude_bodies))
-                {
-                    if (!MoveAndCollide(i, bullet_transform,-motion_vector, exclude_bodies))
-                    {
-                        bullet["transform"] = bullet_transform.Translated(motion_vector);
-                    }
-                }
-            }
-        }
-
-        // remove any checked bullets
-        // use stack to remove bullets in reverse order
-        // so that the indices of the remaining bullets are not changed
-        while (!_bullet_idx_to_remove.IsEmpty)
-        {
-            if (!_bullet_idx_to_remove.TryPop(out var bullet_index)) continue;
-            if (bullet_index < 0 || bullet_index >= _basic_bullets.Count)
-            {
-                #pragma warning disable CA2208 // Instantiate argument exceptions correctly
-                throw new ArgumentOutOfRangeException(nameof(bullet_index), "Bullet index is out of range.");
-                #pragma warning restore CA2208
-            }
-            BulletMultimesh.Multimesh.SetInstanceTransform(bullet_index, HIDE_DOWN);
-            _basic_bullets.RemoveAt(bullet_index);
-        }
-
         // add new bullets
         while (!_bullets_to_add.IsEmpty)
         {
@@ -121,14 +69,69 @@ public partial class BulletManager : Node
         }
     }
 
+    async public override void _PhysicsProcess(double delta)
+    {
+        BulletMultimesh.GlobalPosition = BulletMultimesh.GlobalPosition.Lerp(SimpleController.Instance.GlobalPosition,0.1f);
+
+        // performance optimization
+        BulletMultimesh.Multimesh.VisibleInstanceCount = _basic_bullets.Count;
+        if (_basic_bullets.Count==0) return;
+
+        var neg_multimesh_glob_pos = -BulletMultimesh.GlobalPosition;
+        
+        for (var i=0;i<_basic_bullets.Count;i++)
+        {
+            BulletMultimesh.Multimesh.SetInstanceTransform(i, ((Transform3D)_basic_bullets[i]["transform"]).Translated(neg_multimesh_glob_pos));
+        }
+
+        await Task.Run(()=>{
+            for (var i=0;i<_basic_bullets.Count;i++)
+            {
+                var bullet = _basic_bullets[i];
+                var bullet_transform = (Transform3D)bullet["transform"];
+                var speed = (float)bullet["speed"];
+                var shot_direction = (Vector3)bullet["shot_direction"];
+                var shooter_rid = (Rid)bullet["shooter_rid"];
+                var exclude_bodies = new Godot.Collections.Array<Rid>();
+                if (shooter_rid.IsValid) exclude_bodies.Add(shooter_rid);
+            
+                var len = speed * (float)delta;
+                var motion_vector = shot_direction * len;
+
+                bullet["distance_travelled"] = (float)bullet["distance_travelled"] + len;
+                if ((float)bullet["distance_travelled"] >= BULLET_MAX_DISTANCE)
+                {
+                    DestroyBullet(i, bullet_transform);
+                }
+                else
+                {
+                    if (!CheckForCollision(i, bullet_transform, motion_vector, exclude_bodies))
+                    {
+                        bullet["transform"] = bullet_transform.Translated(motion_vector);
+                    }
+                }
+            }
+        });
+
+        // remove bullets flagged for removal
+        // use stack to remove bullets in reverse order
+        // so that the indices of the remaining bullets are not changed
+        while (!_bullet_idx_to_remove.IsEmpty)
+        {
+            if (!_bullet_idx_to_remove.TryPop(out var bullet_index)) continue;
+            if (bullet_index < 0 || bullet_index >= _basic_bullets.Count) 
+            {
+                // duplicate values in stack sometimes has this result
+                continue;
+            }
+            _basic_bullets.RemoveAt(bullet_index);
+        }
+        _bullet_idx_to_remove.Clear();
+    }
+
     public static string GetBulletCountString()
     {
         return _basic_bullets.Count.ToString();
-    }
-
-    private static bool MoveAndCollide(int bullet_index, Transform3D bullet_transform, Vector3 motion_vector, Godot.Collections.Array<Rid> exclude_bodies)
-    {
-        return Instance.CheckAllBodies(bullet_index, bullet_transform, motion_vector, exclude_bodies);
     }
 
     public static void AddBullet(PhysicsBody3D shooter, Dictionary<string,Variant> bullet_data, Vector3 start_position = new Vector3())
@@ -158,111 +161,7 @@ public partial class BulletManager : Node
         });
     }
 
-    private bool CheckAllBodies(int bullet_idx, Transform3D bullet_global_transform, Vector3 motion_vector, Godot.Collections.Array<Rid> exclude_bodies = null)
-    {
-        exclude_bodies ??= [];
-        var bullet_translated = bullet_global_transform.Translated(motion_vector);
-        foreach (var child in GetTree().CurrentScene.GetChildren())
-        {
-            if (child is StaticBody3D body && !exclude_bodies.Contains(body.GetRid()))
-            {
-                if (body.GetNode<CollisionShape3D>("CollisionShape3D") is CollisionShape3D shape)
-                {
-                    if (shape.Shape is SphereShape3D sphere)
-                    {
-                        var static_sphere_radius = sphere.Radius*shape.GlobalTransform.Basis.Scale.X;
-                        var collide_with_sphere = SphereToSphere(bullet_translated.Origin, BulletRadius, body.GlobalTransform.Origin, static_sphere_radius);
-                        if (collide_with_sphere) 
-                        {
-                            BulletCollide(child, bullet_idx, bullet_translated);
-                            return true;
-                        }
-                    }
-                    else if (shape.Shape is CapsuleShape3D capsule)
-                    {
-                        var collide_with_capsule = SphereToCapsule(
-                            bullet_translated.Origin,
-                            BulletRadius,
-                            shape.GlobalTransform,
-                            capsule.Radius,
-                            capsule.Height);
-                        if (collide_with_capsule) 
-                        {
-                            BulletCollide(child, bullet_idx, bullet_translated);
-                            return true;
-                        }
-                    }
-                    else if (shape.Shape is BoxShape3D box)
-                    {
-                        var collide_with_box = SphereToOBB(bullet_translated.Origin, BulletRadius, shape.GlobalTransform, box.Size);
-                        if (collide_with_box) 
-                        {
-                            BulletCollide(child, bullet_idx, bullet_translated);
-                            return true;
-                        }
-                    }
-                    else if (shape.Shape is ConvexPolygonShape3D convex)
-                    {
-                        var transformed_bullet_collision_box = new System.Numerics.Vector3[_bullet_collision_box.Length];
-                        for (int i=0;i<_bullet_collision_box.Length;i++)
-                        {
-                            var box_vert = bullet_global_transform*_bullet_collision_box[i];
-                            transformed_bullet_collision_box[i] = new System.Numerics.Vector3(
-                                box_vert.X,
-                                box_vert.Y,
-                                box_vert.Z);
-                        }
-                        var transformed_convex_points = new System.Numerics.Vector3[convex.Points.Length];
-                        for (int i=0;i<convex.Points.Length;i++)
-                        {
-                            var convex_vert = shape.GlobalTransform*convex.Points[i];
-                            transformed_convex_points[i] = new System.Numerics.Vector3(
-                                convex_vert.X,
-                                convex_vert.Y,
-                                convex_vert.Z);
-                        }
-                        if (OpenGJKSharp.OpenGJKSharp.HasCollision(transformed_bullet_collision_box, transformed_convex_points))
-                        {
-                            BulletCollide(child, bullet_idx, bullet_translated);
-                            return true;
-                        }
-                    }
-                }
-            }
-            else if (child is Path3D p)
-            {
-                foreach (var path_child in p.GetChildren())
-                {
-                    if (path_child is MeshInstance3D mesh)
-                    {
-                        if (mesh.Mesh is BoxMesh box_mesh)
-                        {
-                            var collide_with_aabb = SphereToAABB(bullet_translated.Origin, BulletRadius, mesh.GlobalTransform.Origin, box_mesh.Size);
-                            if (collide_with_aabb) 
-                            {
-                                BulletCollide(mesh, bullet_idx, bullet_translated);
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // check aabbs
-        foreach (var aabb in BulletCollisionTest.AabbsList)
-        {
-            if (aabb.IntersectsSegment(bullet_global_transform.Origin, bullet_translated.Origin))
-            {
-                BulletCollide(null, bullet_idx, bullet_translated);
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private static void CheckForCollision(int bullet_idx, Transform3D bullet_global_transform, Vector3 motion_vector, Godot.Collections.Array<Rid> exclude_bodies = null)
+    private static bool CheckForCollision(int bullet_idx, Transform3D bullet_global_transform, Vector3 motion_vector, Godot.Collections.Array<Rid> exclude_bodies = null)
     {
         var bullet_cell = PhysBodyTracker.WorldToCell(bullet_global_transform.Origin);
         for (int x=-1;x<=1;x++)
@@ -272,20 +171,25 @@ public partial class BulletManager : Node
                 for (int z=-1;z<=1;z++)
                 {
                     var cell = bullet_cell + new Vector3I(x,y,z);
-                    if (PhysBodyTracker.IsCellOccupied(cell))
+                    if (PhysBodyTracker.IsCellOccupied(cell)&&PhysBodyTracker.TryGetBodiesInCell(cell, out var bodies))
                     {
-                        if (PhysBodyTracker.TryGetBodiesInCell(cell, out var bodies))
+                        foreach (var body in bodies.ToList())
                         {
-                            foreach (var body in bodies)
+                            if (body is not PhysicsBody3D phys_body || !IsInstanceValid(phys_body) || exclude_bodies.Contains(phys_body.GetRid())) continue;
+                            if (PhysBodyTracker.TryGetBodyData(body, out var shape_data))
                             {
-                                if (PhysBodyTracker.TryGetBodyData(body, out var shape_data))
+                                foreach (var tracked_shape in shape_data.ToList())
                                 {
-                                    foreach (var shape in shape_data)
+                                    if (CollideBulletWithShape(
+                                        bullet_global_transform.Translated(motion_vector),
+                                        Instance.BulletRadius,
+                                        tracked_shape))
                                     {
-                                        if (CollideBulletWithShape(bullet_global_transform.Translated(motion_vector), Instance.BulletRadius, shape))
-                                        {
-                                            BulletCollide((GodotObject)body, bullet_idx, bullet_global_transform.Translated(motion_vector));
-                                        }
+                                        BulletCollide(
+                                            (GodotObject)body,
+                                            bullet_idx,
+                                            bullet_global_transform.Translated(motion_vector));
+                                        return true;
                                     }
                                 }
                             }
@@ -294,7 +198,7 @@ public partial class BulletManager : Node
                 }
             }
         }
-        if (!PhysBodyTracker.IsCellOccupied(bullet_cell)) return;
+        return false;
     }
 
     private static bool CollideBulletWithShape(Transform3D bullet_glob_transform, float bullet_radius, PhysBodyTrackerData tracked_shape)
@@ -320,16 +224,7 @@ public partial class BulletManager : Node
         }
         else if (tracked_shape.Type == PhysBodyTrackerData.PhysBodyTrackerShape.CsgConvexHull)
         {
-            var transformed_bullet_collision_box = new System.Numerics.Vector3[Instance._bullet_collision_box.Length];
-            for (int i=0;i<Instance._bullet_collision_box.Length;i++)
-            {
-                var box_vert = bullet_glob_transform*Instance._bullet_collision_box[i];
-                transformed_bullet_collision_box[i] = new System.Numerics.Vector3(
-                    box_vert.X,
-                    box_vert.Y,
-                    box_vert.Z);
-            }
-            return OpenGJKSharp.OpenGJKSharp.HasCollision(transformed_bullet_collision_box, ((CsgConvexHullData)tracked_shape).TransformedPoints);
+            return SphereToConvexHull(bullet_glob_transform.Origin, bullet_radius, ((CsgConvexHullData)tracked_shape).TransformedPoints);
         }
         return false;
     }
@@ -343,10 +238,10 @@ public partial class BulletManager : Node
 
         Callable.From(() =>
         {
-            // debug print body name
-            if (body is Node3D d) GD.Print(d.Name);
-            else if (body is null) GD.Print("null");
-            else GD.Print(body.GetType());
+            // DEBUG print body name
+            // if (body is Node3D d) GD.Print(d.Name);
+            // else if (body is null) GD.Print("null");
+            // else GD.Print(body.GetType());
 
             if (body is IHurtable hurtable)
             {
@@ -359,17 +254,19 @@ public partial class BulletManager : Node
 
     private static void DestroyBullet(int bullet_idx, Transform3D bullet_transform)
     {
-        Instance.BulletMultimesh.Multimesh.SetInstanceTransform(bullet_idx, HIDE_DOWN);
-
-        // Callable.From(() =>
-        // {
-            // var death_particles= BulletDeathScene.Instantiate<GpuParticles3D>();
-            // Instance.GetTree().Root.AddChild(death_particles);
-            // death_particles.GlobalTransform = bullet_transform;
-            // death_particles.Emitting = true;
-        // }).CallDeferred();
-
         _bullet_idx_to_remove.Push(bullet_idx);
+
+        if (_bullet_idx_to_remove.Count < MAX_BULLETS_DESTROYED_AT_ONCE)
+        {
+            Callable.From(() =>
+            {
+                
+                var death_particles = BulletDeathScene.Instantiate<GpuParticles3D>();
+                Instance.GetTree().Root.AddChild(death_particles);
+                death_particles.GlobalTransform = bullet_transform;
+                //death_particles.Emitting = true;
+            }).CallDeferred();
+        }
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -424,6 +321,18 @@ public partial class BulletManager : Node
         float z = Math.Clamp(sphereCenter.Z, min.Z, max.Z);
 
         return sphereCenter.DistanceSquaredTo(new Vector3(x, y, z)) <= sphereRadius * sphereRadius;
+    }
+
+
+    public static bool SphereToConvexHull(Vector3 sphere_centre, float sphere_radius, System.Numerics.Vector3[] convex_hull)
+    {
+        var transformed_bullet_collision_box = new System.Numerics.Vector3[_sphere_convex_shape_verts.Length];
+        for (int i=0;i<_sphere_convex_shape_verts.Length;i++)
+        {
+            var box_vert = sphere_centre+(_sphere_convex_shape_verts[i]*sphere_radius);
+            transformed_bullet_collision_box[i] = new System.Numerics.Vector3(box_vert.X,box_vert.Y,box_vert.Z);
+        }
+        return OpenGJKSharp.OpenGJKSharp.HasCollision(transformed_bullet_collision_box, convex_hull);
     }
 
     private static Vector3 ClosestPointOnLineSegment(Vector3 a, Vector3 b, Vector3 point)

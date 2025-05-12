@@ -1,4 +1,4 @@
-[gd_scene load_steps=46 format=4 uid="uid://iltrd7reyunv"]
+[gd_scene load_steps=47 format=4 uid="uid://iltrd7reyunv"]
 
 [ext_resource type="Material" uid="uid://b3sfpwraj58wq" path="res://terrain_generator/simple_wfc/hedge_texture.tres" id="2_4ki6f"]
 [ext_resource type="PackedScene" uid="uid://detrvp0t5teeu" path="res://enemies/bullets/PhysBodyTracker.tscn" id="2_l8rkt"]
@@ -93,11 +93,14 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AAAKQWZmlkAAAIBBL5MIQWZmlkDk9LTAL5MIQQAAAADk9LTAL5MIwQAAAADg9LTAL5MIQQAAAADk9LTAL5MIQWZmlkDk9LTAAAAKQQAAAAAAAIBBL5MIQQAAAADk9LTAo9nuQAAAAAB0YKDAAADsQAAAAAAAAIBBo9nuQAAAAAB0YKDAo9nuQGZmlkB0YKDAo9nuQAAAAAB0YKDAAADsQAAAAAAAAIBBAAAKQQAAAAAAAIBBL5MIQQAAAADk9LTAAAAKQQAAAAAAAIBBAAAKQWZmlkAAAIBBAAAKQWZmlkAAAIBBAAAKQQAAAAAAAIBBAADsQAAAAAAAAIBBo9nuwGZmlkBwYKDAo9nuQGZmlkB0YKDAo9nuQAAAAAB0YKDAM4b5wAAAoED6x6bAM4b5QAAAoED+x6bAo9nuQGZmlkB0YKDADGcDwQAAoEDqv67ADGcDQQAAoEDuv67AM4b5QAAAoED+x6bAL5MIwWZmlkDg9LTAL5MIQWZmlkDk9LTADGcDQQAAoEDuv67Ao9nuwAAAAABwYKDAo9nuQAAAAAB0YKDAL5MIQQAAAADk9LTAAADsQGZmlkAAAIBBo9nuQGZmlkB0YKDAM4b5QAAAoED+x6bAsHL4QAAAoEAAAIBBM4b5QAAAoED+x6bADGcDQQAAoEDuv67Az/cDQQAAoEAAAIBBDGcDQQAAoEDuv67AL5MIQWZmlkDk9LTAo9nuQGZmlkB0YKDAAADsQGZmlkAAAIBBAADsQAAAAAAAAIBBAADsQAAAAAAAAIBBAADsQGZmlkAAAIBBsHL4QAAAoEAAAIBBsHL4QAAAoEAAAIBBAAAKQWZmlkAAAIBBAADsQAAAAAAAAIBBM4b5QAAAoED+x6bAsHL4QAAAoEAAAIBBAADsQGZmlkAAAIBBDGcDQQAAoEDuv67Az/cDQQAAoEAAAIBBsHL4QAAAoEAAAIBBL5MIQWZmlkDk9LTAAAAKQWZmlkAAAIBBz/cDQQAAoEAAAIBBsHL4QAAAoEAAAIBBz/cDQQAAoEAAAIBBAAAKQWZmlkAAAIBBL5MIQWZmlkDk9LTAL5MIwWZmlkDg9LTAL5MIwQAAAADg9LTAAAAKwQAAAAAAAIBBL5MIwQAAAADg9LTAL5MIwWZmlkDg9LTAL5MIQQAAAADk9LTAL5MIwQAAAADg9LTAo9nuwAAAAABwYKDAo9nuQAAAAAB0YKDAo9nuwAAAAABwYKDAo9nuwGZmlkBwYKDAL5MIwQAAAADg9LTAAAAKwQAAAAAAAIBBAADswAAAAAAAAIBBo9nuwAAAAABwYKDAAADswAAAAAAAAIBBAADswGZmlkAAAIBBAADswAAAAAAAAIBBAAAKwQAAAAAAAIBBAAAKwWZmlkAAAIBBAADswGZmlkAAAIBBo9nuwGZmlkBwYKDAo9nuwAAAAABwYKDAAAAKwWZmlkAAAIBBL5MIwWZmlkDg9LTADGcDwQAAoEDqv67Az/cDwQAAoEAAAIBBDGcDwQAAoEDqv67AM4b5wAAAoED6x6bAsHL4wAAAoEAAAIBBM4b5wAAAoED6x6bAo9nuwGZmlkBwYKDAAADswAAAAAAAAIBBo9nuwAAAAABwYKDAL5MIwQAAAADg9LTADGcDQQAAoEDuv67ADGcDwQAAoEDqv67AL5MIwWZmlkDg9LTAM4b5QAAAoED+x6bAM4b5wAAAoED6x6bADGcDwQAAoEDqv67Ao9nuQGZmlkB0YKDAo9nuwGZmlkBwYKDAM4b5wAAAoED6x6bAL5MIwWZmlkDg9LTAAAAKwWZmlkAAAIBBAAAKwQAAAAAAAIBBAADswAAAAAAAAIBBAAAKwWZmlkAAAIBBsHL4wAAAoEAAAIBBsHL4wAAAoEAAAIBBAADswGZmlkAAAIBBAADswAAAAAAAAIBBDGcDwQAAoEDqv67Az/cDwQAAoEAAAIBBAAAKwWZmlkAAAIBBM4b5wAAAoED6x6bAsHL4wAAAoEAAAIBBz/cDwQAAoEAAAIBBo9nuwGZmlkBwYKDAAADswGZmlkAAAIBBsHL4wAAAoEAAAIBBAAAKwWZmlkAAAIBBz/cDwQAAoEAAAIBBsHL4wAAAoEAAAIBBrOK5nQAAu/9w2xzXAyIukxXAmypBFbT49D9RFYsjpsoVwJsqliqLo3DbHNepGZPex6qbKjQA8P8VwJsqQRW0+KZq9D9tKkKHiyoXVf//uf+mavQ/0yrshl9QDKESHPvrpmr0P20qQoeLKhdV//9EgMeqmyo0APD/FcCbKkEVtPjHqpsqNADw/6ziuZ0AALv//3//f/7//7//f/9/////v/9//3////+/j6gvpeY88sxfUAyhJBzHnaZq9D9bFcfR6ot01jASxcY6aYDaaRjNsV9QDKEkHMed4Vnd6PAcmLMUquDzww1HyTppgNppGM2xZSBL0FZENrJw2xzXqRmT3hSq4PPDDUfJuaroP984n6qmavQ/WxXH0RXAmyqWKoujYTOls/X/NoBfUAyhEhz76zppgNqGEA3+/mgH6fT/AIA6aYDahhAN/hSq4PN2Hz+Cvqtf1AAA0P8UquDzdh8/gnDbHNcDIi6TX1AMoRIc++thM6Wz9f82gIsqF1X//7n//3//f////7//f/9/////v/9//3/+//+//3//f/7//7//f/9//v//v/9//3////+/OmmA2oYQDf7+aAfp9P8AgGEzpbP1/zaAFKrg83YfP4K+q1/UAADQ//5oB+n0/wCAcNsc1wMiLpOs4rmdAAC7/76rX9QAAND//3//f/7//7//f/9/////v/9//3/+//+/cNsc16kZk95lIEvQVkQ2svQ/URWLI6bKjCoZVXl//7/0P1EVoXGtqmUgS9ACV8bNFcCbKpYqi6P0P1EViyOmyrmq6D/fOJ+qpmr0P1sVx9G5qug/3zifqo+oL6XmPPLM9D9RFaFxraqMKhlVeX//v8iqmyq2f8q/uaroPyVytMrIqpsqiYD/v03iGp6JgP+//3//f////7//f/9/////v/9//3////+/TeIanomA/7+PqC+lgFqwrrmq6D8lcrTKuTL9spR/A8BlIEvQAlfGzeFZ3ehde03Ij2iY6Pt/BMDhWd3oXXtNyOqLdNale3GwBKsZ1V2A/r/qi3TWpXtxsI+oL6WAWrCuyKqbKrZ/yr+5qug/JXK0yvQ/URWhca2qFKrg88MNR8nhWd3o8ByYs2UgS9BWRDayOmmA2mkYzbHqi3TWMBLFxuFZ3ejwHJizX1AMoSQcx52PqC+l5jzyzOqLdNYwEsXGZSBL0AJXxs25Mv2ylH8DwIwqGVV5f/+//3//f////7//f/9/////v/9//3/+//+//3//f/7//7//f/9//v//v/9//3////+/4Vnd6F17TciPaJjo+38EwLky/bKUfwPA6ot01qV7cbAEqxnVXYD+v49omOj7fwTAj6gvpYBasK5N4hqeiYD/vwSrGdVdgP6//3//f////7//f/9/////v/9//3/+//+/")
 }]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_ddqot"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_l8rkt"]
 size = Vector3(1.25, 5, 21.0079)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_g4wxp"]
 size = Vector3(0.601685, 5, 16.9526)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ddqot"]
+size = Vector3(1.25, 5, 21.0079)
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_uey40"]
 _surfaces = [{
@@ -459,6 +462,7 @@ shape = SubResource("BoxShape3D_mdc8m")
 [node name="DeadEnds" type="Node3D" parent="."]
 
 [node name="PathOBBDeadEnds1" type="StaticBody3D" parent="DeadEnds"]
+visible = false
 
 [node name="CsgWall_Path3D_268439" type="MeshInstance3D" parent="DeadEnds/PathOBBDeadEnds1"]
 mesh = SubResource("ArrayMesh_fv4uh")
@@ -470,6 +474,7 @@ shape = SubResource("BoxShape3D_thcpr")
 [node name="PhysBodyTracker" parent="DeadEnds/PathOBBDeadEnds1" instance=ExtResource("2_l8rkt")]
 
 [node name="PathOBBDeadEnds5" type="StaticBody3D" parent="DeadEnds"]
+visible = false
 
 [node name="_CollisionShape3D_268489" type="CollisionShape3D" parent="DeadEnds/PathOBBDeadEnds5"]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0.00720215, 2.5, 5.32715)
@@ -478,6 +483,7 @@ shape = SubResource("BoxShape3D_q8fk2")
 [node name="PhysBodyTracker" parent="DeadEnds/PathOBBDeadEnds5" instance=ExtResource("2_l8rkt")]
 
 [node name="PathOBBDeadEnds6" type="StaticBody3D" parent="DeadEnds"]
+visible = false
 
 [node name="_CollisionShape3D_268490" type="CollisionShape3D" parent="DeadEnds/PathOBBDeadEnds6"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 2.5, -5.5)
@@ -486,6 +492,7 @@ shape = SubResource("BoxShape3D_0cfv0")
 [node name="PhysBodyTracker" parent="DeadEnds/PathOBBDeadEnds6" instance=ExtResource("2_l8rkt")]
 
 [node name="PathOBBDeadEnds2" type="StaticBody3D" parent="DeadEnds"]
+visible = false
 
 [node name="CsgWall_Path3D_268440" type="MeshInstance3D" parent="DeadEnds/PathOBBDeadEnds2"]
 mesh = SubResource("ArrayMesh_c14ff")
@@ -497,6 +504,7 @@ shape = SubResource("BoxShape3D_vu56f")
 [node name="PhysBodyTracker" parent="DeadEnds/PathOBBDeadEnds2" instance=ExtResource("2_l8rkt")]
 
 [node name="PathOBBDeadEnds7" type="StaticBody3D" parent="DeadEnds"]
+visible = false
 
 [node name="_CollisionShape3D_268492" type="CollisionShape3D" parent="DeadEnds/PathOBBDeadEnds7"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -5.31055, 2.5, -0.0211487)
@@ -505,6 +513,7 @@ shape = SubResource("BoxShape3D_fwc6q")
 [node name="PhysBodyTracker" parent="DeadEnds/PathOBBDeadEnds7" instance=ExtResource("2_l8rkt")]
 
 [node name="PathOBBDeadEnds8" type="StaticBody3D" parent="DeadEnds"]
+visible = false
 
 [node name="_CollisionShape3D_268493" type="CollisionShape3D" parent="DeadEnds/PathOBBDeadEnds8"]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 5.49194, 2.5, 7.98663)
@@ -513,17 +522,19 @@ shape = SubResource("BoxShape3D_c4h1e")
 [node name="PhysBodyTracker" parent="DeadEnds/PathOBBDeadEnds8" instance=ExtResource("2_l8rkt")]
 
 [node name="PathOBBDeadEnds3" type="StaticBody3D" parent="DeadEnds"]
+visible = false
 
 [node name="CsgWall_Path3D_268441" type="MeshInstance3D" parent="DeadEnds/PathOBBDeadEnds3"]
 mesh = SubResource("ArrayMesh_j2te2")
 
 [node name="@CollisionShape3D@268496" type="CollisionShape3D" parent="DeadEnds/PathOBBDeadEnds3"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -8, 2.5, 5.49603)
-shape = SubResource("BoxShape3D_ddqot")
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 8.05279, 2.5, 5.49603)
+shape = SubResource("BoxShape3D_l8rkt")
 
 [node name="PhysBodyTracker" parent="DeadEnds/PathOBBDeadEnds3" instance=ExtResource("2_l8rkt")]
 
 [node name="PathOBBDeadEnds9" type="StaticBody3D" parent="DeadEnds"]
+visible = false
 
 [node name="_CollisionShape3D_268495" type="CollisionShape3D" parent="DeadEnds/PathOBBDeadEnds9"]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0.00698853, 2.5, -5.32416)
@@ -532,6 +543,7 @@ shape = SubResource("BoxShape3D_g4wxp")
 [node name="PhysBodyTracker" parent="DeadEnds/PathOBBDeadEnds9" instance=ExtResource("2_l8rkt")]
 
 [node name="PathOBBDeadEnds10" type="StaticBody3D" parent="DeadEnds"]
+visible = false
 
 [node name="_CollisionShape3D_268496" type="CollisionShape3D" parent="DeadEnds/PathOBBDeadEnds10"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -8, 2.5, 5.49603)
@@ -540,6 +552,7 @@ shape = SubResource("BoxShape3D_ddqot")
 [node name="PhysBodyTracker" parent="DeadEnds/PathOBBDeadEnds10" instance=ExtResource("2_l8rkt")]
 
 [node name="PathOBBDeadEnds4" type="StaticBody3D" parent="DeadEnds"]
+visible = false
 
 [node name="CsgWall_Path3D_268442" type="MeshInstance3D" parent="DeadEnds/PathOBBDeadEnds4"]
 mesh = SubResource("ArrayMesh_uey40")
@@ -551,6 +564,7 @@ shape = SubResource("BoxShape3D_hg1ty")
 [node name="PhysBodyTracker" parent="DeadEnds/PathOBBDeadEnds4" instance=ExtResource("2_l8rkt")]
 
 [node name="PathOBBDeadEnds11" type="StaticBody3D" parent="DeadEnds"]
+visible = false
 
 [node name="_CollisionShape3D_268498" type="CollisionShape3D" parent="DeadEnds/PathOBBDeadEnds11"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.36241, 2.5, 0)
@@ -559,6 +573,7 @@ shape = SubResource("BoxShape3D_r8812")
 [node name="PhysBodyTracker" parent="DeadEnds/PathOBBDeadEnds11" instance=ExtResource("2_l8rkt")]
 
 [node name="PathOBBDeadEnds12" type="StaticBody3D" parent="DeadEnds"]
+visible = false
 
 [node name="_CollisionShape3D_268499" type="CollisionShape3D" parent="DeadEnds/PathOBBDeadEnds12"]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -5.18756, 2.5, -8.00671)

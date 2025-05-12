@@ -1,10 +1,11 @@
-[gd_scene load_steps=15 format=3 uid="uid://dcyv0jjt08ld8"]
+[gd_scene load_steps=16 format=3 uid="uid://dcyv0jjt08ld8"]
 
 [ext_resource type="PackedScene" uid="uid://b0orkkctg2j5s" path="res://enemies/enemy.tscn" id="1_et8eb"]
 [ext_resource type="SpriteFrames" uid="uid://bpu0paevpvhdt" path="res://enemies/enemy_instances/elijah/eli_walk.tres" id="2_2140p"]
 [ext_resource type="AnimationNodeStateMachine" uid="uid://0nudusaglqy" path="res://enemies/enemy_base_animation_state_machine.tres" id="2_g64l5"]
 [ext_resource type="AudioStream" uid="uid://bysru72jholvi" path="res://enemies/enemy_instances/elijah/audio/cat_pain.wav" id="2_u1rpk"]
 [ext_resource type="AudioStream" uid="uid://fxbtvp74jit3" path="res://enemies/enemy_instances/elijah/audio/cat_idle.wav" id="3_mamhs"]
+[ext_resource type="PackedScene" uid="uid://detrvp0t5teeu" path="res://enemies/bullets/PhysBodyTracker.tscn" id="6_j6qxw"]
 
 [sub_resource type="Animation" id="Animation_uax0s"]
 length = 0.001
@@ -194,3 +195,5 @@ animation = &"base_idle"
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Enemy"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.48343, 0)
+
+[node name="PhysBodyTracker" parent="Enemy" instance=ExtResource("6_j6qxw")]

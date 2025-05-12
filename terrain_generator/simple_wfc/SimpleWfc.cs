@@ -10,7 +10,8 @@ public static class SimpleWfc
     const int South = 0x3;
     const int West = 0x4;
     private static readonly Node3D _tile_path_nodes = GD.Load<PackedScene>("res://terrain_generator/simple_wfc/TilePaths.tscn").Instantiate<Node3D>();
-
+    private static readonly Node3D _tile_static_wall = GD.Load<PackedScene>("res://terrain_generator/simple_wfc/GenWallsStraight.tscn").Instantiate<Node3D>();
+    private static readonly Node3D _tile_static_wall_2 = GD.Load<PackedScene>("res://terrain_generator/simple_wfc/GenWallsDiag.tscn").Instantiate<Node3D>();
     private static readonly Dictionary<Vector2I,int> _cell_walls = new()
     {
         { new Vector2I(0, -1), North }, // N
@@ -41,6 +42,34 @@ public static class SimpleWfc
             (int)WallDirections.SW => [.. _tile_path_nodes.GetNode("CornerPieces/Corner2").GetChildren().OfType<Path3D>()],
             (int)WallDirections.NSW => [dead_ends[2]],
             (int)WallDirections.ESW => [dead_ends[3]],
+            (int)WallDirections.All => [],
+            _ => throw new ArgumentOutOfRangeException(nameof(tileID), tileID, null)
+        };
+        return ret;
+    }
+
+    public static StaticBody3D[] GetTileStaticWall(int tileID, int wall_type)
+    {
+        Node3D wall = wall_type == 0 ? _tile_static_wall : _tile_static_wall_2;
+
+        var dead_ends = wall.GetNode("DeadEnds").GetChildren().OfType<StaticBody3D>().ToArray();
+        StaticBody3D[] ret = tileID switch
+        {
+            (int)WallDirections.None => [.. wall.GetNode("Intersection").GetChildren().OfType<StaticBody3D>()],
+            (int)WallDirections.N => [.. wall.GetNode("TJunctions/TJunction3").GetChildren().OfType<StaticBody3D>()],
+            (int)WallDirections.E => [.. wall.GetNode("TJunctions/TJunction1").GetChildren().OfType<StaticBody3D>()],
+            (int)WallDirections.NE => [.. wall.GetNode("CornerPieces/Corner3").GetChildren().OfType<StaticBody3D>()],
+            (int)WallDirections.S => [.. wall.GetNode("TJunctions/TJunction0").GetChildren().OfType<StaticBody3D>()],
+            (int)WallDirections.NS => [.. wall.GetNode("StraightPaths/StraightPathHor").GetChildren().OfType<StaticBody3D>()],
+            (int)WallDirections.ES => [.. wall.GetNode("CornerPieces/Corner0").GetChildren().OfType<StaticBody3D>()],
+            (int)WallDirections.NES => [dead_ends[0],dead_ends[1],dead_ends[2]],
+            (int)WallDirections.W => [.. wall.GetNode("TJunctions/TJunction2").GetChildren().OfType<StaticBody3D>()],
+            (int)WallDirections.NW => [.. wall.GetNode("CornerPieces/Corner1").GetChildren().OfType<StaticBody3D>()],
+            (int)WallDirections.EW => [.. wall.GetNode("StraightPaths/StraightPathVert").GetChildren().OfType<StaticBody3D>()],
+            (int)WallDirections.NEW => [dead_ends[3], dead_ends[4], dead_ends[5]],
+            (int)WallDirections.SW => [.. wall.GetNode("CornerPieces/Corner2").GetChildren().OfType<StaticBody3D>()],
+            (int)WallDirections.NSW => [dead_ends[6],dead_ends[7],dead_ends[8]],
+            (int)WallDirections.ESW => [dead_ends[9], dead_ends[10], dead_ends[11]],
             (int)WallDirections.All => [],
             _ => throw new ArgumentOutOfRangeException(nameof(tileID), tileID, null)
         };

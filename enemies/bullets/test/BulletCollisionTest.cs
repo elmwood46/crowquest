@@ -124,7 +124,8 @@ public partial class BulletCollisionTest : Node3D
     private float _bullet_radius = 0.25f;
     private Vector3[] _bullet_collision_box = new Vector3[CUBE_VERTS.Length];
 
-    [Export] public MeshInstance3D Sphere;
+    public MeshInstance3D Sphere; // used to test collisions
+    public CollisionShape3D TestConvexHullShape; // used to test collisions
 
     private bool _enable_processing = false;
     private Timer _emit_bullets_timer;
@@ -135,7 +136,7 @@ public partial class BulletCollisionTest : Node3D
     private MeshInstance3D _test_sphere_collision_mesh;
     private static readonly ConvexPolygonShape3D _sphere_convex_shape = GD.Load<ConvexPolygonShape3D>("res://enemies/bullets/test/bulletConvexShape.tres");
     private static readonly Vector3[] _sphere_convex_shape_verts = _sphere_convex_shape.Points;
-    [Export] public CollisionShape3D TestConvexHullShape;
+    
 
     // used to collide bullet with convex hulls (bullet uses a box collision for these bc its small)
     // it's centered around the origin and scaled by the bullet radius
@@ -153,6 +154,9 @@ public partial class BulletCollisionTest : Node3D
 
     public override void _Ready()
     {
+        Sphere = GetNodeOrNull<MeshInstance3D>("%TestSphereMesh");
+        var static_shape = GetNodeOrNull<StaticBody3D>("%ConvexHullTest");
+        TestConvexHullShape = static_shape.GetNode<CollisionShape3D>("CollisionShape3D");
         _prev_sphere_position = Sphere.GlobalPosition;
 
         if (Engine.IsEditorHint()) return;
@@ -169,6 +173,7 @@ public partial class BulletCollisionTest : Node3D
     public override void _Process(double delta)
     {
         if (!EnableProcessing) return;
+        if (Sphere == null) return;
 
         if (_prev_sphere_position != Sphere.GlobalPosition) 
         {
@@ -248,7 +253,9 @@ public partial class BulletCollisionTest : Node3D
     ];
     public void CreateCSGStaticBodies()
     {
+
         _tracked_csg_meshes.Clear();
+        if (TestConvexHullShape == null) return;
         var hulltest = PhysBodyTrackerData.Create(TestConvexHullShape.GlobalTransform, TestConvexHullShape.Shape);
         _tracked_csg_meshes.Add(hulltest);
 
