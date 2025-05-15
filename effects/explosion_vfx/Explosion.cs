@@ -83,14 +83,14 @@ public partial class Explosion : Node3D
 			// 	{
 			// 		var damage = EnemyAttackPatterns.SphereDamageDropoff(GlobalPosition,((Node3D) mesh.IntactScene.GetChild(0)).GlobalPosition, Damage, _explosion_radius);
 			// 		GD.Print("damaging destructo mesh ", mesh, " with ", damage, " damage");
-			// 		mesh.TakeDamage(damage, DamageType.Fire);
+			// 		mesh.TakeDamage(damage, DamageTypeFlagEnum.Fire);
 			// 	}
 			// }
 
 			if (node is IHurtable hurtable) {
 				var damage = AttackManager.SphereDamageDropoff(GlobalPosition, body_position, Damage, _explosion_radius);
 				GD.Print("Damaging hurtable ", hurtable, " with ", damage, " damage");
-				hurtable.TakeDamage(damage, DamageType.Physical);
+				hurtable.TakeDamage(damage, DamageTypeFlagEnum.Physical);
 			}
 		}
 	}

@@ -500,7 +500,7 @@ public partial class PlayerIMPORT : CharacterBody3D
         return pos;
     }
 
-    public void TakeDamage(int damage, DamageType damageType) {
+    public void TakeDamage(int damage, DamageTypeFlagEnum damageType) {
         if (IsDead) return;
         if (_iFramesTimer.IsStopped()) {
             _iFramesTimer.WaitTime = _iFramesWaitTime;

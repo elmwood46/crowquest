@@ -4,11 +4,9 @@ using System.Linq.Expressions;
 
 public partial class SpiralBulletAttack : Node3D, IAttack
 {
-    public static readonly string AttackName = "SpiralBulletAttack";
     public bool CanBeInterrupted => true;
     public bool CanMoveDuring => true;
     public bool IsFinished {get;set;} = false;
-    private static readonly PackedScene DefaultBullet = ResourceLoader.Load("res://enemies/attack_patterns/default_bullet.tscn") as PackedScene; 
     private static readonly AudioStream BulletFireSound = ResourceLoader.Load("res://audio/attacks/bubble-pop-283674.mp3") as AudioStream;
     private Timer _cooldown = new() {WaitTime = 5.0, OneShot = true};
     private Vector2 _cooldown_range = new(4.0f,5.0f); // seconds
@@ -42,7 +40,7 @@ public partial class SpiralBulletAttack : Node3D, IAttack
         {
             enemy.AddChild(_cooldown);
         }
-        return enemy.IsPlayerInRange(16.0f) && _cooldown.IsStopped();
+        return enemy.IsPlayerInRange(16.0f) && _cooldown.IsStopped() && enemy.IsPlayerVisible();
     }
 
     // this state machine is so unnecessarily messy lmao but it works
@@ -63,14 +61,8 @@ public partial class SpiralBulletAttack : Node3D, IAttack
                 _bullet_spawn_timer.Timeout += () =>
                 {
                     if (_bullets_spawned >= _bullet_count) return;
-                    //var bullet = DefaultBullet.Instantiate<Bullet>();
-                    //enemy.GetTree().Root.AddChild(bullet);
-                    //bullet.GlobalPosition = enemy.GlobalPosition;
-                    // bullet.LookAt(bullet.GlobalPosition+enemy.GetYDirectionToPlayer(), Vector3.Up);
-                    // bullet.RotateY(MathF.PI*2 *_spiral_rotations * _bullets_spawned/_bullet_count);
-                    //bullet.BulletDirection = enemy.GetYDirectionToPlayer().Rotated(Vector3.Up,MathF.PI*_bullets_spawned/16);
-                    var bullet_dir = enemy.GetYDirectionToPlayer().Rotated(Vector3.Up,MathF.PI*_bullets_spawned/16);
-                    BulletManager.AddBullet(enemy, 10, DamageType.Physical, bullet_dir, 10.0f);
+                    var bullet_dir = enemy.XZDirectionToPlayer().Rotated(Vector3.Up,MathF.PI*_bullets_spawned/16);
+                    BulletManager.AddBullet(shooter:enemy, damage:10, DamageTypeFlagEnum.Physical, shot_direction:bullet_dir, speed:20.0f, harms_enemies:false);
                     if (Mathf.FloorToInt(_bullets_spawned/(float)_bullet_count)*100%10 == 0)
                     {
                         AudioManager.TryPlay(BulletFireSound, AudioBus.Misc, enemy.GlobalPosition);

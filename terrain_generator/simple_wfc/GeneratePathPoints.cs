@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 [Tool]
-public partial class GeneratePathPointsTest : Node3D
+public partial class GeneratePathPoints : Node3D
 {
     private static readonly PackedScene _csg_wall_scene = GD.Load<PackedScene>("res://terrain_generator/procedural_brick_wall/csg/csg_brick_wall.tscn"); 
     private static readonly PackedScene _phys_body_tracker = GD.Load<PackedScene>("res://enemies/bullets/PhysBodyTracker.tscn");
@@ -23,82 +23,34 @@ public partial class GeneratePathPointsTest : Node3D
     private static Vector2 _path_mesh_dimensions = new(1.25f, 5f);
 
     [Export] public bool CanRunMethods {get;set;} = false;
-
-    [Export] public bool Init
-    {
-        get => false;
-        set
+    [ExportToolButton("Clear Child Nodes",Icon = "Node3D")] public Callable ClearChildrenCallable => Callable.From(ClearChildren);
+    [ExportToolButton("Create Paths",Icon = "Path3D")] public Callable InitCallable => Callable.From(RunInit);
+    [ExportToolButton("Clear Child Nodes Except Intersection")] public Callable ClearChildrenXIntCallable => Callable.From(()=>{
+        if (!CanRunMethods) return;
+        foreach (Node n in GetChildren())
         {
-            RunInit();
-        }
-    }
-
-
-    [Export] public bool ClearChildNodes
-    {
-        get => false;
-        set
-        {
-            ClearChildren();
-        }
-    }
-
-    [Export] public bool ClearAllExceptIntersection
-    {
-        get => false;
-        set
-        {
-            if (!CanRunMethods) return;
-            foreach (Node n in GetChildren())
+            if (n.Name != "Intersection")
             {
-                if (n.Name != "Intersection")
-                {
-                    n.QueueFree();
-                }
+                n.QueueFree();
             }
         }
-    }
+    });
 
-    [Export] public bool AttachCSG
-    {
-        get => false;
-        set
+    [ExportToolButton("Generate CSG Static Bodies")] public Callable GenCsgCallable => Callable.From(GenCsgStaticBodies);
+
+    [ExportToolButton("Add Trackers")] public Callable AddTrackersCallable => Callable.From(()=>{
+        if (!CanRunMethods) return;
+        foreach (var n in GetChildren())
         {
-            GenCsgStaticBodies();
-        }
-    }
-
-    [Export] public bool ApplyTrackersAndMaterial
-    {
-        get => false;
-        set
-        {
-            if (!CanRunMethods) return;
-
-            foreach (var n in GetChildren())
+            if (n is Node3D d)
             {
-                if (n is Node3D d)
+                bool gen_paths = true;
+                foreach (var n2 in n.GetChildren())
                 {
-                    bool gen_paths = true;
-                    foreach (var n2 in n.GetChildren())
+                    if (n2 is Node3D d1 && d1 is not StaticBody3D)
                     {
-                        if (n2 is Node3D d1 && d1 is not StaticBody3D)
-                        {
-                            gen_paths = false;
-                            foreach (var n3 in d1.GetChildren())
-                            {
-                                if (n3 is StaticBody3D sb)
-                                {
-                                    var phys_tracker = _phys_body_tracker.Instantiate<Node>();
-                                    sb.AddChild(phys_tracker);
-                                    phys_tracker.Owner = GetTree().EditedSceneRoot;
-                                }
-                            }
-                        }
-                    }
-                    if (gen_paths)
-                    {
-                        foreach (var n3 in d.GetChildren())
+                        gen_paths = false;
+                        foreach (var n3 in d1.GetChildren())
                         {
                             if (n3 is StaticBody3D sb)
                             {
@@ -109,9 +61,21 @@ public partial class GeneratePathPointsTest : Node3D
                         }
                     }
                 }
+                if (gen_paths)
+                {
+                    foreach (var n3 in d.GetChildren())
+                    {
+                        if (n3 is StaticBody3D sb)
+                        {
+                            var phys_tracker = _phys_body_tracker.Instantiate<Node>();
+                            sb.AddChild(phys_tracker);
+                            phys_tracker.Owner = GetTree().EditedSceneRoot;
+                        }
+                    }
+                }
             }
         }
-    }
+    });
 
     public void GenCsgStaticBodies()
     {

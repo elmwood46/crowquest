@@ -3,7 +3,6 @@ using System;
 
 public partial class ScratchAttack : Node3D, IAttack
 {
-    public static readonly string AttackName = "EliScratchAttack";
     private static readonly PackedScene ScratchAttackHitbox = ResourceLoader.Load("res://enemies/attack_hitboxes/scratch_hitbox.tscn") as PackedScene; 
     public int AttackState {get;private set;} = 0;
     private Node3D _hitbox;
@@ -19,7 +18,7 @@ public partial class ScratchAttack : Node3D, IAttack
         {
             enemy.AddChild(_cooldown);
         }
-        return enemy.IsPlayerInRange(16.0f) && _cooldown.IsStopped();
+        return enemy.IsPlayerInRange(16.0f) && _cooldown.IsStopped() && enemy.IsPlayerVisible();
     }
     private static readonly AudioStream ScratchSound = ResourceLoader.Load("res://enemies/enemy_instances/elijah/audio/cat_attack.wav") as AudioStream;
 
@@ -51,7 +50,7 @@ public partial class ScratchAttack : Node3D, IAttack
             _hitbox = ScratchAttackHitbox.Instantiate() as Node3D;
             enemy.AddChild(_hitbox);
             _hitbox.GlobalPosition = enemy.GlobalPosition;
-            _hitbox.LookAt(_hitbox.GlobalPosition+enemy.GetYDirectionToPlayer(), Vector3.Up);
+            _hitbox.LookAt(_hitbox.GlobalPosition+enemy.XZDirectionToPlayer(), Vector3.Up);
             _attackTimer.WaitTime = 1.0f;
             _attackTimer.Start();
             enemy.StopIdleSoundTimer();
@@ -82,7 +81,7 @@ public partial class ScratchAttack : Node3D, IAttack
                 {
                     if (body is Player p)
                     {
-                        p.TakeDamage(5, DamageType.Physical);
+                        p.TakeDamage(5, DamageTypeFlagEnum.Physical);
                     }
                 }
             }

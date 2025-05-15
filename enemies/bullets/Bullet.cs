@@ -8,7 +8,7 @@ public partial class Bullet : Node3D
     public Vector3 BulletDirection = Vector3.Forward;
     [Export] public float BulletLifeTime = 100.0f;
     [Export] public int BulletDamage = 10;
-    [Export] public DamageType BulletDamageType = DamageType.Physical;
+    [Export] public DamageTypeFlagEnum BulletDamageType = DamageTypeFlagEnum.Physical;
     [Export] public bool IsPlayerBullet = false;
     [Export] public Node3D BulletVisual;
     [Export] public GpuParticles3D BulletDeathScene;

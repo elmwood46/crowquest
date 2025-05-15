@@ -109,13 +109,13 @@ public partial class BulletManager_Physics : Node
     public static void AddBullet(PhysicsBody3D shooter, Dictionary<string,Variant> bullet_data, Vector3 start_position = new Vector3())
     {
         var damage = (int)bullet_data["damage"];
-        var damage_type = (DamageType)(int)bullet_data["damage_type"];
+        var damage_type = (DamageTypeFlagEnum)(int)bullet_data["damage_type"];
         var shot_direction = (Vector3)bullet_data["shot_direction"];
         var speed = (float)bullet_data["speed"];
         AddBullet(shooter, damage, damage_type, shot_direction, speed, start_position);
     }
 
-    public static void AddBullet(PhysicsBody3D shooter, int damage, DamageType damage_type, Vector3 shot_direction, float speed, Vector3 start_position = new Vector3())
+    public static void AddBullet(PhysicsBody3D shooter, int damage, DamageTypeFlagEnum damage_type, Vector3 shot_direction, float speed, Vector3 start_position = new Vector3())
     {
         var bullet = PhysicsServer3D.BodyCreate();
         var start_pos = start_position == Vector3.Zero ? shooter.GlobalPosition+Vector3.Up*0.5f : start_position;
@@ -172,7 +172,7 @@ public partial class BulletManager_Physics : Node
         {
             var bullet_data = _basic_bullets[bullet_idx];
             var damage = (int)bullet_data["damage"];
-            var damtype = (DamageType)(int)bullet_data["damage_type"];
+            var damtype = (DamageTypeFlagEnum)(int)bullet_data["damage_type"];
             hurtable.TakeDamage(damage, damtype);
             DestroyBullet(bullet_idx, bullet_transform);
         }

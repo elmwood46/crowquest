@@ -207,9 +207,10 @@ MoveLerpFactor = 5.0
 
 [node name="Camera3D" type="Camera3D" parent="CharacterBody3D"]
 
-[node name="BulletManager" type="Node" parent="." node_paths=PackedStringArray("BulletMultimesh")]
+[node name="BulletManager" type="Node" parent="." node_paths=PackedStringArray("FollowInstance", "BulletMultimesh")]
 unique_name_in_owner = true
 script = ExtResource("2_06ciu")
+FollowInstance = NodePath("../CharacterBody3D")
 BulletMultimesh = NodePath("MultiMeshInstance3D")
 MaxBullets = 5000
 
@@ -422,3 +423,4 @@ shape = SubResource("BoxShape3D_j7cjo")
 
 [node name="EnemySpawner" parent="." instance=ExtResource("9_umbuv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.01179, 0)
+EnemyCount = 10

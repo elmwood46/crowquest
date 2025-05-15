@@ -3,155 +3,99 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public enum EnemyTag
-{
-    BasicMelee,
-    Ranged,
-    Flying,
-}
-
-public enum EnemyState
-{
-    Idle,
-    Attacking,
-    TakingDamage,
-    Dead,
-    Moving,
-}
-
-public enum DieFace{
-    d4 = 4,
-    d6 = 6,
-    d8 = 8,
-    d10 = 10,
-    d12 = 12,
-    d20 = 20,
-}
-
 public partial class Enemy : RigidBody3D, IHurtable
 {
+    // ==================================================================
+    // ====== Enemy Stats ========
+    // ==================================================================
+    [ExportCategory("Enemy Stats")] 
+    public StateEnum State { get; set; } = StateEnum.Idle;
     [Export] public int MaxHealth { get; set; } = 30;
-    [Export] public string TagsString { get; set; } = "";
-    [Export] public DamageType TouchDamageType {get;set;} = DamageType.Physical;
+    public int Health;
+    public bool IsDead() => Health <= 0 || State == StateEnum.Dead;
+    [Export] public float Speed { get; set; } = 5.0f;
+    [Export(PropertyHint.Range,"0.0,1.0,0.01")] public float PainChance {get;set;} = 0.5f;
+    [Export] public Godot.Collections.Array<TagEnum> Tags { get; set; } = [];
+    [Export] public Godot.Collections.Array<AttackManager.AttackName> Attacks {get;set;} = [];
+    private readonly List<IAttack> _attackList = [];
+    private IAttack _currentAttack = null;
+    private bool CurrentAttackBlocksMovement() => _currentAttack != null && !_currentAttack.CanMoveDuring && !_currentAttack.IsFinished;
+    [Export] public DamageTypeFlagEnum TouchDamageType {get;set;} = DamageTypeFlagEnum.Physical;
     [Export] public int TouchDamageAmount {get;set;} = 1;
     [Export] public float TouchDamageRadius = 1.0f;
+    private Timer _touch_damage_cooldown = new(){Autostart = true, WaitTime = 0.05};
+    [Export] public float StunDuration {get;set;} = 1.0f;
+    [Export] public AttackManager.DieFaceEnum CoinDropDice {get;set;} = AttackManager.DieFaceEnum.d6;
+    [Export (PropertyHint.Range, "1,100,1,or_greater")] public int CoinDropDiceAmount {get;set;} = 3;
+    [Export] public float MaxViewRange {get;set;} = 48.0f;
+    private const int _num_rays = 3; // number of rays to check for player visibility
+
+    // ==================================================================
+    // ====== Audio ========
+    // ==================================================================
+    [ExportCategory("Audio")] 
     [Export] public Godot.Collections.Array<AudioStream> PainSounds { get; set; } = [];
     [Export] public Godot.Collections.Array<AudioStream> DeathSounds { get; set; } = [];
     [Export] public Godot.Collections.Array<AudioStream> IdleSounds { get; set; } = [];
     [Export] public Godot.Collections.Array<AudioStream> SeeSound { get; set; } = [];
-    [Export] public AnimationTree AnimTree { get; set; }
-    [Export] public AnimatedSprite3D Sprite { get; set; }
-    [Export] public float Speed { get; set; } = 5.0f;
-    [Export] public RayCast3D GroundRay {get;set;}
-    [Export] public RayCast3D SlopeCheckRay {get;set;}
-    [Export] public RayCast3D WallCheckRay {get;set;}
-    [Export] public Node3D RayGimbal {get;set;}
-    [Export] public CollisionShape3D CollisionShape {get;set;}
-    [Export(PropertyHint.Range,"0.0,1.0,0.01")] public float PainChance {get;set;} = 0.5f;
-    [Export] public float StunDuration {get;set;} = 1.0f;
-    [Export] public DieFace CoinDropDice {get;set;} = DieFace.d6;
-    [Export] public int CoinDropDiceAmount {get;set;} = 3;
-    [Export] public Godot.Collections.Array<string> AttacksList {get;set;} = [];
-    private List<IAttack> _attackList = [];
-    private IAttack _currentAttack = null;
-    public bool _force_zero_velocity {get;set;} = false;
-
-    private enum MoveState
-    {
-        RUN_FROM_PLAYER,
-        PATH_TO_PLAYER,
-        NAIVE_CHASE,
-        SWITCH_STATES
-    }
-
-    private Timer _deathTimer = new(){WaitTime = 1.0f, Autostart = false, OneShot = true}; 
     private Timer _footstep_timer = new(){WaitTime = 0.5f, Autostart = false, OneShot = true};
-
     private Timer _idle_sound_timer = new(){WaitTime = Random.Shared.Next(_idle_sound_wait_range.X,_idle_sound_wait_range.Y), Autostart = false, OneShot = true};
+    public void StopIdleSoundTimer() =>  _idle_sound_timer.Stop();   
     private static readonly Vector2I _idle_sound_wait_range = new(30, 180);
 
+    // ==================================================================
+    // ====== Exported Nodes ========
+    // ==================================================================
+    [ExportCategory("Editor Nodes")]
+    [Export] public EnemyMoveAgent MovementAgent { get; set; }
+    [Export] public AnimationTree AnimTree { get; set; }
+    [Export] public AnimatedSprite3D Sprite { get; set; }
+    [Export] public RayCast3D GroundRay {get;set;}
+    [Export] public CollisionShape3D CollisionShape {get;set;}
+
+    // ==================================================================
+    // ====== Navigation ========
+    // ==================================================================
+    private bool _flag_force_zero_velocity = false; // when set to true, forces the enemy velocity to 0
+    public void ForceZeroVelocity() => _flag_force_zero_velocity = true;
+
+    // ==================================================================
+    // ====== Animation and Effects ========
+    // ==================================================================
+    public AnimationNodeStateMachinePlayback AnimStateMachine;
     private float _death_shake_factor = 0.05f; 
+    private Timer _deathTimer = new(){WaitTime = 1.0f, Autostart = false, OneShot = true}; 
     private Vector3 _base_sprite_position;
     private Vector3 _base_sprite_scale;
-
     private static readonly Color RED = new(1.0f,0.0f,0.0f);
     private static readonly ShaderMaterial EnemyHitFlash = ResourceLoader.Load("res://enemies/enemy_hit_flash.tres") as ShaderMaterial;
     private static readonly PackedScene _death_blood_fountain = ResourceLoader.Load<PackedScene>("res://effects/enemy_die_fx/enemy_die.tscn"); 
     private static readonly PackedScene _death_smoke = ResourceLoader.Load<PackedScene>("res://effects/enemy_die_fx/enemy_death_smoke.tscn"); 
     private ShaderMaterial _sprite_shader;
-
-    public AnimationNodeStateMachinePlayback AnimStateMachine;
-
-   // [Export] public NavigationAgent3D NavAgent {get;set;}
-    //[Export] public float Mass { get; set; } = 80.0f;
-    public HashSet<EnemyTag> Tags = [];
-
-    // index of the spawned enemy
-    public int Index;
-    public int Health;
-    public EnemyState State = EnemyState.Idle;
-    private Timer _random_walk_dir_timer = new(){WaitTime = 1, OneShot = true};
-
-    private Vector3 _prev_jump_pos = Vector3.Zero;
-
-    private Vector2 _random_walk_dir = Vector2.Zero;
-
-    private float _jump_velocity = 2.5f;
-
-    private Timer _path_req_timer = new(){WaitTime = 1.0f,OneShot = true};
-
     private Timer _stun_timer = new(){WaitTime = 1.0f, OneShot = true};
-    private Timer _damage_player_timer = new(){Autostart = true, WaitTime = 0.05};
+    private bool IsStunned() => !_stun_timer.IsStopped();
 
-    // used for random walk
-    private double _phys_secs = 0;
-    private Vector3 _prev_pos = Vector3.Zero;
+    // ==================================================================
+    // ====== State ========
+    // ==================================================================
+    public bool Deactivated {get;set;} = false; // monster is inactive
+    public bool Ambush {get;set;} = false; // monster in ambush mode
 
-    // monster is inactive
-    public bool Deactivated {get;set;} = false;
-
-    // monster in ambush mode
-    public bool Ambush {get;set;} = false;
-
-    public void TakeDamage(int damage, DamageType damageType)
+    public enum TagEnum
     {
-        Health -= damage;
-
-        var _stun = damage > Health/2 ? 1.0 : PainChance;
-
-        if (Health > 0)
-        {
-            if (_stun_timer.IsStopped() && Random.Shared.NextSingle() < _stun)
-            {
-                if (_currentAttack == null || (_currentAttack != null && _currentAttack.CanBeInterrupted))
-                {
-                    if (_currentAttack != null)
-                    {
-                        _currentAttack.Finish(this);
-                        _currentAttack.ResetParams();
-                        _currentAttack = null;
-                    }
-                    AnimStateMachine.Travel("base_idle");
-                    StopIdleSoundTimer();
-                    var stream = PainSounds[Random.Shared.Next(0,PainSounds.Count)];
-                    AudioManager.TryPlay(stream, AudioBus.Enemies, GlobalPosition);
-                    _stun_timer.WaitTime = StunDuration;
-                    _stun_timer.Start();
-                }
-            }
-        }
-        else _stun_timer.Stop();
+        Flying
     }
 
-    public void ForceZeroVelocity()
+    public enum StateEnum
     {
-        _force_zero_velocity = true;
+        Idle,
+        Attacking,
+        TakingDamage,
+        Dead,
+        Moving
     }
 
-    public void StopIdleSoundTimer()
-    {
-        _idle_sound_timer.Stop();
-    }
+    // ==================================================================
 
     public override void _Ready()
     {
@@ -176,12 +120,11 @@ public partial class Enemy : RigidBody3D, IHurtable
         AddChild(_deathTimer);
         AddChild(_idle_sound_timer);
         AddChild(_footstep_timer);
-        AddChild(_damage_player_timer);
-
+        AddChild(_touch_damage_cooldown);
 
         _footstep_timer.Timeout += () =>
         {
-            if (!Tags.Contains(EnemyTag.Flying) && LinearVelocity.LengthSquared() > 0.1f && IsOnFloor())
+            if (!Tags.Contains(TagEnum.Flying) && LinearVelocity.LengthSquared() > 0.1f && IsOnFloor())
             {
                 PlayFootstepSound();
             }
@@ -196,7 +139,7 @@ public partial class Enemy : RigidBody3D, IHurtable
             _idle_sound_timer.WaitTime = Random.Shared.Next(_idle_sound_wait_range.X,_idle_sound_wait_range.Y);
             _idle_sound_timer.Start();
         };
-        _damage_player_timer.Timeout += () =>
+        _touch_damage_cooldown.Timeout += () =>
         {
             if (IsPlayerInRange(TouchDamageRadius))
             {
@@ -210,16 +153,23 @@ public partial class Enemy : RigidBody3D, IHurtable
         _sprite_shader.SetShaderParameter("flash_enabled", false);
         Sprite.MaterialOverride = _sprite_shader;
 
-        if (Tags.Contains(EnemyTag.Flying))
-        {
-            //MotionMode = MotionModeEnum.Floating;
-            //GravityScale = 0.0f;
-        }
-        AddChild(_random_walk_dir_timer);
+        // if (Tags.Contains(TagEnum.Flying))
+        // {
+        //     MotionMode = MotionModeEnum.Floating;
+        //     GravityScale = 0.0f;
+        // }
+
         AddChild(_stun_timer);
         Health = MaxHealth;
-        ProcessTagString(TagsString);
-        ProcessAttackList();
+
+        // add attack instances to attack list
+        foreach (var atk in Attacks)
+        {
+            if (AttackManager.AllAttackNamesAndTypes.TryGetValue(atk, out var type))
+            {
+                _attackList.Add((IAttack)Activator.CreateInstance(type));
+            }
+        }
 
         if (AnimTree != null)
         {
@@ -231,6 +181,150 @@ public partial class Enemy : RigidBody3D, IHurtable
         }
 
         AnimStateMachine = (AnimationNodeStateMachinePlayback)AnimTree.Get("parameters/playback");
+    }
+
+    public override void _IntegrateForces(PhysicsDirectBodyState3D state)
+    {
+        if (_flag_force_zero_velocity)
+        {
+            state.LinearVelocity = Vector3.Zero;
+            state.AngularVelocity = Vector3.Zero;
+            _flag_force_zero_velocity = false;
+        }
+        else if (!IsDead() 
+            && !IsStunned() 
+            && !CurrentAttackBlocksMovement()
+            && IsOnFloor())
+        {
+            // keep velocity below max speed when moving on floor   
+            if (MovementAgent.State == EnemyMoveAgent.MoveState.PATH_TO_PLAYER)
+            {
+                state.LinearVelocity = state.LinearVelocity.Lerp(state.LinearVelocity.Normalized() * Speed * 2f, 0.45f);
+            }
+            else if (state.LinearVelocity.LengthSquared() > Speed*Speed)
+            {
+                state.LinearVelocity = state.LinearVelocity.Lerp(state.LinearVelocity.Normalized() * Speed, 0.2f);
+            }
+        }
+    }
+
+    public override void _PhysicsProcess(double delta)
+    {
+        if (IsDead()) {DeathAnimation(); return;}
+        if (!IsInstanceValid(this) || !IsInsideTree() || Freeze) return;
+
+        if (Tags.Contains(TagEnum.Flying)) GravityScale = 0.0f;
+        // if (IsOnFloor() || Tags.Contains(TagEnum.Flying)) GravityScale = 0.0f;
+        // else if (!Tags.Contains(TagEnum.Flying)) GravityScale = 1.0f;
+
+        UpdateHitFlashShader();
+
+        // timer to play idle sounds
+        if (_currentAttack == null && _idle_sound_timer.IsStopped())
+        {
+            _idle_sound_timer.WaitTime = Random.Shared.Next(_idle_sound_wait_range.X,_idle_sound_wait_range.Y);
+            _idle_sound_timer.Start();
+        }
+
+        // do attack logic and move if player is not dead
+        if (!Player.Instance.IsDead && !Deactivated && !Ambush)
+        {
+            DoAttackLogic();
+
+            // skip movement if attacking and can't move during attack
+            if (CurrentAttackBlocksMovement()) return;
+
+            MovementAgent.GetMovementVector(delta, out var vel_dir, out var speed_mult);
+
+            if ((this != null)  && IsInstanceValid(this) && IsInsideTree()) 
+            {
+                ApplyCentralForce(vel_dir*speed_mult*Mass);
+            }
+
+            SetFootstepTimer();
+        }
+    }
+
+    private void UpdateHitFlashShader()
+    {
+        // update hit flash shader
+        // (it also renders the base sprite even when not flashing)
+        if ((Texture2D)_sprite_shader.GetShaderParameter("tex") != Sprite.SpriteFrames.GetFrameTexture(Sprite.Animation, Sprite.Frame))
+        {
+            _sprite_shader.SetShaderParameter("tex", Sprite.SpriteFrames.GetFrameTexture(Sprite.Animation, Sprite.Frame));
+        }
+
+        // damage flash
+        if (IsStunned())
+        {
+            if ((bool)_sprite_shader.GetShaderParameter("flash_enabled") != true) _sprite_shader.SetShaderParameter("flash_enabled", true);
+            if ((bool)_sprite_shader.GetShaderParameter("pulse_mode") != true) _sprite_shader.SetShaderParameter("pulse_mode", true);
+            return;
+        }
+        else
+        {
+            if ((bool)_sprite_shader.GetShaderParameter("flash_enabled") != false) _sprite_shader.SetShaderParameter("flash_enabled", false);
+            if ((bool)_sprite_shader.GetShaderParameter("pulse_mode") != false) _sprite_shader.SetShaderParameter("pulse_mode", false);
+        }
+    }
+
+    private void DoAttackLogic()
+    {
+        if (_currentAttack == null)
+        {
+            // randomly choose an attack from the list
+            var viable = new List<IAttack>();
+            foreach (var attack in _attackList)
+            {
+                if (attack.CanTrigger(this)) viable.Add(attack);
+            }
+            if (viable.Count == 0) return;
+            _currentAttack = viable[Random.Shared.Next(0,viable.Count)];
+        }
+        else 
+        {
+            if (_currentAttack.IsFinished)
+            {
+                _currentAttack.ResetParams(); //reset attack
+                _currentAttack = null;
+                //GD.Print("Enemy finished attack ", _currentAttack);
+            }
+            else
+            {
+                _currentAttack.Execute(this);
+                //GD.Print("Enemy is executing attack ", _currentAttack);
+            }
+        }
+    }
+
+    public void TakeDamage(int damage, DamageTypeFlagEnum damageType)
+    {
+        Health -= damage;
+
+        var _stun = damage > Health/2 ? 1.0 : PainChance;
+
+        if (Health > 0)
+        {
+            if (!IsStunned() && Random.Shared.NextSingle() < _stun)
+            {
+                if (_currentAttack == null || (_currentAttack != null && _currentAttack.CanBeInterrupted))
+                {
+                    if (_currentAttack != null)
+                    {
+                        _currentAttack.Finish(this);
+                        _currentAttack.ResetParams();
+                        _currentAttack = null;
+                    }
+                    AnimStateMachine.Travel("base_idle");
+                    StopIdleSoundTimer();
+                    var stream = PainSounds[Random.Shared.Next(0,PainSounds.Count)];
+                    AudioManager.TryPlay(stream, AudioBus.Enemies, GlobalPosition);
+                    _stun_timer.WaitTime = StunDuration;
+                    _stun_timer.Start();
+                }
+            }
+        }
+        else _stun_timer.Stop();
     }
 
     public void DeathAnimation()
@@ -289,142 +383,15 @@ public partial class Enemy : RigidBody3D, IHurtable
         }
     }
 
-    public override void _IntegrateForces(PhysicsDirectBodyState3D state)
-    {
-        if (_force_zero_velocity)
-        {
-            state.LinearVelocity = Vector3.Zero;
-            state.AngularVelocity = Vector3.Zero;
-            _force_zero_velocity = false;
-        }
-    }
-
-    public override void _PhysicsProcess(double delta)
-    {
-        if (Health <= 0) {
-            DeathAnimation();
-            return;
-        }
-
-        if (!IsInstanceValid(this)) return;
-        if (!IsInsideTree()) return;
-        if (Freeze) return;
-
-        //EnemyComputeShaderManager.SetEnemyPosition(Index, GlobalTransform.Origin);
-        if (IsOnFloor() || SlopeDetected() || Tags.Contains(EnemyTag.Flying)) GravityScale = 0.0f;
-        else if (!Tags.Contains(EnemyTag.Flying)) GravityScale = 1.0f;
-
-        // update hit flash shader
-        // (it also renders the base sprite even when not flashing)
-        if ((Texture2D)_sprite_shader.GetShaderParameter("tex") != Sprite.SpriteFrames.GetFrameTexture(Sprite.Animation, Sprite.Frame))
-        {
-            _sprite_shader.SetShaderParameter("tex", Sprite.SpriteFrames.GetFrameTexture(Sprite.Animation, Sprite.Frame));
-        }
-
-        // damage flash
-        if (!_stun_timer.IsStopped())
-        {
-            if ((bool)_sprite_shader.GetShaderParameter("flash_enabled") != true) _sprite_shader.SetShaderParameter("flash_enabled", true);
-            if ((bool)_sprite_shader.GetShaderParameter("pulse_mode") != true) _sprite_shader.SetShaderParameter("pulse_mode", true);
-            return;
-        }
-        else
-        {
-            if ((bool)_sprite_shader.GetShaderParameter("flash_enabled") != false) _sprite_shader.SetShaderParameter("flash_enabled", false);
-            if ((bool)_sprite_shader.GetShaderParameter("pulse_mode") != false) _sprite_shader.SetShaderParameter("pulse_mode", false);
-        }
-
-        // timer to play idle sounds
-        if (_currentAttack == null && _idle_sound_timer.IsStopped())
-        {
-            _idle_sound_timer.WaitTime = Random.Shared.Next(_idle_sound_wait_range.X,_idle_sound_wait_range.Y);
-            _idle_sound_timer.Start();
-        }
-
-        // do attack logic and move if player is not dead
-        if (!Player.Instance.IsDead && !Deactivated && !Ambush)
-        {
-            if (_currentAttack == null)
-            {
-                foreach (var attack in _attackList)
-                {
-                    if (attack.CanTrigger(this))
-                    {
-                        _currentAttack = attack;
-                        _currentAttack.Execute(this);
-                        //GD.Print("Enemy is attacking ", _currentAttack);
-                        break;
-                    }
-                }
-            }
-            else 
-            {
-                if (_currentAttack.IsFinished)
-                {
-                    _currentAttack.ResetParams(); //reset attack
-                    _currentAttack = null;
-                    //GD.Print("Enemy finished attack ", _currentAttack);
-                }
-                else
-                {
-                    _currentAttack.Execute(this);
-                    //GD.Print("Enemy is executing attack ", _currentAttack);
-                }
-            }
-
-            // skip movement if attacking and can't move during attack
-            if (_currentAttack != null && !_currentAttack.CanMoveDuring && !_currentAttack.IsFinished) return;
-
-            // check for triggering random walk 
-            _phys_secs += delta;
-            if (_phys_secs > 1)
-            {
-                _phys_secs -= 1;
-                if (_prev_pos.DistanceSquaredTo(GlobalPosition) < 1.0f)
-                {
-                    _random_walk_dir_timer.Stop();
-                    _random_walk_dir = new Vector2(Random.Shared.NextSingle() * 2 - 1, Random.Shared.NextSingle() * 2 - 1).Normalized();
-                    _random_walk_dir_timer.WaitTime = Random.Shared.NextDouble() + 0.001; // 1 seconds random walk
-                    _random_walk_dir_timer.Start();
-                }
-                _prev_pos = GlobalPosition;
-                //GD.Print($"Enemy {this} is on floor: {IsOnFloor()}");
-            }
-            /*
-            CallDeferred(MethodName.SetNavAgentTarget, new Vector3(60,60,5)); //Player.Instance.GlobalPosition);
-            
-            //var vel = GetHorzDir((float)delta);
-            GD.Print("targ postition: ", NavAgent.TargetPosition);
-            GD.Print("distance to target:, ", NavAgent.DistanceToTarget());
-            GD.Print("next path postition: ", NavAgent.GetNextPathPosition());
-            var vel = NavAgent.GetNextPathPosition() - GlobalPosition;
-            }*/
-
-            var vel = GetHorzDir((float)delta);
-            if (vel.LengthSquared() > 0.01f) RayGimbal.LookAt(RayGimbal.GlobalTransform.Origin + vel, Vector3.Up);
-            if ((this != null)  && IsInstanceValid(this) && IsInsideTree()) ApplyCentralForce(vel.Normalized()*Speed*Mass);
-
-            CheckForJump();
-            SetFootstepTimer();
-        }
-    }
-
-    /*
-    bool first_set = true;
-    private void SetNavAgentTarget(Vector3 target)
-    {
-        if (first_set)
-        {
-            NavAgent.TargetPosition = target;
-            first_set = false;
-        }
-    }*/
+    // ==================================================================
+    // ====== Helper Methods ========
+    // ==================================================================
 
     private void SetFootstepTimer()
     {
         // play foostep sounds
         // reset footstep timer, which plays footstep sound when it times out
-        if (!Tags.Contains(EnemyTag.Flying) && _footstep_timer.IsStopped())
+        if (!Tags.Contains(TagEnum.Flying) && _footstep_timer.IsStopped())
         {
             if (LinearVelocity.LengthSquared() < 16)
             {
@@ -442,29 +409,6 @@ public partial class Enemy : RigidBody3D, IHurtable
             _footstep_timer.Start();
         }      
     }
-
-    private void CheckForJump()
-    {
-        var col = WallCheckRay.GetCollider();
-        if (IsOnFloor() && col != null && (col is StaticBody3D || (col is RigidBody3D r && r.Freeze)))
-        {
-            // Apply a slight upward force to help climb slopes
-            //ApplyCentralImpulse(Vector3.Up * 5.0f);
-            Vector3 normal = WallCheckRay.GetCollisionNormal();
-            
-            // Only jump or change dir if the collision is with a wall (not a floor/slope)
-            if (normal.Dot(Vector3.Up) < 0.001f) // Mostly vertical surface
-            {
-                if (!Tags.Contains(EnemyTag.Flying))// && IsOnFloor())
-                {
-                    //GD.Print("Collided! Jumping...");
-                    if ((this != null) && IsInstanceValid(this) && IsInsideTree()) ApplyCentralImpulse(Vector3.Up * _jump_velocity * Mass);
-                    //LinearVelocity = new Vector3(LinearVelocity.X,_jump_velocity,LinearVelocity.Z); // Apply jump force
-                }
-            }
-        }
-    }
-
     public void ImpulseTowardsPlayer(float impulseMagnitude)
     {
         if ((this != null) && IsInstanceValid(this) && IsInsideTree()
@@ -474,7 +418,6 @@ public partial class Enemy : RigidBody3D, IHurtable
             ApplyCentralImpulse(dir * impulseMagnitude * Mass);
         }
     }
-
     public void ForceTowardsPlayer(float forceMagnitude)
     {
         if ((this != null) && IsInstanceValid(this) && IsInsideTree()
@@ -484,98 +427,66 @@ public partial class Enemy : RigidBody3D, IHurtable
             ApplyCentralForce(dir * forceMagnitude * Mass);
         }
     }
-
     public void SetStun(float duration)
     {
         _stun_timer.Stop();
         _stun_timer.WaitTime = duration;
         _stun_timer.Start();
     }
-
+    public void SetPlayerCurrentAttack(IAttack attack)
+    {
+        if (attack == null) return;
+        _currentAttack = attack;
+        if (_currentAttack.IsFinished) {
+            _currentAttack.ResetParams();
+        }
+    }
     public bool IsOnFloor()
     {
+        GroundRay.ForceRaycastUpdate();
         var col = GroundRay.GetCollider();
-        return col != null && col is StaticBody3D;
+        return col != null && (col is StaticBody3D || col is RigidBody3D);
     }
-
-    public bool SlopeDetected()
-    {
-        var col = SlopeCheckRay.GetCollider();
-        return col != null && col is StaticBody3D;
-    }
-
-    public bool WallDetected()
-    {
-        var col = WallCheckRay.GetCollider();
-        return col != null && col is StaticBody3D || (col is RigidBody3D r && r.Freeze);
-    }
-
-    private Vector3 GetHorzDir(float delta) {
-        var player_pos = Player.Instance.GlobalPosition;
-        var _velocity = LinearVelocity;
-
-        if (Tags.Contains(EnemyTag.Flying)) {
-            // move straight towards player
-            _velocity = (player_pos - GlobalPosition).Normalized() * Speed;
-            if (!_random_walk_dir_timer.IsStopped())
-            {
-                _velocity.X = _random_walk_dir.X * Speed;
-                _velocity.Z = _random_walk_dir.Y * Speed;
-            }
-        }
-        else
-        {
-            var dirxy = new Vector2(GlobalPosition.X, GlobalPosition.Z);
-            if (_random_walk_dir_timer.IsStopped())
-            {
-                // move towards player unless walking randomly
-                var playerxz = new Vector2(player_pos.X, player_pos.Z);
-                dirxy = (playerxz - dirxy).Normalized();
-            }
-            else dirxy = _random_walk_dir;
-            
-            // Basic forward movement
-            _velocity.X = dirxy.X * Speed;
-            _velocity.Z = dirxy.Y * Speed;
-        }
-
-        return new Vector3(_velocity.X,0,_velocity.Z);
-    }
-
-    private void ProcessTagString(string tag_string)
-    {
-        Tags = [];
-        foreach (var tag in tag_string.Split(","))
-        {
-            if (Enum.TryParse(tag, out EnemyTag tagEnum))
-            {
-                Tags.Add(tagEnum);
-            }
-        }
-    }
-
-    private void ProcessAttackList()
-    {
-        foreach (var str in AttacksList)
-        {
-            if (AttackManager.AllAttackNamesAndTypes.TryGetValue(str, out var type))
-            {
-                _attackList.Add((IAttack)Activator.CreateInstance(type));
-            }
-        }
-    }
-
     public bool IsPlayerInRange(float range)
     {
         return Player.Instance.GlobalPosition.DistanceSquaredTo(GlobalPosition) <= range*range;
     }
-
-    public Vector3 GetYDirectionToPlayer()
+    public bool IsPlayerVisible()
     {
-        if ((GlobalPosition.X == Player.Instance.GlobalPosition.X) && (GlobalPosition.Z == Player.Instance.GlobalPosition.Z)) return Vector3.Forward;
-        return new Vector3(GlobalPosition.X, 0.0f, GlobalPosition.Z).DirectionTo(new Vector3(Player.Instance.GlobalPosition.X, 0.0f, Player.Instance.GlobalPosition.Z));
-    }
+        if (!IsPlayerInRange(MaxViewRange)) return false;
+        for (int i=0; i<_num_rays; i++)
+        {
+            if (Player.Instance != null && IsInstanceValid(Player.Instance))
+            {
+                var spaceState = GetWorld3D().DirectSpaceState;
 
+                Vector3 origin = GlobalPosition+Vector3.Up, end = Player.Instance.GlobalPosition+Vector3.Up*(i+0.5f)*Player.PLAYER_HEIGHT/_num_rays;
+                var dirToPlayer = (end - origin).Normalized();
+                var query = PhysicsRayQueryParameters3D.Create(origin, end+dirToPlayer*2.0f);
+                query.Exclude = [GetRid()];
+                query.CollideWithBodies = true;
+
+                var result = spaceState.IntersectRay(query);
+
+                if (result.Count > 0)
+                {
+                    var res_obj = result["collider"].AsGodotObject();
+                    //GD.Print($"Ray {i}: {res_obj}");
+                    if (res_obj != null && res_obj is not StaticBody3D && res_obj is Player)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    public Vector3 XZDirectionToPlayer()
+    {
+        return 
+            new Vector3(GlobalPosition.X, 0.0f, GlobalPosition.Z)
+            .DirectionTo(new Vector3(Player.Instance.GlobalPosition.X, 0.0f, Player.Instance.GlobalPosition.Z));
+    }
     private void PlayFootstepSound()
     {
         GroundRay.ForceRaycastUpdate();

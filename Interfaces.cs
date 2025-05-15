@@ -7,19 +7,19 @@ public enum ChestType
     BasicWooden
 }
 
-public enum DamageType
+public enum DamageTypeFlagEnum
 {
-    Fire,
-    Ice,
-    Electric,
-    Poison,
-    Physical,
-    Magic
+    Physical = 1 << 1,
+    Fire = 1 << 2,
+    Ice = 1 << 3,
+    Electric = 1 << 4,
+    Poison = 1 << 5,
+    Magic = 1 << 6
 }
 
 public interface IHurtable
 {
-	void TakeDamage(int damage, DamageType type);
+	void TakeDamage(int damage, DamageTypeFlagEnum type);
 }
 
 public interface IPickup

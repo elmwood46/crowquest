@@ -462,7 +462,6 @@ shape = SubResource("BoxShape3D_mdc8m")
 [node name="DeadEnds" type="Node3D" parent="."]
 
 [node name="PathOBBDeadEnds1" type="StaticBody3D" parent="DeadEnds"]
-visible = false
 
 [node name="CsgWall_Path3D_268439" type="MeshInstance3D" parent="DeadEnds/PathOBBDeadEnds1"]
 mesh = SubResource("ArrayMesh_fv4uh")
@@ -474,7 +473,6 @@ shape = SubResource("BoxShape3D_thcpr")
 [node name="PhysBodyTracker" parent="DeadEnds/PathOBBDeadEnds1" instance=ExtResource("2_l8rkt")]
 
 [node name="PathOBBDeadEnds5" type="StaticBody3D" parent="DeadEnds"]
-visible = false
 
 [node name="_CollisionShape3D_268489" type="CollisionShape3D" parent="DeadEnds/PathOBBDeadEnds5"]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0.00720215, 2.5, 5.32715)
@@ -483,7 +481,6 @@ shape = SubResource("BoxShape3D_q8fk2")
 [node name="PhysBodyTracker" parent="DeadEnds/PathOBBDeadEnds5" instance=ExtResource("2_l8rkt")]
 
 [node name="PathOBBDeadEnds6" type="StaticBody3D" parent="DeadEnds"]
-visible = false
 
 [node name="_CollisionShape3D_268490" type="CollisionShape3D" parent="DeadEnds/PathOBBDeadEnds6"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 2.5, -5.5)
@@ -492,7 +489,6 @@ shape = SubResource("BoxShape3D_0cfv0")
 [node name="PhysBodyTracker" parent="DeadEnds/PathOBBDeadEnds6" instance=ExtResource("2_l8rkt")]
 
 [node name="PathOBBDeadEnds2" type="StaticBody3D" parent="DeadEnds"]
-visible = false
 
 [node name="CsgWall_Path3D_268440" type="MeshInstance3D" parent="DeadEnds/PathOBBDeadEnds2"]
 mesh = SubResource("ArrayMesh_c14ff")
@@ -504,7 +500,6 @@ shape = SubResource("BoxShape3D_vu56f")
 [node name="PhysBodyTracker" parent="DeadEnds/PathOBBDeadEnds2" instance=ExtResource("2_l8rkt")]
 
 [node name="PathOBBDeadEnds7" type="StaticBody3D" parent="DeadEnds"]
-visible = false
 
 [node name="_CollisionShape3D_268492" type="CollisionShape3D" parent="DeadEnds/PathOBBDeadEnds7"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -5.31055, 2.5, -0.0211487)
@@ -513,7 +508,6 @@ shape = SubResource("BoxShape3D_fwc6q")
 [node name="PhysBodyTracker" parent="DeadEnds/PathOBBDeadEnds7" instance=ExtResource("2_l8rkt")]
 
 [node name="PathOBBDeadEnds8" type="StaticBody3D" parent="DeadEnds"]
-visible = false
 
 [node name="_CollisionShape3D_268493" type="CollisionShape3D" parent="DeadEnds/PathOBBDeadEnds8"]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 5.49194, 2.5, 7.98663)
@@ -522,7 +516,6 @@ shape = SubResource("BoxShape3D_c4h1e")
 [node name="PhysBodyTracker" parent="DeadEnds/PathOBBDeadEnds8" instance=ExtResource("2_l8rkt")]
 
 [node name="PathOBBDeadEnds3" type="StaticBody3D" parent="DeadEnds"]
-visible = false
 
 [node name="CsgWall_Path3D_268441" type="MeshInstance3D" parent="DeadEnds/PathOBBDeadEnds3"]
 mesh = SubResource("ArrayMesh_j2te2")
@@ -534,7 +527,6 @@ shape = SubResource("BoxShape3D_l8rkt")
 [node name="PhysBodyTracker" parent="DeadEnds/PathOBBDeadEnds3" instance=ExtResource("2_l8rkt")]
 
 [node name="PathOBBDeadEnds9" type="StaticBody3D" parent="DeadEnds"]
-visible = false
 
 [node name="_CollisionShape3D_268495" type="CollisionShape3D" parent="DeadEnds/PathOBBDeadEnds9"]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0.00698853, 2.5, -5.32416)
@@ -543,7 +535,6 @@ shape = SubResource("BoxShape3D_g4wxp")
 [node name="PhysBodyTracker" parent="DeadEnds/PathOBBDeadEnds9" instance=ExtResource("2_l8rkt")]
 
 [node name="PathOBBDeadEnds10" type="StaticBody3D" parent="DeadEnds"]
-visible = false
 
 [node name="_CollisionShape3D_268496" type="CollisionShape3D" parent="DeadEnds/PathOBBDeadEnds10"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -8, 2.5, 5.49603)
@@ -552,7 +543,6 @@ shape = SubResource("BoxShape3D_ddqot")
 [node name="PhysBodyTracker" parent="DeadEnds/PathOBBDeadEnds10" instance=ExtResource("2_l8rkt")]
 
 [node name="PathOBBDeadEnds4" type="StaticBody3D" parent="DeadEnds"]
-visible = false
 
 [node name="CsgWall_Path3D_268442" type="MeshInstance3D" parent="DeadEnds/PathOBBDeadEnds4"]
 mesh = SubResource("ArrayMesh_uey40")
@@ -564,7 +554,6 @@ shape = SubResource("BoxShape3D_hg1ty")
 [node name="PhysBodyTracker" parent="DeadEnds/PathOBBDeadEnds4" instance=ExtResource("2_l8rkt")]
 
 [node name="PathOBBDeadEnds11" type="StaticBody3D" parent="DeadEnds"]
-visible = false
 
 [node name="_CollisionShape3D_268498" type="CollisionShape3D" parent="DeadEnds/PathOBBDeadEnds11"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.36241, 2.5, 0)
@@ -573,7 +562,6 @@ shape = SubResource("BoxShape3D_r8812")
 [node name="PhysBodyTracker" parent="DeadEnds/PathOBBDeadEnds11" instance=ExtResource("2_l8rkt")]
 
 [node name="PathOBBDeadEnds12" type="StaticBody3D" parent="DeadEnds"]
-visible = false
 
 [node name="_CollisionShape3D_268499" type="CollisionShape3D" parent="DeadEnds/PathOBBDeadEnds12"]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -5.18756, 2.5, -8.00671)

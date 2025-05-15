@@ -79,7 +79,7 @@ public partial class SimpleController : CharacterBody3D
     private void FireBullet()
     {
         var dir = Camera.GlobalTransform.Basis*Vector3.Forward + new Vector3(Random.Shared.NextSingle()*0.1f, Random.Shared.NextSingle()*0.1f, Random.Shared.NextSingle()*0.1f);
-        BulletManager.AddBullet(this, 10, DamageType.Physical, dir, 32.0f);
+        BulletManager.AddBullet(this, 10, DamageTypeFlagEnum.Physical, dir, 32.0f);
         if (Engine.GetProcessFrames()%10ul==0)
         {
             AudioManager.TryPlay(BULLET_FIRE_SOUND, AudioBus.Misc, GlobalPosition);

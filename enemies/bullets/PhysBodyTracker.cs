@@ -116,7 +116,7 @@ public partial class PhysBodyTracker : Node
         if  (_parent_body is TreasureChest t)
         {
             t.Opened += () => {
-                GD.Print("updating treasure chest in grid!");
+                //GD.Print("updating treasure chest in grid!");
                 UpdateBodyInGrid(t);
             };
         }
@@ -124,19 +124,29 @@ public partial class PhysBodyTracker : Node
         else if (((Node3D)_parent_body).GetParent() is TreasureChest big_chest) 
         {
             big_chest.Opened += () => {
-                GD.Print("updating big chest in grid!");
+                //GD.Print("updating big chest in grid!");
                 UpdateBodyInGrid(big_chest);
             };
         }
     }
 
+    /// <summary>
+    /// This keeps the body's grid position updated.
+    /// It's convenient to be able to do it here, but 
+    /// can lead to concurrent modification exceptions.
+    /// It's done in BulletManager's _PhysicsProcess instead
+    /// </summary>
+    /// <param name="delta"></param>
     public override void _PhysicsProcess(double delta)
+    {
+        // if (Engine.GetPhysicsFrames() % 2 == 0) return; // basic optimization to skip every other frame
+        // ManualUpdateBodyInGrid
+    }
+
+    public void ManualUpdateBodyInGrid()
     {
         // do not run in editor
         if (Engine.IsEditorHint()) return;
-
-        // basic optimization to skip every other frame
-        if (Engine.GetPhysicsFrames() % 2 == 0) return;
 
         // skip if body is static
         if (_parent_body is StaticBody3D) return;
@@ -197,7 +207,6 @@ public partial class PhysBodyTracker : Node
         if (body is StaticBody3D)
         {
             var children = body.GetChildren();
-            var visual_instance = children.OfType<VisualInstance3D>().FirstOrDefault();
             var shape = children.OfType<CollisionShape3D>().FirstOrDefault();
             if (shape.Shape is ConvexPolygonShape3D conv)
             {
@@ -211,22 +220,8 @@ public partial class PhysBodyTracker : Node
                 }
                 UpdateBodyPointCloudInGrid(body, pts);
             }
-            else if (visual_instance != null)
-            {
-                // this only checks visual instances, not shapes
-                // if body has a visual instance, its AABB is used for hierarchical culling 
-                UpdateBodyAABBInGrid(body);
-            }
-            else if (shape.Shape is BoxShape3D)
-            {
-                // if a body does not have a visual instance, its first box collider is used
-                // this is because the static maze walls have static bodies with no associated mesh
-                UpdateBodyBoxInGrid(body);
-            }
-            else
-            {
-                throw new Exception($"StaticBody3D {body.Name} does not have a visual instance or a box shape.");
-            }
+            else if (shape != null) UpdateBodyAABBInGrid(body);
+            else throw new Exception($"Attempted to track StaticBody3D {body.Name} does not have a collision shape.");
 
             _body_to_data.TryRemove(body, out var _);
             var shape_data = new List<PhysBodyTrackerData>();
@@ -301,43 +296,6 @@ public partial class PhysBodyTracker : Node
             set.Add(body);
             gridCells.Add(cell);
         }
-    }
-
-    private static void UpdateBodyBoxInGrid(PhysicsBody3D body)
-    {
-        var shape = body.GetChildren().OfType<CollisionShape3D>().FirstOrDefault();
-        if (shape.Shape is BoxShape3D box)
-        {
-            RemoveBodyFromGrid(body);
-            if (!_body_to_gridpos.TryGetValue(body, out var gridCells))
-            {
-                gridCells = [];
-                _body_to_gridpos[body] = gridCells;
-            }
-            gridCells.Clear();
-            var aabb = new Aabb(-box.Size/2f, box.Size);
-            aabb = shape.GlobalTransform*aabb;
-            var min = WorldToCell(aabb.Position);
-            var max = WorldToCell(aabb.Position + aabb.Size);
-            for (int x = min.X; x <= max.X; x++)
-            {
-                for (int y = min.Y; y <= max.Y; y++)
-                {
-                    for (int z = min.Z; z <= max.Z; z++)
-                    {
-                        Vector3I cell = new(x, y, z);
-                        if (!_gridpos_to_bodies.TryGetValue(cell, out var set))
-                        {
-                            set = [];
-                            _gridpos_to_bodies[cell] = set;
-                        }
-                        set.Add(body);
-                        gridCells.Add(cell);
-                    }
-                }
-            }
-        }
-        else throw new Exception($"Shape is not a BoxShape3D, but {shape.Shape.GetType()}");
     }
 
     private static void UpdateBodyAABBInGrid(PhysicsBody3D body)
@@ -441,9 +399,10 @@ public partial class PhysBodyTracker : Node
 
         foreach (var pc in node.GetChildren(true))
         {
-            if (pc is VisualInstance3D vis_instance)
+            if (pc is CollisionShape3D shape)
             {
-                var aabb = vis_instance.GetAabb();
+                var aabb = ShapeToAabb(shape.Shape);
+                aabb = shape.GlobalTransform*aabb;
                 if (!foundShape)
                 {
                     totalAabb = aabb;
@@ -456,7 +415,42 @@ public partial class PhysBodyTracker : Node
             }
         }
 
-        return  node.GlobalTransform*totalAabb;
+        return totalAabb;
+    }
+
+    private static Aabb ShapeToAabb(Shape3D shape)
+    {
+        if (shape is BoxShape3D box)
+        {
+            return new Aabb(-box.Size / 2f, box.Size);
+        }
+        else if (shape is SphereShape3D sphere)
+        {
+            return new Aabb(-Vector3.One * sphere.Radius, Vector3.One * sphere.Radius * 2f);
+        }
+        else if (shape is CapsuleShape3D capsule)
+        {
+            var size = new Vector3(capsule.Radius*2, capsule.Height, capsule.Radius*2);
+            return new Aabb(-size/2f, size);
+        }
+        else if (shape is ConvexPolygonShape3D convex)
+        {
+            Vector3 min = Vector3.One*float.MaxValue, max = Vector3.One*float.MinValue;
+
+            foreach (var pt in convex.Points)
+            {
+                if (pt.X < min.X) min.X = pt.X;
+                if (pt.X > max.X) max.X = pt.X;
+                if (pt.Y < min.Y) min.Y = pt.Y;
+                if (pt.Y > max.Y) max.Y = pt.Y;
+                if (pt.Z < min.Z) min.Z = pt.Z;
+                if (pt.Z > max.Z) max.Z = pt.Z;
+            }
+            var size = max - min;
+
+            return new Aabb(-size/2f, size);
+        }
+        return default;
     }
 
     public static Vector3I WorldToCell(Vector3 worldPos)
@@ -481,5 +475,10 @@ public partial class PhysBodyTracker : Node
     public static bool TryGetBodyData(object body, out List<PhysBodyTrackerData> data)
     {
         return _body_to_data.TryGetValue(body, out data);
+    }
+
+    public static List<PhysicsBody3D> AllTrackedBodies()
+    {
+        return [.. _body_to_data.Keys.OfType<PhysicsBody3D>()];
     }
 }

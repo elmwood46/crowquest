@@ -104,7 +104,7 @@ public partial class Player : CharacterBody3D, IHurtable
 		return Instance._camera_3d.GlobalPosition;
 	}
 
-	public void TakeDamage(int damage, DamageType type)
+	public void TakeDamage(int damage, DamageTypeFlagEnum type)
 	{
         if (IsDead) return;
         if (_iFramesStopwatch.ElapsedMilliseconds > _iFramesWaitTime)
@@ -114,13 +114,15 @@ public partial class Player : CharacterBody3D, IHurtable
             _iFramesStopwatch.Restart();
             _current_health -= damage;
             _damage_vignette_ratio += damage_ratio;
-			_damage_vignette_ratio = Mathf.Clamp(_damage_vignette_ratio,_min_damage_vignette_ratio, 1.0f);
+			if (_min_damage_vignette_ratio >= 1.0f) _damage_vignette_ratio = 1;
+			else _damage_vignette_ratio = Mathf.Clamp(_damage_vignette_ratio,_min_damage_vignette_ratio, 1.0f);
             if (_current_health <= 0)
 			{
                 _current_health = 0;
 				_player_is_active = false;
                 GD.Print("Player died");
-				ResetCameraZoom();
+				//ResetCameraZoom();
+				_camera_zoom = MinCameraSize;
 				UpdateDamageVignette();
             }
         }
@@ -280,20 +282,21 @@ public partial class Player : CharacterBody3D, IHurtable
 		if (@event is InputEventKey)
 		{
 			var keyEvent = @event as InputEventKey;
-			if (keyEvent.Pressed && keyEvent.Keycode == Key.Escape)
-			{
-				if (Input.GetMouseMode() == Input.MouseModeEnum.Visible)
-				{
-					Input.SetMouseMode(Input.MouseModeEnum.Captured);
-					_player_is_active = true;
-				}
-				else
-				{
-					Input.SetMouseMode(Input.MouseModeEnum.Visible);
-					_player_is_active = false;
-				}
-			}
-			else if (keyEvent.Pressed && keyEvent.Keycode == Key.F1)
+			// if (keyEvent.Pressed && keyEvent.Keycode == Key.Escape)
+			// {
+			// 	if (Input.GetMouseMode() == Input.MouseModeEnum.Visible)
+			// 	{
+			// 		Input.SetMouseMode(Input.MouseModeEnum.Captured);
+			// 		_player_is_active = true;
+			// 	}
+			// 	else
+			// 	{
+			// 		Input.SetMouseMode(Input.MouseModeEnum.Visible);
+			// 		_player_is_active = false;
+			// 	}
+			// }
+			//else if (keyEvent.Pressed && keyEvent.Keycode == Key.F1)
+			if (keyEvent.Pressed && keyEvent.Keycode == Key.F1)
 			{
 				if (GetViewport().DebugDraw==Viewport.DebugDrawEnum.Wireframe) {
 					RenderingServer.SetDebugGenerateWireframes(false);
@@ -320,7 +323,7 @@ public partial class Player : CharacterBody3D, IHurtable
 			}
 			else if (keyEvent.Pressed && keyEvent.Keycode == Key.F4)
 			{
-				TakeDamage(5,DamageType.Physical);
+				TakeDamage(5,DamageTypeFlagEnum.Physical);
 			}
 		}
 

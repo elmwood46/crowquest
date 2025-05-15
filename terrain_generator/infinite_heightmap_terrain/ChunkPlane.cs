@@ -12,7 +12,7 @@ public partial class ChunkPlane : StaticBody3D
     [Export] public MeshInstance3D MeshInstance { get; set; }
     [Export] public CollisionShape3D CollisionShape { get; set; }
     [Export] public NavigationRegion3D NavRegion { get; set; }
-    [Export] public bool DisableWallGeneration { get; set; } = false;
+    [Export] public bool DisableCSGWallGeneration { get; set; } = true;
     [Export] public bool DisableLampGeneration { get; set; } = false;
     [Export] public bool DisableSarcophagusGeneration { get; set; } = false;
     [Export] public bool DrawDebugMeshes = false;
@@ -29,11 +29,13 @@ public partial class ChunkPlane : StaticBody3D
     // ==================================================================
     // ====== Ground, Lamps, Trees, Grass ========
     // ==================================================================
+    private static readonly PackedScene _phys_tracker_scene = GD.Load<PackedScene>("res://enemies/bullets/PhysBodyTracker.tscn");
     private static readonly StandardMaterial3D _ground_material = GD.Load<StandardMaterial3D>("res://terrain_generator/grass/dark_green.tres"); //GD.Load<StandardMaterial3D>("res://terrain_generator/infinite_heightmap_terrain/ground_material.tres");
     private static readonly StandardMaterial3D _ground_material_2 = GD.Load<StandardMaterial3D>("res://terrain_generator/grass/dark_green.tres");///GD.Load<StandardMaterial3D>("res://terrain_generator/infinite_heightmap_terrain/ground_light_material.tres");
     private static readonly PackedScene _csg_brick_wall_scene = GD.Load<PackedScene>("res://terrain_generator/procedural_brick_wall/csg/csg_brick_wall.tscn");
     private static readonly PackedScene _lamp_post_scene = GD.Load<PackedScene>("res://environment_models/street_lamps/streetlamp_small.tscn");
     private static readonly Noise _grass_noise = GD.Load<FastNoiseLite>("res://terrain_generator/grass/grass_fast_noise_lite.tres");
+    
     private Grass[] _grass_nodes;
     private static readonly PackedScene[] _tree_scenes =
     [
@@ -237,10 +239,28 @@ public partial class ChunkPlane : StaticBody3D
         var chunk_rng = new Random(GetCantorPairing(chunk_pos*Mathf.RoundToInt(seeded_random*1000)));
         seeded_random = seeded_random * 0.5f + 0.5f; // remap to 0-1
         var chunk_tile_id = SimpleWfc.GetTileID(chunk_pos);
+        var has_diagonal_walls = seeded_random < 0.5 || is_starting_chunk;
         
         // ====== generate walls =====
         var chunk_offset = ChunkManager.Instance.ChunkSize * chunk_pos;
-        var path_set = SimpleWfc.GetTilePaths(chunk_pos);
+        var path_set = SimpleWfc.GetTilePaths(chunk_tile_id);
+        var static_wall_set = SimpleWfc.GetTileStaticWall(chunk_tile_id, has_diagonal_walls ? 1:0);
+        foreach (var wall in static_wall_set)
+        {
+            var wall_copy = wall.Duplicate() as StaticBody3D;
+            if (!DisableCSGWallGeneration)
+            {
+                foreach (var child in wall_copy.GetChildren())
+                {
+                    if (child is MeshInstance3D mesh)
+                    {
+                        mesh.QueueFree();
+                    }
+                }
+            }
+            NavRegion.AddChild(wall_copy);
+        }
+
         var nodePaths = new List<string>();
         foreach (var path in path_set)
         {
@@ -249,16 +269,18 @@ public partial class ChunkPlane : StaticBody3D
 
             NavRegion.AddChild(path_copy);
 
-            if (DisableWallGeneration)
+            if (DisableCSGWallGeneration)
             {
                 nodePaths.Add(path_copy.GetPath());
+                path_copy.GlobalPosition *= 0.5f;
                 continue;
             }
 
             var wall = _csg_brick_wall_scene.Instantiate<CsgPolygon3D>();
-            if (seeded_random < 0.5 || is_starting_chunk)
+            wall.UseCollision = false;
+            if (has_diagonal_walls)
             {
-                //wall.PathInterval = 10.0f;
+                wall.PathInterval = 10.0f;
             }
             path_copy.AddChild(wall);
             wall.PathNode = path_copy.GetPath();
@@ -285,6 +307,8 @@ public partial class ChunkPlane : StaticBody3D
             for (int j=0;j<lamp_count;j++)
             {
                 var lamp = _lamp_post_scene.Instantiate<StaticBody3D>();
+                var phys_tracker = _phys_tracker_scene.Instantiate<PhysBodyTracker>();
+                lamp.AddChild(phys_tracker);
                 lamp_node.AddChild(lamp);
                 var point = path_node.Curve.SampleBaked(j*distance_between_lamps);
                 lamp.Position = point*0.8f;
@@ -309,7 +333,16 @@ public partial class ChunkPlane : StaticBody3D
         NavRegion.AddChild(treasure_node);
         void add_chest(TreasureChest chest, Transform3D transform)
         {
+            // set transform
             chest.Transform = transform;
+
+            // add collision tracker
+            if (chest.Type != ChestType.BasicWooden)
+            {
+                var phys_tracker = _phys_tracker_scene.Instantiate<PhysBodyTracker>();
+                chest.AddChild(phys_tracker);
+            }
+
             treasure_node.AddChild(chest);
             if (_opened_chests.Contains(chest.GlobalPosition))
             {
@@ -323,6 +356,7 @@ public partial class ChunkPlane : StaticBody3D
                 for (int j=0;j<sarco_count;j++)
                 {
                     var sarco = _sarco_scene.Instantiate<TreasureChest>();
+
                     var rand_angle = chunk_rng.NextSingle()*Mathf.Pi*2;
                     var rand_dist = 2.0f+Math.Max(chunk_rng.NextSingle(),chunk_rng.NextSingle())*14.0f;
                     var pos = (Vector3.Forward * rand_dist).Rotated(Vector3.Up, rand_angle);
@@ -445,11 +479,16 @@ public partial class ChunkPlane : StaticBody3D
         if (SimpleWfc.ChunkHasNoWalls(chunk_tile_id)) num_trees += 3;
         if (hasTree) for (var t=0;t<num_trees;t++) // && SimpleWfc.ChunkHasNoWalls(chunk_tile_id))
         {
+            // init tree
             var tree_scene = _tree_scenes[chunk_rng.Next(0, _tree_scenes.Length)];
             var tree = tree_scene.Instantiate<StaticBody3D>();
             var rand_angle = chunk_rng.NextSingle() * Mathf.Pi * 2;
             var rand_dist = Math.Max(chunk_rng.NextSingle(), chunk_rng.NextSingle()) * 16.0f;
             var pos = (Vector3.Forward * rand_dist).Rotated(Vector3.Up, rand_angle);
+
+            // add physics tracker to tree
+            var phys_tracker = _phys_tracker_scene.Instantiate<PhysBodyTracker>();
+            tree.AddChild(phys_tracker);
 
             // ensure that we don't spawn trees on top of walls
             for (var i=0; i<nodePaths.Count;i++)
@@ -565,7 +604,8 @@ public partial class ChunkPlane : StaticBody3D
                 mesh = GenerateHeightmapMesh(global_xz_offset);
             });
             MeshInstance.Mesh = mesh;
-            CollisionShape.Shape = MeshInstance.Mesh.CreateTrimeshShape();
+            CollisionShape.Shape = new BoxShape3D() {Size = new Vector3(32,1,32)};//MeshInstance.Mesh.CreateTrimeshShape();
+            CollisionShape.Position = Vector3.Down*0.5f;
         }
 
         // regen chunk features 
@@ -575,11 +615,14 @@ public partial class ChunkPlane : StaticBody3D
         await Task.Delay(100);
         //if (!IsInGroup(NAV_GROUP_NAME+Name)) AddToGroup(NAV_GROUP_NAME+Name);
         PopulateNavmeshGroupRecursive(NavRegion);
-        var bigplane = new MeshInstance3D
+        var bigplane = new StaticBody3D();
+        var shape = new CollisionShape3D()
         {
-            Mesh = new PlaneMesh() { Size = new Vector2(33, 33) }
+            Shape = new BoxShape3D() {Size = new Vector3(33,1,33)},
+            Position = Vector3.Down*0.5f
         };
         NavRegion.AddChild(bigplane);
+        bigplane.AddChild(shape);
         bigplane.AddToGroup(NAV_GROUP_NAME+Name);
         NavRegion.BakeNavigationMesh();
         bigplane.QueueFree();

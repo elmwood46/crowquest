@@ -4,7 +4,6 @@ using System;
 public partial class NavigationTest : CharacterBody3D
 {
     public const float MAX_VIEW_RANGE = 48.0f;
-    [Export] public Node3D HeadPosition;
     [Export] public Label DebugLabel;
     private NavigationAgent3D _agent;
     private Timer _random_walk_dir_timer = new(){WaitTime = 1, Autostart = false, OneShot = true};
@@ -52,11 +51,6 @@ public partial class NavigationTest : CharacterBody3D
             _state_timer = 0.0f;
         };
         _prev_pos = GlobalPosition;
-    }
-
-    public override void _Process(double delta)
-    {
-
     }
 
     public override void _PhysicsProcess(double delta)

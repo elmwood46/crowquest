@@ -79,11 +79,11 @@ advance_expression = "_stun_timer.is_stopped()"
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_ursd8"]
 advance_mode = 2
-advance_expression = "linear_velocity.length_squared() >= 0.1"
+advance_expression = "linear_velocity.length_squared() >= 0.2"
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_vm3y2"]
 advance_mode = 2
-advance_expression = "linear_velocity.length_squared() < 0.1"
+advance_expression = "linear_velocity.length_squared() < 0.05"
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_3r66f"]
 advance_mode = 2
@@ -128,4 +128,4 @@ states/scratch/position = Vector2(604.5, 298.906)
 states/windup_scratch/node = SubResource("AnimationNodeAnimation_ins1d")
 states/windup_scratch/position = Vector2(403, 307.305)
 transitions = ["base_idle", "base_pain", SubResource("AnimationNodeStateMachineTransition_plcts"), "base_pain", "base_idle", SubResource("AnimationNodeStateMachineTransition_fgmmi"), "base_idle", "base_move", SubResource("AnimationNodeStateMachineTransition_ursd8"), "base_move", "base_idle", SubResource("AnimationNodeStateMachineTransition_vm3y2"), "base_move", "base_pain", SubResource("AnimationNodeStateMachineTransition_3r66f"), "base_pain", "base_move", SubResource("AnimationNodeStateMachineTransition_u8436"), "Start", "base_idle", SubResource("AnimationNodeStateMachineTransition_k6iir"), "windup_scratch", "base_idle", SubResource("AnimationNodeStateMachineTransition_57rwm"), "scratch", "base_idle", SubResource("AnimationNodeStateMachineTransition_6n8dy"), "windup_scratch", "base_pain", SubResource("AnimationNodeStateMachineTransition_xmeck"), "scratch", "base_pain", SubResource("AnimationNodeStateMachineTransition_pn3yw")]
-graph_offset = Vector2(108, 66)
+graph_offset = Vector2(-35, 19)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=4 uid="uid://cbosg6usncinx"]
+[gd_scene load_steps=21 format=4 uid="uid://cbosg6usncinx"]
 
 [ext_resource type="Texture2D" uid="uid://cbxhix5jw3rkh" path="res://environment_models/halloween/scenes/stone_sarcophagus_Stone_08_albedo.png" id="1_w57cu"]
 [ext_resource type="Script" uid="uid://bpi4e7pxa2ajt" path="res://interactables/TreasureChest.cs" id="1_xgfh0"]
@@ -6,7 +6,6 @@
 [ext_resource type="AudioStream" uid="uid://sp30mjbdr72l" path="res://audio/treasure/sarcophagus/open2.ogg" id="3_qct11"]
 [ext_resource type="AudioStream" uid="uid://wqe2udki3s64" path="res://audio/treasure/sarcophagus/open3.ogg" id="4_5g2jc"]
 [ext_resource type="Material" uid="uid://choys7akyahpf" path="res://interactables/mesh_shine_highlight_shader_material.tres" id="4_rwq8f"]
-[ext_resource type="PackedScene" uid="uid://detrvp0t5teeu" path="res://enemies/bullets/PhysBodyTracker.tscn" id="7_lipin"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nfqry"]
 resource_name = "Stone_08"
@@ -263,5 +262,3 @@ libraries = {
 
 [node name="spawn_marker" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-
-[node name="PhysBodyTracker" parent="." instance=ExtResource("7_lipin")]

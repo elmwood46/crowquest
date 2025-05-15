@@ -103,9 +103,11 @@ wait_time_light = 20
 [node name="AudioManager" type="Node" parent="."]
 script = ExtResource("2_7mycd")
 
-[node name="BulletManager" type="Node" parent="." node_paths=PackedStringArray("BulletMultimesh")]
+[node name="BulletManager" type="Node" parent="." node_paths=PackedStringArray("FollowInstance", "BulletMultimesh")]
 script = ExtResource("3_4c57u")
+FollowInstance = NodePath("../Player")
 BulletMultimesh = NodePath("MultiMeshInstance3D")
+MaxBullets = 5000
 
 [node name="MultiMeshInstance3D" type="MultiMeshInstance3D" parent="BulletManager"]
 multimesh = ExtResource("4_efxa6")

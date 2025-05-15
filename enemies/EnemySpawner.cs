@@ -8,8 +8,8 @@ public class EnemyData{
     public Vector3 Velocity;
     public int Health;
     public int MaxHealth;
-    public EnemyState State;
-    public HashSet<EnemyTag> Tags;
+    public Enemy.StateEnum State;
+    public Godot.Collections.Array<Enemy.TagEnum> Tags;
     public Vector3 RandomWalkDir;
     public float JumpVelocity;
     public Timer RandomWalkDirTimer = new(){WaitTime = 1, Autostart = false, OneShot = true};
@@ -39,11 +39,10 @@ public partial class EnemySpawner : Node3D
         for (int i=0; i < EnemyCount; i++)
         {
             var enemy = _enemy_scene.Instantiate();
-            ((Enemy)enemy.GetChild(0)).Index = i;
             
             if (i >= 300)
             {
-                ((Enemy)enemy.GetChild(0)).Tags.Add(EnemyTag.Flying);
+                ((Enemy)enemy.GetChild(0)).Tags.Add(Enemy.TagEnum.Flying);
             }
             var setglob = GlobalTransform.Origin
             + new Vector3(
@@ -89,7 +88,7 @@ public partial class EnemySpawner : Node3D
 
         foreach (var enemy in _enemies_pool)
         {
-            if (enemy.State == EnemyState.Dead)
+            if (enemy.State == Enemy.StateEnum.Dead)
             {
                 enemy.QueueFree();
             }

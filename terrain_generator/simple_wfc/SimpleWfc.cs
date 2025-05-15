@@ -11,7 +11,7 @@ public static class SimpleWfc
     const int West = 0x4;
     private static readonly Node3D _tile_path_nodes = GD.Load<PackedScene>("res://terrain_generator/simple_wfc/TilePaths.tscn").Instantiate<Node3D>();
     private static readonly Node3D _tile_static_wall = GD.Load<PackedScene>("res://terrain_generator/simple_wfc/GenWallsStraight.tscn").Instantiate<Node3D>();
-    private static readonly Node3D _tile_static_wall_2 = GD.Load<PackedScene>("res://terrain_generator/simple_wfc/GenWallsDiag.tscn").Instantiate<Node3D>();
+    private static readonly Node3D _tile_static_wall_diag = GD.Load<PackedScene>("res://terrain_generator/simple_wfc/GenWallsDiag.tscn").Instantiate<Node3D>();
     private static readonly Dictionary<Vector2I,int> _cell_walls = new()
     {
         { new Vector2I(0, -1), North }, // N
@@ -50,7 +50,7 @@ public static class SimpleWfc
 
     public static StaticBody3D[] GetTileStaticWall(int tileID, int wall_type)
     {
-        Node3D wall = wall_type == 0 ? _tile_static_wall : _tile_static_wall_2;
+        Node3D wall = wall_type == 0 ? _tile_static_wall : _tile_static_wall_diag;
 
         var dead_ends = wall.GetNode("DeadEnds").GetChildren().OfType<StaticBody3D>().ToArray();
         StaticBody3D[] ret = tileID switch
@@ -74,6 +74,11 @@ public static class SimpleWfc
             _ => throw new ArgumentOutOfRangeException(nameof(tileID), tileID, null)
         };
         return ret;
+    }
+
+    public static StaticBody3D[] GetTileStaticWall(Vector2I cell, int wall_type)
+    {
+        return GetTileStaticWall(GetTileID(cell), wall_type);
     }
 
     public static Path3D[] GetTilePaths(Vector2I cell)

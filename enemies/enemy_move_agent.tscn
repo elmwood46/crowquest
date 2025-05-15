@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://i74e6cewfs78"]
+
+[ext_resource type="Script" uid="uid://1brfij6t7tij" path="res://enemies/EnemyMoveAgent.cs" id="1_8o53y"]
+
+[node name="EnemyMoveAgent" type="Node3D"]
+script = ExtResource("1_8o53y")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
