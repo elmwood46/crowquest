@@ -39,7 +39,7 @@ public partial class ChunkManager : Node
     private float _max_height = 0.0f; //20.0f;
     private float _planeResolution = 0.25f;
 
-    private const int FramesPerChunkUpdate = 2;
+    private const int FramesPerChunkUpdate = 3;
     private int _frame = 0;
 
     private readonly ConcurrentDictionary<ChunkPlane, Vector2I> _chunkToPosition = new();
@@ -97,7 +97,7 @@ public partial class ChunkManager : Node
             }
         }
 
-        if ((_frame%FramesPerChunkUpdate) == 0 && _chunksToUpdate.TryDequeue(out var chunkUpdate))
+        if (_frame>=FramesPerChunkUpdate && _chunksToUpdate.TryDequeue(out var chunkUpdate))
         {
             var (chunk, newPosition) = chunkUpdate;
             chunk.CallDeferred(nameof(ChunkPlane.SetChunkPosition), newPosition);

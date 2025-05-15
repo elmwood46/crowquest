@@ -77,35 +77,46 @@ public class CsgConvexHullData : PhysBodyTrackerData
 /// </summary>
 public partial class PhysBodyTracker : Node
 {
+    public struct TrackerKey { }
+
     private const float CellSize = 4f;
 
     // used to track bodies in a grid, for moving bodies which update their position
-    private static readonly ConcurrentDictionary<object, HashSet<Vector3I>> _body_to_gridpos = [];
+    private static readonly ConcurrentDictionary<PhysBodyTracker, HashSet<Vector3I>> _tracker_to_gridpos = [];
     // used to track occupied grid positions, to test collisions
-    private static readonly ConcurrentDictionary<Vector3I, HashSet<object>> _gridpos_to_bodies = [];
+    private static readonly ConcurrentDictionary<Vector3I, HashSet<PhysBodyTracker>> _gridpos_to_trackers = [];
     // used to associate bodies with a transform and shape data
-    private static readonly ConcurrentDictionary<object, List<PhysBodyTrackerData>> _body_to_data = [];
+    private static readonly ConcurrentDictionary<PhysBodyTracker, List<PhysBodyTrackerData>> _tracker_to_data = [];
+    private static readonly ConcurrentDictionary<PhysicsBody3D, PhysBodyTracker> _tracked_bodies = [];
 
     // used to track cells that are empty, to clean them up later
     private static readonly Dictionary<Vector3I, float> _pendingCleanupCells = [];
 
     private Transform3D _body_prev_transform = Transform3D.Identity;
-    private GodotObject _parent_body = null;
+    public GodotObject ParentBody = null;
     //private readonly SemaphoreSlim _semaphore = new(1, 1);
 
     private static bool _already_clean_up_this_frame = false;
-    private static int _num_instances = 0;
+    
+    private static readonly List<PhysBodyTracker> _trackers_to_clear_manually = [];
 
     public override void _Ready()
     {
-        _num_instances++;
         if (Engine.IsEditorHint()) return;
         var body = GetParent();
 
         if (body is PhysicsBody3D phys_body)
         {
-            _parent_body = phys_body;
-            UpdateBodyInGrid(phys_body);
+            phys_body.TreeExiting += () =>
+            {
+                //if (!_tracked_bodies.TryRemove(phys_body, out var removed_tracker)) { GD.Print("failed to remove body from tracker"); }
+                _trackers_to_clear_manually.Add(this);
+            };
+
+            ParentBody = phys_body;
+            _tracked_bodies.TryAdd(phys_body, this);
+            //GD.Print($"Tracking {phys_body} ({phys_body.Name}) in grid");
+            UpdateTrackerInGrid(this);
         }
         else
         {
@@ -113,21 +124,25 @@ public partial class PhysBodyTracker : Node
         }
 
         // static body treasure chests are not tracked, but we need to update the grid when they are opened
-        if  (_parent_body is TreasureChest t)
+        if (ParentBody is TreasureChest t)
         {
-            t.Opened += () => {
+            t.Opened += () =>
+            {
                 //GD.Print("updating treasure chest in grid!");
-                UpdateBodyInGrid(t);
+                UpdateTrackerInGrid(this);
             };
         }
         // special case, big chest node structure is nested for no reason...
-        else if (((Node3D)_parent_body).GetParent() is TreasureChest big_chest) 
+        else if (((Node3D)ParentBody).GetParent() is TreasureChest big_chest)
         {
-            big_chest.Opened += () => {
+            big_chest.Opened += () =>
+            {
                 //GD.Print("updating big chest in grid!");
-                UpdateBodyInGrid(big_chest);
+                UpdateTrackerInGrid(this);
             };
         }
+
+        CallDeferred(MethodName.Reparent, GetTree().Root);
     }
 
     /// <summary>
@@ -143,21 +158,21 @@ public partial class PhysBodyTracker : Node
         // ManualUpdateBodyInGrid
     }
 
-    public void ManualUpdateBodyInGrid()
+    public void ManualUpdateTrackerInGrid()
     {
         // do not run in editor
         if (Engine.IsEditorHint()) return;
 
         // skip if body is static
-        if (_parent_body is StaticBody3D) return;
+        if (ParentBody is StaticBody3D) return;
 
         // only characterbody and rigid bodies need to be tracked for position changes
-        var parent = (PhysicsBody3D)_parent_body;
+        var parent = (PhysicsBody3D)ParentBody;
         var new_transform = parent.GlobalTransform;
         if (new_transform != _body_prev_transform)
         {
             //GD.Print($"Updating parent Body");
-            UpdateBodyInGrid(parent);
+            UpdateTrackerInGrid(this);
             _body_prev_transform = new_transform;
         }
     }
@@ -178,94 +193,44 @@ public partial class PhysBodyTracker : Node
         _already_clean_up_this_frame = false;
     }
 
-    public override void _ExitTree()
+    public static void StopTrackingAndFree(PhysBodyTracker tracker)
     {
-        Callable.From(()=>
-        { 
-            GD.Print($"Exiting tree, PhysBodyTracker {this} removed from {GetParent()}.");
-            _num_instances--;
-            if (_parent_body == null) 
-            {
-                GD.PushWarning($"Trying to exit tree, PhysBodyTracker {this} has no parent body.");
-                return;
-            }
+        RemoveTrackerFromGrid(tracker);
+        if (!_tracker_to_data.TryRemove(tracker, out var _)) GD.Print($"Failed to remove tracker_to_data for {tracker}");
+        _tracker_to_gridpos.TryRemove(tracker, out _);
 
-            // remove the body from the grid if it exists
-            RemoveBodyFromGrid((PhysicsBody3D)_parent_body);
-            _body_to_data.TryRemove((PhysicsBody3D)_parent_body, out var _);
-            _body_to_gridpos.TryRemove(_parent_body, out _);
-            if (_num_instances==0)
-            {
-                _gridpos_to_bodies.Clear();
-                _body_to_gridpos.Clear();
-                _pendingCleanupCells.Clear();
-            }
-        }).CallDeferred();
-
-        base._ExitTree();
+        tracker.QueueFree();
     }
 
-    private static void UpdateBodyInGrid(PhysicsBody3D body)
+    private static void UpdateTrackerInGrid(PhysBodyTracker tracker)
     {
-        if (body == null || !IsInstanceValid(body)) return;
+        RemoveTrackerFromGrid(tracker);
+        if (tracker.ParentBody is not PhysicsBody3D body || !IsInstanceValid(tracker.ParentBody))
+        {
+            _trackers_to_clear_manually.Add(tracker);
+            return;
+        }
 
         if (body is StaticBody3D)
-        {
-            var children = body.GetChildren();
-            var shape = children.OfType<CollisionShape3D>().FirstOrDefault();
-            if (shape.Shape is ConvexPolygonShape3D conv)
             {
-                List<Vector3> pts = [];
-                foreach (var child in children)
+                var children = body.GetChildren();
+                var shape = children.OfType<CollisionShape3D>().FirstOrDefault();
+                if (shape.Shape is ConvexPolygonShape3D conv)
                 {
-                    if (child is CollisionShape3D cs && cs.Shape is ConvexPolygonShape3D d)
+                    List<Vector3> pts = [];
+                    foreach (var child in children)
                     {
-                        pts.AddRange(d.Points.Select(p => cs.GlobalTransform*p));
+                        if (child is CollisionShape3D cs && cs.Shape is ConvexPolygonShape3D d)
+                        {
+                            pts.AddRange(d.Points.Select(p => cs.GlobalTransform * p));
+                        }
                     }
+                    UpdateBodyPointCloudInGrid(tracker, body, pts);
                 }
-                UpdateBodyPointCloudInGrid(body, pts);
-            }
-            else if (shape != null) UpdateBodyAABBInGrid(body);
-            else throw new Exception($"Attempted to track StaticBody3D {body.Name} does not have a collision shape.");
+                else if (shape != null) UpdateBodyAABBInGrid(tracker, body);
+                else throw new Exception($"Attempted to track StaticBody3D {body.Name} does not have a collision shape.");
 
-            _body_to_data.TryRemove(body, out var _);
-            var shape_data = new List<PhysBodyTrackerData>();
-            foreach (var child in body.GetChildren())
-            {
-                if (child is CollisionShape3D cs)
-                {
-                    shape_data.Add(PhysBodyTrackerData.Create(cs.GlobalTransform, cs.Shape));
-                }
-            }
-            _body_to_data[body] = shape_data;
-        }
-        else // dynamic bodies
-        {
-            UpdateBodyAABBInGrid(body);
-
-            if (body is Enemy en)
-            {
-                var shape = en.CollisionShape;
-                if (_body_to_data.TryGetValue(en, out var enemy_data))
-                {
-                    foreach (var d in enemy_data)
-                        d.GlobalTransform = shape.GlobalTransform;
-                }
-                else _body_to_data[en] = [PhysBodyTrackerData.Create(shape.GlobalTransform, shape.Shape)];
-            }
-            else if (body is Player pc)
-            {
-                var shape = pc.PlayerCollisionShape;
-                if (_body_to_data.TryGetValue(pc, out var player_data))
-                {
-                    foreach (var d in player_data)
-                        d.GlobalTransform = shape.GlobalTransform;
-                }
-                else _body_to_data[pc] = [PhysBodyTrackerData.Create(shape.GlobalTransform, shape.Shape)];
-            }
-            else 
-            {
-                _body_to_data.TryRemove(body, out var _);
+                _tracker_to_data.TryRemove(tracker, out var _);
                 var shape_data = new List<PhysBodyTrackerData>();
                 foreach (var child in body.GetChildren())
                 {
@@ -274,39 +239,72 @@ public partial class PhysBodyTracker : Node
                         shape_data.Add(PhysBodyTrackerData.Create(cs.GlobalTransform, cs.Shape));
                     }
                 }
-                _body_to_data[body] = shape_data;
+                _tracker_to_data[tracker] = shape_data;
             }
-        }
+            else // dynamic bodies
+            {
+                UpdateBodyAABBInGrid(tracker, body);
+
+                if (body is Enemy en)
+                {
+                    var shape = en.CollisionShape;
+                    if (_tracker_to_data.TryGetValue(tracker, out var enemy_data))
+                    {
+                        foreach (var d in enemy_data)
+                            d.GlobalTransform = shape.GlobalTransform;
+                    }
+                    else _tracker_to_data[tracker] = [PhysBodyTrackerData.Create(shape.GlobalTransform, shape.Shape)];
+                }
+                else if (body is Player pc)
+                {
+                    var shape = pc.PlayerCollisionShape;
+                    if (_tracker_to_data.TryGetValue(tracker, out var player_data))
+                    {
+                        foreach (var d in player_data)
+                            d.GlobalTransform = shape.GlobalTransform;
+                    }
+                    else _tracker_to_data[tracker] = [PhysBodyTrackerData.Create(shape.GlobalTransform, shape.Shape)];
+                }
+                else
+                {
+                    _tracker_to_data.TryRemove(tracker, out var _);
+                    var shape_data = new List<PhysBodyTrackerData>();
+                    foreach (var child in body.GetChildren())
+                    {
+                        if (child is CollisionShape3D cs)
+                        {
+                            shape_data.Add(PhysBodyTrackerData.Create(cs.GlobalTransform, cs.Shape));
+                        }
+                    }
+                    _tracker_to_data[tracker] = shape_data;
+                }
+            }
     }
 
-    private static void UpdateBodyPointCloudInGrid(PhysicsBody3D body, List<Vector3> point_cloud)
+    private static void UpdateBodyPointCloudInGrid(PhysBodyTracker tracker, PhysicsBody3D body, List<Vector3> point_cloud)
     {
-        RemoveBodyFromGrid(body);
-
-        if (!_body_to_gridpos.TryGetValue(body, out var gridCells))
+        if (!_tracker_to_gridpos.TryGetValue(tracker, out var gridCells))
         {
             gridCells = [];
-            _body_to_gridpos[body] = gridCells;
+            _tracker_to_gridpos[tracker] = gridCells;
         }
         gridCells.Clear();
 
-        for (int i=0; i< point_cloud.Count; i++)
+        for (int i = 0; i < point_cloud.Count; i++)
         {
             var cell = WorldToCell(point_cloud[i]);
-            if (!_gridpos_to_bodies.TryGetValue(cell, out var set))
+            if (!_gridpos_to_trackers.TryGetValue(cell, out var set))
             {
                 set = [];
-                _gridpos_to_bodies[cell] = set;
+                _gridpos_to_trackers[cell] = set;
             }
-            set.Add(body);
+            set.Add(tracker);
             gridCells.Add(cell);
         }
     }
 
-    private static void UpdateBodyAABBInGrid(PhysicsBody3D body)
+    private static void UpdateBodyAABBInGrid(PhysBodyTracker tracker, PhysicsBody3D body)
     {
-        RemoveBodyFromGrid(body);
-
         Aabb totalAabb = GetNodeAabb(body);
 
         if (totalAabb == default)
@@ -319,10 +317,10 @@ public partial class PhysBodyTracker : Node
         var max = WorldToCell(totalAabb.Position + totalAabb.Size);
 
 
-        if (!_body_to_gridpos.TryGetValue(body, out var gridCells))
+        if (!_tracker_to_gridpos.TryGetValue(tracker, out var gridCells))
         {
             gridCells = [];
-            _body_to_gridpos[body] = gridCells;
+            _tracker_to_gridpos[tracker] = gridCells;
         }
         gridCells.Clear();
 
@@ -335,30 +333,30 @@ public partial class PhysBodyTracker : Node
                     Vector3I cell = new(x, y, z);
                     gridCells.Add(cell);
 
-                    if (!_gridpos_to_bodies.TryGetValue(cell, out var set))
+                    if (!_gridpos_to_trackers.TryGetValue(cell, out var set))
                     {
                         set = [];
-                        _gridpos_to_bodies[cell] = set;
+                        _gridpos_to_trackers[cell] = set;
                     }
-                    set.Add(body);
+                    set.Add(tracker);
                 }
             }
         }
     }
 
-    private static void RemoveBodyFromGrid(PhysicsBody3D body)
+    private static void RemoveTrackerFromGrid(PhysBodyTracker tracker)
     {
-        if (_body_to_gridpos.TryGetValue(body, out var cells))
+        if (_tracker_to_gridpos.TryGetValue(tracker, out var cells))
         {
             foreach (var cell in cells)
             {
-                if (_gridpos_to_bodies.TryGetValue(cell, out var set))
+                if (_gridpos_to_trackers.TryGetValue(cell, out var set))
                 {
-                    set.Remove(body);
+                    set.Remove(tracker);
                 }
                 if (set.Count == 0 && !_pendingCleanupCells.ContainsKey(cell))
                 {
-                    _pendingCleanupCells.Add(cell,0f);
+                    _pendingCleanupCells.Add(cell, 0f);
                 }
             }
         }
@@ -368,22 +366,22 @@ public partial class PhysBodyTracker : Node
     {
         if (_pendingCleanupCells.Count == 0) return;
 
-        var toRemove = new List<Vector3I>();
+        var remove_from_cleanup_list = new List<Vector3I>();
 
-        foreach (var (cell,t) in _pendingCleanupCells)
+        foreach (var (cell, t) in _pendingCleanupCells)
         {
-            if (_gridpos_to_bodies.TryGetValue(cell, out var checkSet))
+            if (_gridpos_to_trackers.TryGetValue(cell, out var checkSet))
             {
                 if (checkSet.Count > 0)
                 {
-                    toRemove.Add(cell);
+                    remove_from_cleanup_list.Add(cell);
                 }
                 else
                 {
                     if (t > 1f)
                     {
-                        _gridpos_to_bodies.TryRemove(cell, out var _);
-                        toRemove.Add(cell);
+                        _gridpos_to_trackers.TryRemove(cell, out var _);
+                        remove_from_cleanup_list.Add(cell);
                     }
                     else
                     {
@@ -393,7 +391,7 @@ public partial class PhysBodyTracker : Node
             }
         }
 
-        foreach (var cell in toRemove)
+        foreach (var cell in remove_from_cleanup_list)
             _pendingCleanupCells.Remove(cell);
     }
 
@@ -407,13 +405,13 @@ public partial class PhysBodyTracker : Node
             if (pc is CollisionShape3D shape)
             {
                 var aabb = ShapeToAabb(shape.Shape);
-                aabb = shape.GlobalTransform*aabb;
+                aabb = shape.GlobalTransform * aabb;
                 if (!foundShape)
                 {
                     totalAabb = aabb;
                     foundShape = true;
                 }
-                else 
+                else
                 {
                     totalAabb = totalAabb.Merge(aabb);
                 }
@@ -435,12 +433,12 @@ public partial class PhysBodyTracker : Node
         }
         else if (shape is CapsuleShape3D capsule)
         {
-            var size = new Vector3(capsule.Radius*2, capsule.Height, capsule.Radius*2);
-            return new Aabb(-size/2f, size);
+            var size = new Vector3(capsule.Radius * 2, capsule.Height, capsule.Radius * 2);
+            return new Aabb(-size / 2f, size);
         }
         else if (shape is ConvexPolygonShape3D convex)
         {
-            Vector3 min = Vector3.One*float.MaxValue, max = Vector3.One*float.MinValue;
+            Vector3 min = Vector3.One * float.MaxValue, max = Vector3.One * float.MinValue;
 
             foreach (var pt in convex.Points)
             {
@@ -453,7 +451,7 @@ public partial class PhysBodyTracker : Node
             }
             var size = max - min;
 
-            return new Aabb(-size/2f, size);
+            return new Aabb(-size / 2f, size);
         }
         return default;
     }
@@ -469,21 +467,60 @@ public partial class PhysBodyTracker : Node
 
     public static bool IsCellOccupied(Vector3I cell)
     {
-        return _gridpos_to_bodies.ContainsKey(cell);
+        return _gridpos_to_trackers.ContainsKey(cell);
     }
 
-    public static bool TryGetBodiesInCell(Vector3I cell, out HashSet<object> bodies)
+    public static bool TryGetTrackersInCell(Vector3I cell, out HashSet<PhysBodyTracker> trackers)
     {
-        return _gridpos_to_bodies.TryGetValue(cell, out bodies);
+        return _gridpos_to_trackers.TryGetValue(cell, out trackers);
     }
 
-    public static bool TryGetBodyData(object body, out List<PhysBodyTrackerData> data)
+    public static bool TryGetTrackerData(PhysBodyTracker tracker, out List<PhysBodyTrackerData> data)
     {
-        return _body_to_data.TryGetValue(body, out data);
+        return _tracker_to_data.TryGetValue(tracker, out data);
     }
 
-    public static List<PhysicsBody3D> AllTrackedBodies()
+    public static List<PhysBodyTracker> AllTrackers()
     {
-        return [.. _body_to_data.Keys.OfType<PhysicsBody3D>()];
+        return [.. _tracker_to_data.Keys];
+    }
+
+    public static bool TrackedBodiesContainsPlayer()
+    {
+        return _tracked_bodies.ContainsKey(Player.Instance);
+    }
+
+    public static bool TryGetTrackerFromBody(PhysicsBody3D body, out PhysBodyTracker tracker)
+    {
+        if (_tracked_bodies.TryGetValue(body, out PhysBodyTracker value))
+        {
+            tracker = value;
+            return true;
+        }
+        else
+        {
+            tracker = null;
+            return false;
+        }
+    }
+
+    public static void ManuallyFlushTrackers()
+    {
+        foreach (var tracker in _trackers_to_clear_manually)
+        {
+            StopTrackingAndFree(tracker);
+        }
+        _trackers_to_clear_manually.Clear();
+
+        // GD.Print($"UNTRACKING. REMAINING BODIES COUNT: {_tracked_bodies.Count}");
+        // GD.Print("Gridpos to trackers count: " + _gridpos_to_trackers.Count);
+        // GD.Print("Tracker to gridpos count: " + _tracker_to_gridpos.Count);
+        // GD.Print("Tracker to data count: " + _tracker_to_data.Count);
+        // GD.Print("Pending cleanup cells count: " + _pendingCleanupCells.Count);
+    }
+    
+    public static int NumTrackedBodies()
+    {
+        return _tracked_bodies.Count;
     }
 }

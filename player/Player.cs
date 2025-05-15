@@ -38,7 +38,7 @@ public partial class Player : CharacterBody3D, IHurtable
 	private Timer _autoattack_timer = new() { WaitTime = 0.2f, OneShot = true };
 	private float _autoattack_cooldown = 1.0f;
 	private int _autoattack_number = 1;
-	private float _autoattack_homing = 0.3f;
+	private float _autoattack_homing = 0.1f;
 	private int _autoattack_damage = 10;
 	private float _autoattack_bullet_speed = 20.0f;
 	public HashSet<Enemy> VisibleEnemiesInRange = [];
@@ -107,9 +107,7 @@ public partial class Player : CharacterBody3D, IHurtable
 		_autoattack_timer.WaitTime = _autoattack_cooldown;
 		_autoattack_timer.Timeout += () =>
 		{
-			if (IsDead) return;
-			var active_enemies = GetActiveNonBlockedEnemiesInArea();
-			if (active_enemies.Count > 0)
+			if (!IsDead && GetActiveNonBlockedEnemiesInArea().Count > 0)
 			{
 				for (var i = 0; i < _autoattack_number; i++) BulletManager.AddBullet(
 						this,
@@ -466,6 +464,7 @@ public partial class Player : CharacterBody3D, IHurtable
 			else _damage_vignette_ratio = Mathf.Clamp(_damage_vignette_ratio, _min_damage_vignette_ratio, 1.0f);
 			if (_current_health <= 0)
 			{
+				_autoattack_timer.Stop();
 				_current_health = 0;
 				_player_is_active = false;
 				GD.Print("Player died");
@@ -518,6 +517,7 @@ public partial class Player : CharacterBody3D, IHurtable
 		_current_health = MaxHealth;
 		GlobalPosition = Vector3.Zero + Vector3.Up * 2.0f; //SaveManager.GetCachedPlayerPosition();
 		_player_is_active = true;
+		_autoattack_timer.Start();
 
 		// do screen melt effect
 		ScreenMeltEffect.Set("melting", true);
