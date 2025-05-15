@@ -435,7 +435,8 @@ public partial class Player : CharacterBody3D, IHurtable
 		}
 		else
 		{
-			move_speed = Input.IsActionPressed("Sprint") ? sprint_speed : MoveSpeed;
+			// SPRINTING
+			//move_speed = Input.IsActionPressed("Sprint") ? sprint_speed : MoveSpeed;
 
 			// reset footstep timer, based on moving speed, which plays footstep sound when it times out
 			ResetFootstepTimer(move_speed);
