@@ -105,6 +105,7 @@ public partial class BulletManager : Node
         var enemies_trackers_list = trackers_list.Where(b => b.ParentBody is Enemy).ToList();
         List<Vector3> tracked_enemies_targetable = Player.Instance == null ? [] :
             [.. Player.Instance.GetActiveNonBlockedEnemiesInArea().Select(e => e.GlobalPosition * XZ_ONE)];
+        PhysBodyTracker.TryGetTrackerFromBody(Player.Instance, out var player_tracker);
 
         // create body collision exclusion map, and update multimesh
         Dictionary<int, HashSet<PhysBodyTracker>> exclusion_map = [];
@@ -121,6 +122,8 @@ public partial class BulletManager : Node
             {
                 exclusion_map[i].Add(shooter_tracker);
             }
+
+            if (Player.Instance.HasRollIFrames()) exclusion_map[i].Add(player_tracker);
 
             if (!(bool)_basic_bullets[i]["harms_enemies"]) foreach (var e in enemies_trackers_list) exclusion_map[i].Add(e);
         }

@@ -42,6 +42,18 @@ public partial class Player : CharacterBody3D, IHurtable
 	private int _autoattack_damage = 10;
 	private float _autoattack_bullet_speed = 20.0f;
 	public HashSet<Enemy> VisibleEnemiesInRange = [];
+	// rolling
+	private bool _can_roll = true;
+	private float _roll_cooldown_time = 0.3f;
+	private Timer _roll_cooldown_timer = new() { OneShot = true };
+	private bool _is_rolling = false;
+	private int _roll_iframes = 20;
+	private int _roll_iframe_counter = 0;
+	private float _roll_duration = 1.0f;
+	private float _roll_animation_speedscale;
+	private float _roll_move_speed = 12.0f;
+	private Vector3 _saved_roll_dir = default;
+	public bool HasRollIFrames() => _roll_iframe_counter > 0;
 
 	// =======================================================================
 	// damage & death vars
@@ -173,6 +185,25 @@ public partial class Player : CharacterBody3D, IHurtable
 		AddChild(_blink_timer);
 		AddChild(_reopen_eyes_timer);
 		_blink_timer.Start();
+
+		// rolling
+		_roll_cooldown_timer.WaitTime = _roll_cooldown_time;
+		_roll_cooldown_timer.Timeout += () =>
+		{
+			_can_roll = true;
+		};
+		AddChild(_roll_cooldown_timer);
+		_roll_animation_speedscale = _anim_tree.GetAnimation("Flip").Length/_roll_duration;
+		_anim_tree.GetAnimation("Flip").Set("speed_scale",_roll_animation_speedscale);
+		_anim_tree.AnimationFinished += (anim_name) =>
+		{
+			if (anim_name == "Flip")
+			{
+				_is_rolling = false;
+				HandleAnimations();
+				_roll_cooldown_timer.Start();
+			}
+		};
 
 		// footsteps
 		_camera_3d.AddChild(_footstep_sound_player);
@@ -338,21 +369,51 @@ public partial class Player : CharacterBody3D, IHurtable
 
 		var velocity = Velocity;
 
+		// get input direction		
+		var inputDirection = Input.GetVector("MoveLeft", "MoveRight", "MoveBack", "MoveForward");
+		//var y_input = ((Input.IsActionPressed("Jump") ? 1.0f : 0.0f) - (Input.IsActionPressed("Crouch") ? 1.0f : 0.0f)) * Vector3.Up;
+
+		var camera_basis = Basis.FromEuler(_camera_3d.GlobalRotation * Vector3.Up);
+		var direction = new Vector3(inputDirection.X, 0.0f, -inputDirection.Y);
+		direction = camera_basis * direction.Normalized();
+
+		if (!_is_rolling && GlobalTransform * -direction != _player_model.GlobalPosition)
+		{
+			_player_model.LookAt(GlobalTransform * -direction);
+		}
+
+		// check for jump, roll, footstep sounds, apply gravity
+
 		if (IsOnFloor())
 		{
 			// jump
 			if (Input.IsActionJustPressed("Jump"))
 			{
-				velocity.Y = JumpVelocity;
+				//velocity.Y = JumpVelocity;
+				if (_can_roll)
+				{
+					if (direction != Vector3.Zero) _saved_roll_dir = direction;
+					else _saved_roll_dir = _player_model.GlobalBasis * Vector3.Back;
+
+					_is_rolling = true;
+					_can_roll = false;
+					_velocity_sq_last_frame = 0.0f;
+					PlayFootstepSound();
+					_anim_state_machine.Travel("Roll");
+					_roll_iframe_counter = _roll_iframes+1;
+				}
 			}
 
 			// play footstep sound if landing or if just starting to move
-			if (_lastFrameOnFloor < Engine.GetPhysicsFrames() - 1
-			|| (velocity.LengthSquared() > 0.2f && _velocity_sq_last_frame <= 0.2f))
+			if (!_is_rolling)
 			{
-				_footstep_sound_player.Stop();
-				_footstep_timer.Stop();
-				PlayFootstepSound(_lastFrameOnFloor < Engine.GetPhysicsFrames() - 1);
+				if (_lastFrameOnFloor < Engine.GetPhysicsFrames() - 1
+					|| (velocity.LengthSquared() > 0.2f && _velocity_sq_last_frame <= 0.2f))
+				{
+					_footstep_sound_player.Stop();
+					_footstep_timer.Stop();
+					PlayFootstepSound(_lastFrameOnFloor < Engine.GetPhysicsFrames() - 1);
+				}
 			}
 
 			_lastFrameOnFloor = Engine.GetPhysicsFrames();
@@ -363,42 +424,22 @@ public partial class Player : CharacterBody3D, IHurtable
 		}
 		_velocity_sq_last_frame = velocity.LengthSquared();
 
-		// get input direction		
-		var inputDirection = Input.GetVector("MoveLeft", "MoveRight", "MoveBack", "MoveForward");
-		var y_input = ((Input.IsActionPressed("Jump") ? 1.0f : 0.0f) - (Input.IsActionPressed("Crouch") ? 1.0f : 0.0f)) * Vector3.Up;
-
-		var direction = new Vector3(inputDirection.X, 0.0f, -inputDirection.Y);
-		direction = Basis.FromEuler(_camera_3d.GlobalRotation * Vector3.Up) * direction.Normalized();
-
-		if (GlobalTransform * -direction != _player_model.GlobalPosition)
-		{
-			_player_model.LookAt(GlobalTransform * -direction);
-		}
-
 		//direction += y_input;
+		var move_speed = MoveSpeed;
 		var sprint_speed = MoveSpeed * SprintFactor;
-		var move_speed = Input.IsActionPressed("Sprint") ? sprint_speed : MoveSpeed;
 
-		// reset footstep timer, which plays footstep sound when it times out
-		if (_footstep_timer.IsStopped())
+		if (_is_rolling)
 		{
-			if (move_speed >= MoveSpeed && move_speed < move_speed * SprintFactor)
-			{
-				_footstep_timer.WaitTime = AudioManager.FootstepWaitTimes.X;
-
-			}
-			else if (move_speed >= sprint_speed)
-			{
-				_footstep_timer.WaitTime = AudioManager.FootstepWaitTimes.Y;
-			}
-			else
-			{
-				_footstep_timer.WaitTime = AudioManager.FootstepWaitTimes.Z;
-			}
-
-			_footstep_timer.Start();
+			move_speed = _roll_move_speed;
+			direction = _saved_roll_dir;
 		}
+		else
+		{
+			move_speed = Input.IsActionPressed("Sprint") ? sprint_speed : MoveSpeed;
 
+			// reset footstep timer, based on moving speed, which plays footstep sound when it times out
+			ResetFootstepTimer(move_speed);
+		}
 
 		velocity.X = Mathf.Lerp(velocity.X, direction.X * move_speed, (float)delta * MoveLerpFactor);
 		//velocity.Y = Mathf.Lerp(velocity.Y, direction.Y * move_speed, (float)delta * MoveLerpFactor);
@@ -413,7 +454,7 @@ public partial class Player : CharacterBody3D, IHurtable
 		UpdateDamageVignette();
 
 		// FOV
-		var max_vel_clamped = sprint_speed * 2.0f;
+		var max_vel_clamped = _is_rolling ? _roll_move_speed : sprint_speed * 2.0f;
 		var velocity_clamped = Mathf.Clamp(velocity.Length(), 0.5f, max_vel_clamped);
 		LerpCameraSize(_camera_zoom + _MAX_CAM_SIZE_CHANGE * velocity_clamped / max_vel_clamped);
 
@@ -421,9 +462,33 @@ public partial class Player : CharacterBody3D, IHurtable
 		{
 			ResetCameraZoom();
 		}
+
+		if (_roll_iframe_counter > 0) _roll_iframe_counter--;
 	}
 
 	// =======================================================================
+
+	public void ResetFootstepTimer(float move_speed)
+	{
+		if (_footstep_timer.IsStopped())
+		{
+			if (move_speed >= MoveSpeed && move_speed < move_speed * SprintFactor)
+			{
+				_footstep_timer.WaitTime = AudioManager.FootstepWaitTimes.X;
+
+			}
+			else if (move_speed >= MoveSpeed * SprintFactor)
+			{
+				_footstep_timer.WaitTime = AudioManager.FootstepWaitTimes.Y;
+			}
+			else
+			{
+				_footstep_timer.WaitTime = AudioManager.FootstepWaitTimes.Z;
+			}
+
+			_footstep_timer.Start();
+		}
+	}
 
 	public string CameraFacedDirection()
 	{
@@ -453,6 +518,7 @@ public partial class Player : CharacterBody3D, IHurtable
 	public void TakeDamage(int damage, DamageTypeFlagEnum type)
 	{
 		if (IsDead) return;
+		if (HasRollIFrames()) return;
 		if (_iFramesStopwatch.ElapsedMilliseconds > _iFramesWaitTime)
 		{
 			var damage_ratio = 1.0f * damage / MaxHealth;
@@ -550,12 +616,18 @@ public partial class Player : CharacterBody3D, IHurtable
 
 	public void HandleAnimations()
 	{
-		if (!IsOnFloor())
+		if (_is_rolling)
 		{
-			if (Velocity.Y >= 0) _anim_state_machine.Travel("Jump");
-			else _anim_state_machine.Travel("Fall");
+			_anim_state_machine.Travel("Roll");
 			return;
 		}
+
+		if (!IsOnFloor())
+			{
+				if (Velocity.Y >= 0) _anim_state_machine.Travel("Jump");
+				else _anim_state_machine.Travel("Fall");
+				return;
+			}
 
 		if (Velocity.LengthSquared() <= 0.1f)
 		{

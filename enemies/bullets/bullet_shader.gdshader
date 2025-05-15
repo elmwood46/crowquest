@@ -8,5 +8,5 @@ void vertex()
 
 void fragment() {
 	ALBEDO = COLOR.rgb;
-	EMISSION = COLOR.rgb * 3.0;  // strong red glow
+	EMISSION = COLOR.rgb * 5.0;  // strong red glow
 }
