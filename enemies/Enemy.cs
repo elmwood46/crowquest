@@ -131,7 +131,7 @@ public partial class Enemy : RigidBody3D, IHurtable
         };
 
         _idle_sound_timer.Timeout += () => {
-            if (IdleSounds.Count > 0)
+            if (IdleSounds.Count > 0 && !IsDead() && !Freeze && Visible)
             {
                 var sound = IdleSounds[Random.Shared.Next(0,IdleSounds.Count)];
                 AudioManager.TryPlay(sound, AudioBus.Enemies, GlobalPosition);
@@ -141,7 +141,7 @@ public partial class Enemy : RigidBody3D, IHurtable
         };
         _touch_damage_cooldown.Timeout += () =>
         {
-            if (IsPlayerInRange(TouchDamageRadius))
+            if (!IsDead() && !Freeze && Visible && IsPlayerInRange(TouchDamageRadius))
             {
                 Player.Instance.TakeDamage(TouchDamageAmount, TouchDamageType);
             }
@@ -185,27 +185,33 @@ public partial class Enemy : RigidBody3D, IHurtable
 
     public override void _IntegrateForces(PhysicsDirectBodyState3D state)
     {
-        if (_flag_force_zero_velocity)
+        if (IsDead())
         {
             state.LinearVelocity = Vector3.Zero;
-            state.AngularVelocity = Vector3.Zero;
-            _flag_force_zero_velocity = false;
+            return;
         }
-        else if (!IsDead() 
-            && !IsStunned() 
-            && !CurrentAttackBlocksMovement()
-            && IsOnFloor())
-        {
-            // keep velocity below max speed when moving on floor   
-            if (MovementAgent.State == EnemyMoveAgent.MoveState.PATH_TO_PLAYER)
+
+        if (_flag_force_zero_velocity)
             {
-                state.LinearVelocity = state.LinearVelocity.Lerp(state.LinearVelocity.Normalized() * Speed * 2f, 0.45f);
+                state.LinearVelocity = Vector3.Zero;
+                state.AngularVelocity = Vector3.Zero;
+                _flag_force_zero_velocity = false;
             }
-            else if (state.LinearVelocity.LengthSquared() > Speed*Speed)
+            else if (!IsDead()
+                && !IsStunned()
+                && !CurrentAttackBlocksMovement()
+                && IsOnFloor())
             {
-                state.LinearVelocity = state.LinearVelocity.Lerp(state.LinearVelocity.Normalized() * Speed, 0.2f);
+                // keep velocity below max speed when moving on floor   
+                if (MovementAgent.State == EnemyMoveAgent.MoveState.PATH_TO_PLAYER)
+                {
+                    state.LinearVelocity = state.LinearVelocity.Lerp(state.LinearVelocity.Normalized() * Speed * 2f, 0.45f);
+                }
+                else if (state.LinearVelocity.LengthSquared() > Speed * Speed)
+                {
+                    state.LinearVelocity = state.LinearVelocity.Lerp(state.LinearVelocity.Normalized() * Speed, 0.2f);
+                }
             }
-        }
     }
 
     public override void _PhysicsProcess(double delta)
@@ -329,42 +335,44 @@ public partial class Enemy : RigidBody3D, IHurtable
 
     public void DeathAnimation()
     {
+        if (!Visible) return;
         if (AnimStateMachine.GetCurrentNode() == "base_die")
         {
             // shake sprite
             float shakex, shakey, shakez;
-            shakex = _death_shake_factor*(Random.Shared.NextSingle()*2.0f-1.0f);
-            shakey = _death_shake_factor*(Random.Shared.NextSingle()*2.0f-1.0f);
-            shakez = _death_shake_factor*(Random.Shared.NextSingle()*2.0f-1.0f);
-            Sprite.Position = _base_sprite_position + new Vector3(shakex,shakey,shakez);
+            shakex = _death_shake_factor * (Random.Shared.NextSingle() * 2.0f - 1.0f);
+            shakey = _death_shake_factor * (Random.Shared.NextSingle() * 2.0f - 1.0f);
+            shakez = _death_shake_factor * (Random.Shared.NextSingle() * 2.0f - 1.0f);
+            Sprite.Position = _base_sprite_position + new Vector3(shakex, shakey, shakez);
 
             if ((bool)_sprite_shader.GetShaderParameter("pulse_mode") != false) _sprite_shader.SetShaderParameter("pulse_mode", false);
             if ((bool)_sprite_shader.GetShaderParameter("flash_enabled") != true) _sprite_shader.SetShaderParameter("flash_enabled", true);
             if ((float)_sprite_shader.GetShaderParameter("intensity") != 0.5f) _sprite_shader.SetShaderParameter("intensity", 0.5f);
             if ((Color)_sprite_shader.GetShaderParameter("flash_color") != RED) _sprite_shader.SetShaderParameter("flash_color", RED);
-            
-            if (_deathTimer.IsStopped())
+
+            if (_deathTimer.IsStopped() && Visible)
             {
+                GD.Print("added death smoke");
                 var blood_fountain = _death_blood_fountain.Instantiate() as GpuParticles3D;
                 blood_fountain.Emitting = true;
-                blood_fountain.Finished += () => blood_fountain.QueueFree();
+                blood_fountain.Finished += blood_fountain.QueueFree;
                 var deathsmoke = _death_smoke.Instantiate() as GpuParticles3D;
                 deathsmoke.Emitting = true;
-                deathsmoke.Finished += () => deathsmoke.QueueFree();
-                AddSibling(blood_fountain);
-                AddSibling(deathsmoke);
+                deathsmoke.Finished += deathsmoke.QueueFree;
+                GetTree().CurrentScene.AddChild(blood_fountain);
+                GetTree().CurrentScene.AddChild(deathsmoke);
                 blood_fountain.SetGlobalPosition(GlobalPosition);
-                deathsmoke.SetGlobalPosition(GlobalPosition+Vector3.Up*0.5f);
+                deathsmoke.SetGlobalPosition(GlobalPosition + Vector3.Up * 0.5f);
 
                 var coinAmount = 0;
                 //GD.Print("die faces: ", (int)CoinDropDice);
                 for (int i = 0; i < CoinDropDiceAmount; i++)
                 {
-                    coinAmount += Mathf.FloorToInt(Random.Shared.NextSingle()* (int)CoinDropDice) + 1;
+                    coinAmount += Mathf.FloorToInt(Random.Shared.NextSingle() * (int)CoinDropDice) + 1;
                 }
-                AddSibling(TreasureSpawner.Create(GlobalPosition+Vector3.Up*0.5f,coinAmount,0.5f));
+                GetTree().CurrentScene.AddChild(TreasureSpawner.Create(GlobalPosition + Vector3.Up * 0.5f, coinAmount, 0.5f));
 
-                QueueFree();
+                Visible = false;
             }
             else
             {
@@ -375,7 +383,7 @@ public partial class Enemy : RigidBody3D, IHurtable
         else
         {
             _idle_sound_timer.Stop();
-            var stream = DeathSounds[Random.Shared.Next(0,DeathSounds.Count)];
+            var stream = DeathSounds[Random.Shared.Next(0, DeathSounds.Count)];
             AudioManager.TryPlay(stream, AudioBus.Enemies, GlobalPosition);
             AnimStateMachine.Travel("base_die", true);
             _deathTimer.WaitTime = AnimTree.GetAnimation("base_die").Length;

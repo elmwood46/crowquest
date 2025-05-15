@@ -423,4 +423,4 @@ shape = SubResource("BoxShape3D_j7cjo")
 
 [node name="EnemySpawner" parent="." instance=ExtResource("9_umbuv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.01179, 0)
-EnemyCount = 10
+EnemyCount = 0

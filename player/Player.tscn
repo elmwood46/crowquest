@@ -1,4 +1,4 @@
-[gd_scene load_steps=37 format=4 uid="uid://bjhvg8rf53fx4"]
+[gd_scene load_steps=38 format=4 uid="uid://bjhvg8rf53fx4"]
 
 [ext_resource type="Script" uid="uid://5t1nwwrdxlah" path="res://player/Player.cs" id="1_e80uo"]
 [ext_resource type="Texture2D" uid="uid://bt5o0sr6peltq" path="res://character_models/gdquest_gobot/model/gobot_gobot_diffuse.png" id="1_kne1u"]
@@ -2082,7 +2082,10 @@ func _process(_delta: float) -> void:
 [sub_resource type="SphereShape3D" id="SphereShape3D_06mnu"]
 radius = 1.0
 
-[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("ScreenMeltEffect", "DamageVignette", "ShapeCast", "HoverText", "CoinPickupArea", "GroundCheckRay", "PlayerCollisionShape")]
+[sub_resource type="SphereShape3D" id="SphereShape3D_b32pr"]
+radius = 16.0
+
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("ScreenMeltEffect", "DamageVignette", "ShapeCast", "HoverText", "CoinPickupArea", "GroundCheckRay", "PlayerCollisionShape", "AutoAttackArea")]
 script = ExtResource("1_e80uo")
 MoveSpeed = 10.0
 MinCameraSize = 10.0
@@ -2094,6 +2097,7 @@ HoverText = NodePath("Label3D")
 CoinPickupArea = NodePath("CoinPickupArea")
 GroundCheckRay = NodePath("gobot/RayCast3D")
 PlayerCollisionShape = NodePath("CollisionShape3D")
+AutoAttackArea = NodePath("AutoAttack_Range")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.946598, 0)
@@ -2125,50 +2129,50 @@ bones/2/name = "Body"
 bones/2/parent = -1
 bones/2/rest = Transform3D(1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, 1, 0, 0.388826, 0)
 bones/2/enabled = true
-bones/2/position = Vector3(0, 0.370947, 0)
-bones/2/rotation = Quaternion(0.0697505, -0.0131772, 0.000921437, 0.997477)
+bones/2/position = Vector3(0, 0.35067, 0)
+bones/2/rotation = Quaternion(0.0697338, 0.0254412, -0.00177902, 0.99724)
 bones/2/scale = Vector3(1, 1, 1)
 bones/3/name = "Hips"
 bones/3/parent = 2
 bones/3/rest = Transform3D(1, 0, -1.50996e-07, 0, -1, 0, -1.50996e-07, 0, -1, 0, 0, 0)
 bones/3/enabled = true
 bones/3/position = Vector3(0, 0, 0)
-bones/3/rotation = Quaternion(1, -1.14308e-10, -7.70249e-08, 2.4245e-09)
+bones/3/rotation = Quaternion(1, -5.80217e-11, -7.50295e-08, 3.72648e-09)
 bones/3/scale = Vector3(1, 1, 1)
 bones/4/name = "UpperLeg.L"
 bones/4/parent = 3
 bones/4/rest = Transform3D(1, 1.11022e-16, 6.35179e-08, -2.64443e-09, 0.999133, 0.0416328, -6.34628e-08, -0.0416328, 0.999133, 0.0975467, 0.0688788, -6.18939e-09)
 bones/4/enabled = true
 bones/4/position = Vector3(0.0975467, 0.0688788, -6.18939e-09)
-bones/4/rotation = Quaternion(-0.284936, -0.183176, -0.0257438, 0.940529)
+bones/4/rotation = Quaternion(-0.494421, -0.136342, -0.0478256, 0.85713)
 bones/4/scale = Vector3(1, 1, 1)
 bones/5/name = "LowerLeg.L"
 bones/5/parent = 4
 bones/5/rest = Transform3D(1, 2.24914e-06, 2.2026e-06, -2.10413e-06, 0.997965, -0.063758, -2.34152e-06, 0.063758, 0.997965, 8.04412e-09, 0.0954144, -4.65661e-10)
 bones/5/enabled = true
 bones/5/position = Vector3(8.04412e-09, 0.0954144, -4.65661e-10)
-bones/5/rotation = Quaternion(0.0483815, 1.12875e-06, -1.65024e-06, 0.998829)
+bones/5/rotation = Quaternion(0.375639, 1.04875e-06, -1.28222e-05, 0.926766)
 bones/5/scale = Vector3(1, 1, 1)
 bones/6/name = "UpperLeg.R"
 bones/6/parent = 3
 bones/6/rest = Transform3D(1, 1.11022e-16, 6.35179e-08, -2.64443e-09, 0.999133, 0.0416328, -6.34628e-08, -0.0416328, 0.999133, -0.0975467, 0.0688788, 6.21329e-09)
 bones/6/enabled = true
 bones/6/position = Vector3(-0.0975467, 0.0688788, 6.21329e-09)
-bones/6/rotation = Quaternion(-0.163662, 0.526207, 0.147184, 0.821376)
+bones/6/rotation = Quaternion(-0.220151, 0.54673, 0.233766, 0.773287)
 bones/6/scale = Vector3(1, 1, 1)
 bones/7/name = "LowerLeg.R"
 bones/7/parent = 6
 bones/7/rest = Transform3D(1, -2.25442e-06, -2.20226e-06, 2.10942e-06, 0.997965, -0.063758, 2.34152e-06, 0.063758, 0.997965, -6.85704e-09, 0.0954144, -4.65662e-10)
 bones/7/enabled = true
 bones/7/position = Vector3(-6.85704e-09, 0.0954144, -4.65662e-10)
-bones/7/rotation = Quaternion(0.341075, -1.05487e-06, 1.16713e-05, 0.940036)
+bones/7/rotation = Quaternion(0.518882, -9.66129e-07, 1.77588e-05, 0.854846)
 bones/7/scale = Vector3(1, 1, 1)
 bones/8/name = "UpperArm.L"
 bones/8/parent = 2
 bones/8/rest = Transform3D(0.0145381, 0.999894, 7.04782e-07, 7.15256e-07, -7.15256e-07, 1, 0.999894, -0.0145381, -7.25579e-07, 0.129051, 0.136329, 6.30673e-08)
 bones/8/enabled = true
 bones/8/position = Vector3(0.129051, 0.136329, 6.30673e-08)
-bones/8/rotation = Quaternion(-0.611572, -0.286836, -0.692484, 0.25332)
+bones/8/rotation = Quaternion(-0.671576, -0.262802, -0.63446, 0.278175)
 bones/8/scale = Vector3(1, 1, 1)
 bones/9/name = "LowerArm.L"
 bones/9/parent = 8
@@ -2224,7 +2228,7 @@ bones/16/parent = 2
 bones/16/rest = Transform3D(0.0145378, -0.999894, -7.04782e-07, -7.15256e-07, -7.15256e-07, 1, -0.999894, -0.0145378, -7.25578e-07, -0.129051, 0.136329, 8.56313e-08)
 bones/16/enabled = true
 bones/16/position = Vector3(-0.129051, 0.136329, 8.56313e-08)
-bones/16/rotation = Quaternion(-0.701302, 0.249124, 0.601439, 0.290488)
+bones/16/rotation = Quaternion(-0.644157, 0.274326, 0.662281, 0.266818)
 bones/16/scale = Vector3(1, 1, 1)
 bones/17/name = "LowerArm.R"
 bones/17/parent = 16
@@ -2453,6 +2457,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.606311, 0)
 shape = SubResource("SphereShape3D_06mnu")
 
 [node name="PhysBodyTracker" parent="." instance=ExtResource("12_b32pr")]
+
+[node name="AutoAttack_Range" type="Area3D" parent="."]
+collision_layer = 257
+collision_mask = 257
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AutoAttack_Range"]
+shape = SubResource("SphereShape3D_b32pr")
 
 [connection signal="value_changed" from="Control/PanelContainer/VBoxContainer/PanelContainer/VBoxContainer/HBoxContainer/HSlider" to="." method="SetChunkMaxHeight"]
 [connection signal="value_changed" from="Control/PanelContainer/VBoxContainer/PanelContainer/VBoxContainer/HBoxContainer2/HSlider" to="." method="SetChunkResolution"]

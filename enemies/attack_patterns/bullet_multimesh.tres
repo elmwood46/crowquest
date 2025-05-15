@@ -1,13 +1,13 @@
-[gd_resource type="MultiMesh" load_steps=3 format=3 uid="uid://b78qnlijvoxe2"]
+[gd_resource type="MultiMesh" load_steps=4 format=3 uid="uid://b78qnlijvoxe2"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4c57u"]
-albedo_color = Color(1, 0.933333, 0, 1)
-emission_enabled = true
-emission = Color(1, 1, 0.14902, 1)
-emission_energy_multiplier = 2.22
+[ext_resource type="Shader" uid="uid://d3bfulf08k375" path="res://enemies/bullets/bullet_shader.gdshader" id="1_y8aji"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mowh5"]
+render_priority = 0
+shader = ExtResource("1_y8aji")
 
 [sub_resource type="SphereMesh" id="SphereMesh_efxa6"]
-material = SubResource("StandardMaterial3D_4c57u")
+material = SubResource("ShaderMaterial_mowh5")
 radius = 0.25
 height = 0.5
 radial_segments = 6
@@ -15,4 +15,5 @@ rings = 3
 
 [resource]
 transform_format = 1
+use_colors = true
 mesh = SubResource("SphereMesh_efxa6")

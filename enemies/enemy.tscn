@@ -7,7 +7,7 @@
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_ni3r6"]
 friction = 0.0
 
-[node name="Enemy" type="RigidBody3D" node_paths=PackedStringArray("MovementAgent", "GroundRay", "WallCheckRay")]
+[node name="Enemy" type="RigidBody3D" node_paths=PackedStringArray("MovementAgent", "GroundRay")]
 collision_layer = 256
 collision_mask = 271
 axis_lock_angular_x = true
@@ -20,7 +20,6 @@ Speed = 10.0
 CoinDropDiceAmount = 0
 MovementAgent = NodePath("EnemyMoveAgent")
 GroundRay = NodePath("GroundRay")
-WallCheckRay = NodePath("")
 
 [node name="GroundRay" type="RayCast3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.365, 0)

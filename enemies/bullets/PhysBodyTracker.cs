@@ -180,23 +180,28 @@ public partial class PhysBodyTracker : Node
 
     public override void _ExitTree()
     {
-        _num_instances--;
-        if (_parent_body == null) 
-        {
-            GD.PushWarning($"Trying to exit tree, PhysBodyTracker {this} has no parent body.");
-            return;
-        }
+        Callable.From(()=>
+        { 
+            GD.Print($"Exiting tree, PhysBodyTracker {this} removed from {GetParent()}.");
+            _num_instances--;
+            if (_parent_body == null) 
+            {
+                GD.PushWarning($"Trying to exit tree, PhysBodyTracker {this} has no parent body.");
+                return;
+            }
 
-        // remove the body from the grid if it exists
-        RemoveBodyFromGrid((PhysicsBody3D)_parent_body);
-        _body_to_data.TryRemove((PhysicsBody3D)_parent_body, out var _);
-        _body_to_gridpos.TryRemove(_parent_body, out _);
-        if (_num_instances==0)
-        {
-            _gridpos_to_bodies.Clear();
-            _body_to_gridpos.Clear();
-            _pendingCleanupCells.Clear();
-        }
+            // remove the body from the grid if it exists
+            RemoveBodyFromGrid((PhysicsBody3D)_parent_body);
+            _body_to_data.TryRemove((PhysicsBody3D)_parent_body, out var _);
+            _body_to_gridpos.TryRemove(_parent_body, out _);
+            if (_num_instances==0)
+            {
+                _gridpos_to_bodies.Clear();
+                _body_to_gridpos.Clear();
+                _pendingCleanupCells.Clear();
+            }
+        }).CallDeferred();
+
         base._ExitTree();
     }
 

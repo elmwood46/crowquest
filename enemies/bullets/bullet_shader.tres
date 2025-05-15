@@ -1,0 +1,7 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://c2sqm45bosiwg"]
+
+[ext_resource type="Shader" uid="uid://d3bfulf08k375" path="res://enemies/bullets/bullet_shader.gdshader" id="1_pcdo7"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_pcdo7")

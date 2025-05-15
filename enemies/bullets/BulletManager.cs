@@ -27,17 +27,8 @@ public partial class BulletManager : Node
     private const float BULLET_MAX_DISTANCE = 160f;
     // limit particle effect for destroying bullets to prevent stuttering
     private const int MAX_PARTICLE_NODES_CREATED_PER_FRAME = 10;
-    private static readonly Vector3[] CUBE_VERTS = // used to collide bullet with convex hulls (bullet uses a box collision for these bc its small)
-        {
-            new(-0.5f, -0.5f, -0.5f),
-            new(0.5f, -0.5f, -0.5f),
-            new(-0.5f, 0.5f, -0.5f),
-            new(0.5f, 0.5f, -0.5f),
-            new(-0.5f, -0.5f, 0.5f),
-            new(0.5f, -0.5f, 0.5f),
-            new(-0.5f, 0.5f, 0.5f),
-            new(0.5f, 0.5f, 0.5f)
-        };
+
+    private static readonly Vector3 XZ_ONE = new(1,0,1);
 
     public override void _Ready()
     {
@@ -66,30 +57,85 @@ public partial class BulletManager : Node
         BulletMultimesh.Multimesh.VisibleInstanceCount = _basic_bullets.Count;
         if (_basic_bullets.Count==0) return;
 
+        // get the global position of the multimesh and player
         var neg_multimesh_glob_pos = -BulletMultimesh.GlobalPosition;
-        
-        for (var i=0;i<_basic_bullets.Count;i++)
-        {
-            BulletMultimesh.Multimesh.SetInstanceTransform(i, ((Transform3D)_basic_bullets[i]["transform"]).Translated(neg_multimesh_glob_pos));
-        }
-        var bodies_list = PhysBodyTracker.AllTrackedBodies();
+        var player_xz_glob_pos = XZ_ONE*FollowInstance.GlobalPosition;
 
-        await Task.Run(()=>{
-            for (var i=0;i<_basic_bullets.Count;i++)
+        // get phys data
+        var bodies_list = PhysBodyTracker.AllTrackedBodies();
+        var enemies_list = bodies_list.Where(b => b is Enemy).ToList();
+        List<Enemy> enemies_targetable = Player.Instance == null ? [] : Player.Instance.GetActiveNonBlockedEnemiesInArea();
+
+        // create body collision exclusion map, and update multimesh
+        Dictionary<int, HashSet<PhysicsBody3D>> exclusion_map = [];
+        var mm = BulletMultimesh.Multimesh;
+        for (var i = 0; i < _basic_bullets.Count; i++)
+        {
+            mm.SetInstanceTransform(i, ((Transform3D)_basic_bullets[i]["transform"]).Translated(neg_multimesh_glob_pos));
+            mm.SetInstanceColor(i, (Color)_basic_bullets[i]["color"]);
+
+            // exclusion map
+            exclusion_map[i] = [];
+            if ((GodotObject)_basic_bullets[i]["shooter_id"] is PhysicsBody3D shooter_id)
             {
+                exclusion_map[i].Add(shooter_id);
+            }
+            if (!(bool)_basic_bullets[i]["harms_enemies"]) foreach (var e in enemies_list) exclusion_map[i].Add(e);
+        }
+
+        // do collisions and position updates in background thread
+        await Task.Run(() =>
+        {
+            for (var i = 0; i < _basic_bullets.Count; i++)
+            {
+                // get bullet data
+                if (!exclusion_map.TryGetValue(i, out var exclude_bodies)) exclude_bodies = [];
                 var bullet = _basic_bullets[i];
                 if (bullet == null) continue;
                 var bullet_transform = (Transform3D)bullet["transform"];
                 var speed = (float)bullet["speed"];
                 var shot_direction = (Vector3)bullet["shot_direction"];
-                var shooter_id = (PhysicsBody3D)bullet["shooter_id"];
                 var harms_enemies = (bool)bullet["harms_enemies"];
-                HashSet<PhysicsBody3D> exclude_bodies = [shooter_id];
-                if (!harms_enemies) foreach (var b in bodies_list) if (b is Enemy) exclude_bodies.Add(b);
-            
+                var homing_rate = (float)bullet["homing_rate"];
+
+                // do homing
+                if (homing_rate > Mathf.Epsilon)
+                {
+                    bool is_enemy_bullet = (bool)bullet["is_enemy_bullet"];
+                    if (is_enemy_bullet)
+                    {
+                        var homing_dir = (player_xz_glob_pos - bullet_transform.Origin * XZ_ONE).Normalized();
+                        shot_direction = shot_direction.Lerp(homing_dir, homing_rate);
+                    }
+                    else if (enemies_targetable.Count > 0)
+                    {
+                        Vector3 bullet_pos = bullet_transform.Origin * XZ_ONE;
+                        float min_dist_sq = float.MaxValue;
+                        Vector3 closest_enemy_pos = bullet_pos;
+
+                        foreach (var enemy in enemies_targetable)
+                        {
+                            Vector3 enemy_pos = enemy.GlobalTransform.Origin * XZ_ONE;
+                            float dist_sq = bullet_pos.DistanceSquaredTo(enemy_pos);
+                            if (dist_sq < min_dist_sq)
+                            {
+                                min_dist_sq = dist_sq;
+                                closest_enemy_pos = enemy_pos;
+                            }
+                        }
+
+                        Vector3 homing_dir = (closest_enemy_pos - bullet_pos).Normalized();
+                        shot_direction = shot_direction.Lerp(homing_dir, homing_rate);
+                    }
+                    shot_direction = shot_direction.Normalized();
+                }
+                bullet["shot_direction"] = shot_direction;
+
+                // calc motion vector
                 var len = speed * (float)delta;
                 var motion_vector = shot_direction * len;
 
+                // update distance and check for collision
                 bullet["distance_travelled"] = (float)bullet["distance_travelled"] + len;
                 if ((float)bullet["distance_travelled"] >= BULLET_MAX_DISTANCE)
                 {
@@ -105,29 +151,37 @@ public partial class BulletManager : Node
             }
         });
 
-        // remove bullets flagged for removal
-        // use stack to remove bullets in reverse order
-        // so that the indices of the remaining bullets are not changed
-        while (!_bullet_idx_to_remove.IsEmpty)
+        Callable.From(() =>
         {
-            if (!_bullet_idx_to_remove.TryPop(out var bullet_index)) continue;
-            if (bullet_index < 0 || bullet_index >= _basic_bullets.Count) 
+            // remove bullets flagged for removal
+            while (!_bullet_idx_to_remove.IsEmpty)
             {
-                // duplicate values in stack sometimes has this result
-                continue;
+                if (!_bullet_idx_to_remove.TryPop(out var bullet_index)) continue;
+                if (bullet_index < 0 || bullet_index >= _basic_bullets.Count)
+                {
+                    continue; // this stops duplicate values in stack from causing errors
+                }
+                _basic_bullets.RemoveAt(bullet_index);
             }
-            _basic_bullets.RemoveAt(bullet_index);
-        }
-        _bullet_idx_to_remove.Clear();
+            _bullet_idx_to_remove.Clear();
 
-        // update the physics bodies in the grid
-        // doing this manually here avoids concurrent modification exceptions
-        if (Engine.GetPhysicsFrames() % 2ul == 0) foreach (var body in bodies_list)
-        {
-            if (body is null || !IsInstanceValid(body)) continue;
-            var phys_tracker = body.GetNodeOrNull<PhysBodyTracker>("PhysBodyTracker");
-            phys_tracker?.ManualUpdateBodyInGrid();
-        }
+            // update the physics bodies in the grid
+            // including removing enemies
+            // doing this manually here avoids concurrent modification exceptions
+            if (Engine.GetPhysicsFrames() % 2ul == 0) foreach (var body in bodies_list)
+            {
+                if (body == null || body is not GodotObject || !IsInstanceValid(body)) continue;
+                var phys_tracker = body.GetNodeOrNull<PhysBodyTracker>("PhysBodyTracker");
+
+                if (body is Enemy enemy && enemy.IsDead() && enemy.Freeze && !enemy.Visible)
+                {
+                    enemy.QueueFree();
+                    continue;
+                }
+
+                phys_tracker?.ManualUpdateBodyInGrid();
+            }
+        }).CallDeferred();
     }
 
     public static string GetBulletCountString()
@@ -137,26 +191,16 @@ public partial class BulletManager : Node
 
     public static void AddBullet(
         PhysicsBody3D shooter,
-        Dictionary<string,Variant> bullet_data,
-        Vector3 start_position = default)
-    {
-        var damage = (int)bullet_data["damage"];
-        var damage_type = (DamageTypeFlagEnum)(int)bullet_data["damage_type"];
-        var shot_direction = (Vector3)bullet_data["shot_direction"];
-        var speed = (float)bullet_data["speed"];
-        var harms_enemies = (bool)bullet_data["harms_enemies"];
-        AddBullet(shooter, damage, damage_type, shot_direction, speed, harms_enemies, start_position);
-    }
-
-    public static void AddBullet(
-        PhysicsBody3D shooter,
         int damage,
         DamageTypeFlagEnum damage_type,
         Vector3 shot_direction,
         float speed,
         bool harms_enemies = true,
-        Vector3 start_position = default)
+        Vector3 start_position = default,
+        float homing_rate = 0.0f,
+        Color color = default)
     {
+        if (color == default) color = Colors.DarkOrange;
         var start_pos = start_position == default ? shooter.GlobalPosition+Vector3.Up*0.5f : start_position;
         shot_direction = shot_direction.Normalized();
         var start_transform =  new Transform3D(Basis.Identity,start_pos).LookingAt(start_pos+shot_direction, Vector3.Up);
@@ -170,28 +214,34 @@ public partial class BulletManager : Node
             {"shooter_id", shooter},
             {"distance_travelled", 0f},
             {"transform", start_transform},
-            {"harms_enemies", harms_enemies}
+            {"harms_enemies", harms_enemies},
+            {"homing_rate", homing_rate},
+            {"color", color},
+            {"is_enemy_bullet", shooter is Enemy}
         });
     }
 
-    private static bool CheckForCollision(int bullet_idx, Transform3D bullet_global_transform, Vector3 motion_vector, HashSet<PhysicsBody3D> exclude_bodies = null)
+    private static bool CheckForCollision(int bullet_idx,
+        Transform3D bullet_global_transform,
+        Vector3 motion_vec,
+        HashSet<PhysicsBody3D> exclude_bodies = null)
     {
         var bullet_cell = PhysBodyTracker.WorldToCell(bullet_global_transform.Origin);
-        for (int x=-1;x<=1;x++)
+        for (int x = -1; x <= 1; x++)
         {
-            for (int y=-1;y<=1;y++)
+            for (int y = -1; y <= 1; y++)
             {
-                for (int z=-1;z<=1;z++)
+                for (int z = -1; z <= 1; z++)
                 {
-                    var cell = bullet_cell + new Vector3I(x,y,z);
-                    if (PhysBodyTracker.IsCellOccupied(cell)&&PhysBodyTracker.TryGetBodiesInCell(cell, out var bodies))
+                    var cell = bullet_cell + new Vector3I(x, y, z);
+                    if (PhysBodyTracker.IsCellOccupied(cell) && PhysBodyTracker.TryGetBodiesInCell(cell, out var bodies))
                     {
                         try
                         {
                             foreach (var body in bodies)
                             {
-                                if (body is null || body is not PhysicsBody3D phys_body 
-                                    || exclude_bodies.Contains(phys_body) 
+                                if (body is null || body is not PhysicsBody3D phys_body
+                                    || exclude_bodies.Contains(phys_body)
                                     || !IsInstanceValid(phys_body))
                                 {
                                     continue;
@@ -202,15 +252,15 @@ public partial class BulletManager : Node
                                     foreach (var tracked_shape in shape_data)
                                     {
                                         if (tracked_shape is null) continue;
-                                        if (CollideBulletWithShape(
-                                            bullet_global_transform.Translated(motion_vector),
+                                        if (IsBulletIntersectShape(
+                                            bullet_global_transform.Translated(motion_vec),
                                             Instance.BulletRadius,
                                             tracked_shape))
                                         {
-                                            BulletCollided(
+                                            DoBulletCollision(
                                                 (GodotObject)body,
                                                 bullet_idx,
-                                                bullet_global_transform.Translated(motion_vector));
+                                                bullet_global_transform.Translated(motion_vec));
                                             return true;
                                         }
                                     }
@@ -230,7 +280,7 @@ public partial class BulletManager : Node
         return false;
     }
 
-    private static bool CollideBulletWithShape(Transform3D bullet_glob_transform, float bullet_radius, PhysBodyTrackerData tracked_shape)
+    private static bool IsBulletIntersectShape(Transform3D bullet_glob_transform, float bullet_radius, PhysBodyTrackerData tracked_shape)
     {
         if (tracked_shape.Type == PhysBodyTrackerData.PhysBodyTrackerShape.Sphere)
         {
@@ -258,7 +308,7 @@ public partial class BulletManager : Node
         return false;
     }
 
-    private static void BulletCollided(GodotObject body, int bullet_idx, Transform3D bullet_transform)
+    private static void DoBulletCollision(GodotObject body, int bullet_idx, Transform3D bullet_transform)
     {
         if (bullet_idx < 0 || bullet_idx >= _basic_bullets.Count) return;
         if (_bullet_idx_to_remove.Contains(bullet_idx)) return;

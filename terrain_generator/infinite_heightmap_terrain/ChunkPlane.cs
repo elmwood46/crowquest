@@ -357,7 +357,7 @@ public partial class ChunkPlane : StaticBody3D
                 {
                     var sarco = _sarco_scene.Instantiate<TreasureChest>();
 
-                    var rand_angle = chunk_rng.NextSingle()*Mathf.Pi*2;
+                    var rand_angle = chunk_rng.NextSingle()*Mathf.Tau;
                     var rand_dist = 2.0f+Math.Max(chunk_rng.NextSingle(),chunk_rng.NextSingle())*14.0f;
                     var pos = (Vector3.Forward * rand_dist).Rotated(Vector3.Up, rand_angle);
                     var transform = new Transform3D(Basis.Identity.Rotated(Vector3.Up, rand_angle), pos);
@@ -393,7 +393,7 @@ public partial class ChunkPlane : StaticBody3D
                 for (var k=0; k < num_flower; k++)
                 {
                     //var flower_instance = blue_flowers_multimesh.Multimesh.GetInstanceTransform(k);
-                    var rand_angle = chunk_rng.NextSingle()*Mathf.Pi*2;
+                    var rand_angle = chunk_rng.NextSingle()*Mathf.Tau;
                     var rand_dist = lamp_flower_distance.X+chunk_rng.NextSingle()*(lamp_flower_distance.Y-lamp_flower_distance.X);
                     var transform = _base_flower_transform;
                     transform = transform.Rotated(Vector3.Up, rand_angle);
@@ -430,7 +430,7 @@ public partial class ChunkPlane : StaticBody3D
         }
         for (int i=0; i<flower_count; i++)
         {
-            var rand_angle = chunk_rng.NextSingle()*Mathf.Pi*2;
+            var rand_angle = chunk_rng.NextSingle()*Mathf.Tau;
             var rand_dist = Math.Max(chunk_rng.NextSingle(),chunk_rng.NextSingle())*16.0f;
             var glob_pos = centerPoint + (Vector3.Forward * rand_dist).Rotated(Vector3.Up, rand_angle);
 
@@ -569,7 +569,7 @@ public partial class ChunkPlane : StaticBody3D
         }
         for (int i=0; i<count; i++)
         {
-            var rand_angle = chunk_rng.NextSingle()*Mathf.Pi*2;
+            var rand_angle = chunk_rng.NextSingle()*Mathf.Tau;
             var rand_dist = Math.Max(chunk_rng.NextSingle(),chunk_rng.NextSingle())*16.0f;
             var pos = (Vector3.Forward * rand_dist).Rotated(Vector3.Up, rand_angle);
 
