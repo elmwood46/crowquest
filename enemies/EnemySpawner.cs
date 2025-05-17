@@ -21,7 +21,13 @@ public partial class EnemySpawner : Node3D
     [Export] int EnemyCount = 5;
     [Export] Vector3 SpawnBoxDimensions;
 
-    private PackedScene _enemy_scene = ResourceLoader.Load<PackedScene>("res://enemies/enemy_instances/elijah/elijah.tscn");
+    private static readonly PackedScene _elijah_scene = ResourceLoader.Load<PackedScene>("res://enemies/enemy_instances/elijah/elijah.tscn");
+    private static readonly PackedScene _storm_scene = ResourceLoader.Load<PackedScene>("res://enemies/enemy_instances/storm/storm.tscn");
+
+    private PackedScene[] EnemyScenes = [
+        _elijah_scene,
+        _storm_scene
+    ];
 
     private static readonly List<Enemy> _enemies_pool = [];
     private static readonly List<Vector3> _enemy_directions = [];
@@ -38,7 +44,7 @@ public partial class EnemySpawner : Node3D
     {
         for (int i=0; i < EnemyCount; i++)
         {
-            var enemy = _enemy_scene.Instantiate();
+            var enemy = EnemyScenes[i%EnemyScenes.Length].Instantiate();
             
             if (i >= 300)
             {

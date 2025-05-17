@@ -1,22 +1,20 @@
 [gd_scene load_steps=5 format=3 uid="uid://b0orkkctg2j5s"]
 
 [ext_resource type="Script" uid="uid://w6n6vagh5blr" path="res://enemies/Enemy.cs" id="1_2tyyd"]
+[ext_resource type="PhysicsMaterial" uid="uid://dauuguu7hkogm" path="res://enemies/enemy_physics_material.tres" id="1_a6vjd"]
 [ext_resource type="PackedScene" uid="uid://detrvp0t5teeu" path="res://enemies/bullets/PhysBodyTracker.tscn" id="2_7frlh"]
 [ext_resource type="PackedScene" uid="uid://i74e6cewfs78" path="res://enemies/enemy_move_agent.tscn" id="3_orwns"]
-
-[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_ni3r6"]
-friction = 0.0
 
 [node name="Enemy" type="RigidBody3D" node_paths=PackedStringArray("MovementAgent", "GroundRay")]
 collision_layer = 256
 collision_mask = 271
 axis_lock_angular_x = true
 axis_lock_angular_z = true
-physics_material_override = SubResource("PhysicsMaterial_ni3r6")
+physics_material_override = ExtResource("1_a6vjd")
 lock_rotation = true
 linear_damp = 1.0
 script = ExtResource("1_2tyyd")
-Speed = 10.0
+Speed = 20.0
 CoinDropDiceAmount = 0
 MovementAgent = NodePath("EnemyMoveAgent")
 GroundRay = NodePath("GroundRay")

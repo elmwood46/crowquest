@@ -19,12 +19,16 @@ public static class AttackManager
     {
         Scratch,
         SpiralBullet,
+        StormToss,
     }
 
-    public static readonly Dictionary<AttackName, Type> AllAttackNamesAndTypes = new() 
+    public static readonly AudioStream TossEnemyImpactSound = ResourceLoader.Load("res://enemies/enemy_instances/storm/storm_impact.ogg") as AudioStream;
+
+    public static readonly Dictionary<AttackName, Type> AllAttackNamesAndTypes = new()
     {
         {AttackName.Scratch,typeof(ScratchAttack)},
-        {AttackName.SpiralBullet,typeof(SpiralBulletAttack)}
+        {AttackName.SpiralBullet,typeof(SpiralBulletAttack)},
+        {AttackName.StormToss,typeof(StormTossAttack)}
     };
 
     public static int SphereDamageDropoff(Vector3 sphereCentre, Vector3 bodyGlobalPosition, float base_damage, float explosion_radius) {

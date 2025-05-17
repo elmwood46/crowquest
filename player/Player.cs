@@ -37,7 +37,7 @@ public partial class Player : CharacterBody3D, IHurtable
 	private bool _player_is_active = true;
 	private Timer _autoattack_timer = new() { WaitTime = 0.2f, OneShot = true };
 	private float _autoattack_cooldown = 1.0f;
-	private int _autoattack_number = 1;
+	[Export] private int _autoattack_number = 1;
 	private float _autoattack_homing = 0.1f;
 	private int _autoattack_damage = 10;
 	private float _autoattack_bullet_speed = 20.0f;
@@ -53,7 +53,15 @@ public partial class Player : CharacterBody3D, IHurtable
 	private float _roll_animation_speedscale;
 	private float _roll_move_speed = 12.0f;
 	private Vector3 _saved_roll_dir = default;
-	public bool HasRollIFrames() => _roll_iframe_counter > 0;
+	public bool HasRollIFrames() { return _roll_iframe_counter > 0; }
+	public void ForceStopRolling()
+	{
+		_is_rolling = false;
+		HandleAnimations();
+		_roll_iframe_counter = 0;
+		_can_roll = false;
+		_roll_cooldown_timer.Start();
+	}
 
 	// =======================================================================
 	// damage & death vars
@@ -518,8 +526,8 @@ public partial class Player : CharacterBody3D, IHurtable
 
 	public void TakeDamage(int damage, DamageTypeFlagEnum type)
 	{
-		if (IsDead) return;
-		if (HasRollIFrames()) return;
+		if (IsDead) return;//{ GD.Print("player is dead"); return; }
+		if (HasRollIFrames()) return; //{ GD.Print("player has roll iframes"); return; }
 		if (_iFramesStopwatch.ElapsedMilliseconds > _iFramesWaitTime)
 		{
 			var damage_ratio = 1.0f * damage / MaxHealth;
@@ -539,7 +547,7 @@ public partial class Player : CharacterBody3D, IHurtable
 				_camera_zoom = MinCameraSize;
 				UpdateDamageVignette();
 			}
-		}
+		} //else GD.Print("player is invincible");
 	}
 
 	public void AddCameraShake(float amount)

@@ -58,6 +58,7 @@ public partial class Enemy : RigidBody3D, IHurtable
     // ==================================================================
     private bool _flag_force_zero_velocity = false; // when set to true, forces the enemy velocity to 0
     public void ForceZeroVelocity() => _flag_force_zero_velocity = true;
+    public static readonly PhysicsMaterial DefaultPhysicsMaterial = GD.Load("res://enemies/enemy_physics_material.tres") as PhysicsMaterial;
 
     // ==================================================================
     // ====== Animation and Effects ========
@@ -73,7 +74,7 @@ public partial class Enemy : RigidBody3D, IHurtable
     private static readonly PackedScene _death_smoke = ResourceLoader.Load<PackedScene>("res://effects/enemy_die_fx/enemy_death_smoke.tscn"); 
     private ShaderMaterial _sprite_shader;
     private Timer _stun_timer = new(){WaitTime = 1.0f, OneShot = true};
-    private bool IsStunned() => !_stun_timer.IsStopped();
+    public bool IsStunned() { return !_stun_timer.IsStopped(); }
 
     // ==================================================================
     // ====== State ========
@@ -83,7 +84,8 @@ public partial class Enemy : RigidBody3D, IHurtable
 
     public enum TagEnum
     {
-        Flying
+        Flying,
+        CanBePickedUp
     }
 
     public enum StateEnum
@@ -92,7 +94,8 @@ public partial class Enemy : RigidBody3D, IHurtable
         Attacking,
         TakingDamage,
         Dead,
-        Moving
+        Moving,
+        IsPickedUp
     }
 
     // ==================================================================
@@ -111,9 +114,31 @@ public partial class Enemy : RigidBody3D, IHurtable
         MaxContactsReported = 1;
         BodyEntered += (body) =>
         {
-            if (body is Player player)
+            // TODO thrown enemies should get stars over head while stunned
+            if (Tags.Contains(TagEnum.CanBePickedUp) && State == StateEnum.IsPickedUp && body is not Enemy)
             {
-                player.TakeDamage(TouchDamageAmount, TouchDamageType);
+                //GD.Print("Enemy touched player while picked up");
+                if (body is Player p)
+                {
+                    if (p.HasRollIFrames()) p.ForceStopRolling();
+                    p.TakeDamage(20*TouchDamageAmount, TouchDamageType);
+                    p.AddCameraShake(0.3f);
+                    GD.Print($"DID HIGH DAMAGE TO PLAYER {p} while picked up");
+                    // TODO  do some player stunning thing here when thrown enemy hits them
+                    // p.Velocity 
+                }
+                GD.Print($"setting enemy {Name}{this} to idle");
+                State = StateEnum.Idle;
+                SetStun(2.0f);
+                AnimStateMachine.Travel("base_idle", true);
+                AudioManager.TryPlay(AttackManager.TossEnemyImpactSound, AudioBus.Enemies, GlobalPosition);
+            }
+            else
+            {
+                if (body is Player player)
+                {
+                    player.TakeDamage(TouchDamageAmount, TouchDamageType);
+                }
             }
         };
 
@@ -178,7 +203,14 @@ public partial class Enemy : RigidBody3D, IHurtable
             if (!list.Contains("base_pain")) throw new Exception($"Enemy {this} AnimationPlayer must have a 'base_pain' animation");
             if (!list.Contains("base_die")) throw new Exception($"Enemy {this} AnimationPlayer must have a 'base_die' animation");
             if (!list.Contains("base_move")) throw new Exception($"Enemy {this} AnimationPlayer must have a 'base_move' animation");
+
+            if (Tags.Contains(TagEnum.CanBePickedUp))
+            {
+                if (!list.Contains("picked_up")) throw new Exception($"Enemy {this} is throwable; AnimationPlayer must have a 'picked_up' animation");
+                if (!list.Contains("thrown")) throw new Exception($"Enemy {this} is throwable; AnimationPlayer must have a 'thrown' animation");
+            }
         }
+        else throw new Exception($"Enemy {this} must have an AnimationTree set in editor.");
 
         AnimStateMachine = (AnimationNodeStateMachinePlayback)AnimTree.Get("parameters/playback");
     }
@@ -216,8 +248,21 @@ public partial class Enemy : RigidBody3D, IHurtable
 
     public override void _PhysicsProcess(double delta)
     {
-        if (IsDead()) {DeathAnimation(); return;}
+        if (Deactivated) return;
+
+        if (IsDead()) { DeathAnimation(); return; }
         if (!IsInstanceValid(this) || !IsInsideTree() || Freeze) return;
+
+        if (State == StateEnum.IsPickedUp)
+        {
+            if (IsOnFloor())
+            {
+                State = StateEnum.Idle;
+                SetStun(0.5f);
+                AnimStateMachine.Travel("base_idle", true);
+                AudioManager.TryPlay(AttackManager.TossEnemyImpactSound, AudioBus.Enemies, GlobalPosition);
+            }
+        }
 
         if (Tags.Contains(TagEnum.Flying)) GravityScale = 0.0f;
         // if (IsOnFloor() || Tags.Contains(TagEnum.Flying)) GravityScale = 0.0f;
@@ -233,7 +278,7 @@ public partial class Enemy : RigidBody3D, IHurtable
         }
 
         // do attack logic and move if player is not dead
-        if (!Player.Instance.IsDead && !Deactivated && !Ambush)
+        if (!Player.Instance.IsDead && !Ambush)
         {
             DoAttackLogic();
 
@@ -274,8 +319,29 @@ public partial class Enemy : RigidBody3D, IHurtable
         }
     }
 
+    public IAttack GetCurrentAttack()
+    {
+        return _currentAttack;
+    }
+
+    public void StopAttacking()
+    {
+        if (_currentAttack != null)
+        {
+            _currentAttack.Finish(this);
+            _currentAttack.ResetParams();
+            _currentAttack = null;
+        }
+    }
+
     private void DoAttackLogic()
     {
+        if (State == StateEnum.IsPickedUp)
+        {
+                StopAttacking();
+                return;
+        }
+
         if (_currentAttack == null)
         {
             // randomly choose an attack from the list
@@ -285,10 +351,11 @@ public partial class Enemy : RigidBody3D, IHurtable
                 if (attack.CanTrigger(this)) viable.Add(attack);
             }
             if (viable.Count == 0) return;
-            _currentAttack = viable[Random.Shared.Next(0,viable.Count)];
+            _currentAttack = viable[Random.Shared.Next(0, viable.Count)];
         }
-        else 
+        else
         {
+
             if (_currentAttack.IsFinished)
             {
                 _currentAttack.ResetParams(); //reset attack
@@ -303,11 +370,22 @@ public partial class Enemy : RigidBody3D, IHurtable
         }
     }
 
+    public void Deactivate()
+    {
+        if (IsDead() || !_deathTimer.IsStopped()) return;
+        Deactivated = true;
+        _footstep_timer.Stop();
+        _idle_sound_timer.Stop();
+        _stun_timer.Stop();
+        StopIdleSoundTimer();
+        AnimStateMachine.Travel("base_idle");
+    }
+
     public void TakeDamage(int damage, DamageTypeFlagEnum damageType)
     {
         Health -= damage;
 
-        var _stun = damage > Health/2 ? 1.0 : PainChance;
+        var _stun = damage > Health / 2 ? 1.0 : PainChance;
 
         if (Health > 0)
         {
@@ -323,7 +401,7 @@ public partial class Enemy : RigidBody3D, IHurtable
                     }
                     AnimStateMachine.Travel("base_idle");
                     StopIdleSoundTimer();
-                    var stream = PainSounds[Random.Shared.Next(0,PainSounds.Count)];
+                    var stream = PainSounds[Random.Shared.Next(0, PainSounds.Count)];
                     AudioManager.TryPlay(stream, AudioBus.Enemies, GlobalPosition);
                     _stun_timer.WaitTime = StunDuration;
                     _stun_timer.Start();
@@ -453,7 +531,11 @@ public partial class Enemy : RigidBody3D, IHurtable
     {
         GroundRay.ForceRaycastUpdate();
         var col = GroundRay.GetCollider();
-        return col != null && (col is StaticBody3D || col is RigidBody3D);
+        if (Tags.Contains(TagEnum.CanBePickedUp) && State == StateEnum.IsPickedUp)
+        {
+            return col != null && col is StaticBody3D;
+        }
+        else return col != null && (col is StaticBody3D || col is RigidBody3D);
     }
     public bool IsPlayerInRange(float range)
     {

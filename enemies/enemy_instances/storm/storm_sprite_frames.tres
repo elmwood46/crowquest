@@ -1,0 +1,66 @@
+[gd_resource type="SpriteFrames" load_steps=5 format=3 uid="uid://b8g30s5ben3p6"]
+
+[ext_resource type="Texture2D" uid="uid://ba53so8h7m0kh" path="res://enemies/enemy_instances/storm/storm_idle.png" id="1_rhgun"]
+[ext_resource type="Texture2D" uid="uid://cl0nlqgeuiua2" path="res://enemies/enemy_instances/storm/storm_picked_up.png" id="2_r08an"]
+[ext_resource type="Texture2D" uid="uid://cx2mgulmtdqpm" path="res://enemies/enemy_instances/storm/storm_lie_down.png" id="3_r1q0h"]
+[ext_resource type="Texture2D" uid="uid://ddip3voh7e0c2" path="res://enemies/enemy_instances/storm/storm_upside_down.png" id="4_sg6ka"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_rhgun")
+}],
+"loop": true,
+"name": &"base_die",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_rhgun")
+}],
+"loop": true,
+"name": &"base_idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_rhgun")
+}],
+"loop": true,
+"name": &"base_move",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_rhgun")
+}],
+"loop": true,
+"name": &"base_pain",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_r08an")
+}],
+"loop": true,
+"name": &"picked_up",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_rhgun")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_r1q0h")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_r08an")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_sg6ka")
+}],
+"loop": true,
+"name": &"thrown",
+"speed": 5.0
+}]

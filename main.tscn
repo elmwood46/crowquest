@@ -115,6 +115,7 @@ multimesh = ExtResource("4_efxa6")
 [node name="Player" parent="." instance=ExtResource("1_ig7tw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
 MaxCameraSize = 300.0
+_autoattack_number = 0
 
 [node name="Control2" type="Control" parent="Player" groups=["debug_overlay"]]
 layout_mode = 3
