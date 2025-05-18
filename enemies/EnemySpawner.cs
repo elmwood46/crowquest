@@ -3,19 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-public class EnemyData{
-    public Vector3 Position;
-    public Vector3 Velocity;
-    public int Health;
-    public int MaxHealth;
-    public Enemy.StateEnum State;
-    public Godot.Collections.Array<Enemy.TagEnum> Tags;
-    public Vector3 RandomWalkDir;
-    public float JumpVelocity;
-    public Timer RandomWalkDirTimer = new(){WaitTime = 1, Autostart = false, OneShot = true};
-    public float Speed;
-}
-
 public partial class EnemySpawner : Node3D
 {
     [Export] int EnemyCount = 5;
@@ -29,12 +16,6 @@ public partial class EnemySpawner : Node3D
         _storm_scene
     ];
 
-    private static readonly List<Enemy> _enemies_pool = [];
-    private static readonly List<Vector3> _enemy_directions = [];
-    private static readonly List<Timer> _enemy_random_walk = [];
-
-    private static readonly Dictionary<int, EnemyData> _enemy_data = [];
-
     public override void _Ready()
     {
         CallDeferred(MethodName.DeferredSpawn);
@@ -44,7 +25,7 @@ public partial class EnemySpawner : Node3D
     {
         for (int i=0; i < EnemyCount; i++)
         {
-            var enemy = EnemyScenes[i%EnemyScenes.Length].Instantiate();
+            var enemy = EnemyScenes[1].Instantiate();
             
             if (i >= 300)
             {
@@ -58,46 +39,6 @@ public partial class EnemySpawner : Node3D
             //EnemyComputeShaderManager.SetEnemyPosition(i, setglob);
             AddSibling(enemy);
             enemy.CallDeferred(MethodName.SetGlobalPosition, setglob);
-            _enemies_pool.Add(((Enemy)enemy.GetChild(0)));
-            _enemy_data[i] = new EnemyData{
-                Position = setglob,
-                Velocity = Vector3.Zero,
-                Health = ((Enemy)enemy.GetChild(0)).MaxHealth,
-                MaxHealth = ((Enemy)enemy.GetChild(0)).MaxHealth,
-                State = ((Enemy)enemy.GetChild(0)).State,
-                Tags = ((Enemy)enemy.GetChild(0)).Tags,
-                RandomWalkDir = Vector3.Zero,
-                JumpVelocity = 5.0f,
-                Speed = ((Enemy)enemy.GetChild(0)).Speed,
-            };  
-            enemy.CallDeferred(MethodName.AddChild,_enemy_data[i].RandomWalkDirTimer);
-        }
-        //QueueFree();
-    }
-
-    private int _batchSize = 100;
-    async public override void _Process(double delta)
-    {
-        var tasks = new List<Task>();
-        for (int batch=0; batch < Math.Ceiling(_enemies_pool.Count/(float)_batchSize); batch++)
-        {
-            tasks.Add(Task.Run(() => {
-                for (int idx =0; idx < _batchSize; idx++)
-                {
-                    if (batch*_batchSize + idx >= _enemies_pool.Count) return Task.CompletedTask;
-                    
-                }
-                return Task.CompletedTask;
-            }));
-        }
-        await Task.WhenAll(tasks);
-
-        foreach (var enemy in _enemies_pool)
-        {
-            if (enemy.State == Enemy.StateEnum.Dead)
-            {
-                enemy.QueueFree();
-            }
         }
     }
 }

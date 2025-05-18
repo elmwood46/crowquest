@@ -34,13 +34,21 @@ public partial class StormTossAttack : Node3D, IAttack
 
     private static bool IsPickuppable(Enemy enemy)
     {
-        return enemy.Tags.Contains(Enemy.TagEnum.CanBePickedUp) && enemy.State != Enemy.StateEnum.IsPickedUp && !enemy.IsStunned();
+        return enemy.Visible && enemy.Tags.Contains(Enemy.TagEnum.CanBePickedUp) && enemy.State != Enemy.StateEnum.IsPickedUp && !enemy.IsStunned() && !enemy.IsDead();
     }
 
     // this state machine is so unnecessarily messy lmao but it works
     public void Execute(Enemy enemy)
     {
         if (IsFinished) return;
+
+        if (enemy == null || !IsInstanceValid(enemy))
+        {
+            GD.Print("Enemy is null or invalid. Cancelling storm toss attack.");
+            ResetParams();
+            IsFinished = true;
+            return;
+        }
 
         if (AttackState == 0)
         {
@@ -82,7 +90,8 @@ public partial class StormTossAttack : Node3D, IAttack
             AudioManager.TryPlay(PickupSound, AudioBus.Enemies, enemy.GlobalPosition);
             AttackState = 1;
 
-            var t = new Timer() // backup timer in case the enemy is not picked up properly, this forces the state switch
+            // backup timer in case the enemy is not picked up properly, this forces the state switch
+            var t = new Timer()
             {
                 OneShot = true,
                 WaitTime = 3.0f
@@ -90,6 +99,7 @@ public partial class StormTossAttack : Node3D, IAttack
             t.Timeout += () =>
             {
                 t.QueueFree();
+                // if state has already changed, don't do anything
                 if (AttackState != 1) return;
 
                 AttackState = 2;
@@ -101,6 +111,19 @@ public partial class StormTossAttack : Node3D, IAttack
                 };
                 t2.Timeout += () =>
                 {
+                    if (enemy == null || !IsInstanceValid(enemy))
+                    {
+                        GD.Print("Enemy is null or invalid. Cancelling storm toss attack.");
+                        ResetParams();
+                        IsFinished = true;
+                        return;
+                    }
+                    if (_enemy_to_toss == null || !IsInstanceValid(_enemy_to_toss))
+                    {
+                        GD.Print("Enemy to toss is null or invalid. Cancelling storm toss attack.");
+                        Finish(enemy);
+                        return;
+                    }
                     _enemy_to_toss.AnimStateMachine.Travel("thrown", true);
                     AudioManager.TryPlay(TossSound, AudioBus.Enemies, _enemy_to_toss.GlobalPosition);
                     AttackState = 3;
@@ -114,7 +137,7 @@ public partial class StormTossAttack : Node3D, IAttack
         }
         else if (_enemy_to_toss == null || !IsInstanceValid(_enemy_to_toss))
         {
-            GD.Print("enemy to toss is null or invalid: " + _enemy_to_toss);
+            GD.Print("Enemy to toss is null or invalid. Cancelling storm toss attack.");
             Finish(enemy);
             return;
         }
@@ -134,6 +157,19 @@ public partial class StormTossAttack : Node3D, IAttack
                 };
                 t.Timeout += () =>
                 {
+                    if (enemy == null || !IsInstanceValid(enemy))
+                    {
+                        GD.Print("Enemy is null or invalid. Cancelling storm toss attack.");
+                        ResetParams();
+                        IsFinished = true;
+                        return;
+                    }
+                    if (_enemy_to_toss == null || !IsInstanceValid(_enemy_to_toss))
+                    {
+                        GD.Print("Enemy to toss is null or invalid. Cancelling storm toss attack.");
+                        Finish(enemy);
+                        return;
+                    }
                     _enemy_to_toss.AnimStateMachine.Travel("thrown", true);
                     AudioManager.TryPlay(TossSound, AudioBus.Enemies, _enemy_to_toss.GlobalPosition);
                     AttackState = 3;
@@ -193,15 +229,9 @@ public partial class StormTossAttack : Node3D, IAttack
 
     public void Finish(Enemy enemy)
     {
-        if (_enemy_to_toss != null && IsInstanceValid(_enemy_to_toss))
-        {
-            _enemy_to_toss.FreezeMode = RigidBody3D.FreezeModeEnum.Kinematic;
-            _enemy_to_toss.Freeze = false;
-            _enemy_to_toss.GravityScale = 1f;
-            _enemy_to_toss.PhysicsMaterialOverride = Enemy.DefaultPhysicsMaterial;
-        }
-        _enemy_to_toss = null;
-
+        ResetEnemyToToss();
+    
+        if (enemy == null || !IsInstanceValid(enemy)) return;
         _cooldown.Stop();
         _cooldown.WaitTime = _cooldown_range.X + Random.Shared.NextSingle()*(_cooldown_range.Y-_cooldown_range.X);
         _cooldown.Start();
@@ -209,9 +239,23 @@ public partial class StormTossAttack : Node3D, IAttack
         enemy.AnimStateMachine.Travel("base_idle", true);
     }
 
+    private void ResetEnemyToToss()
+    {
+        if (_enemy_to_toss != null && IsInstanceValid(_enemy_to_toss))
+        {
+            _enemy_to_toss.PhysicsMaterialOverride = Enemy.DefaultPhysicsMaterial;
+            _enemy_to_toss.FreezeMode = RigidBody3D.FreezeModeEnum.Kinematic;
+            _enemy_to_toss.Freeze = false;
+            _enemy_to_toss.GravityScale = 1f;
+            _enemy_to_toss.State = Enemy.StateEnum.Idle;
+            _enemy_to_toss.AnimStateMachine.Travel("base_idle", true);
+        }
+        _enemy_to_toss = null;
+    }
+
     public void ResetParams()
     {
-        _enemy_to_toss = null;
+        ResetEnemyToToss();
         IsFinished = false;
         AttackState = 0;
     }

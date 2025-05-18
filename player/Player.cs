@@ -34,10 +34,11 @@ public partial class Player : CharacterBody3D, IHurtable
 	// =======================================================================
 	// instance vars
 	private int _money = 0;
+	private int _XP = 0;
 	private bool _player_is_active = true;
 	private Timer _autoattack_timer = new() { WaitTime = 0.2f, OneShot = true };
 	private float _autoattack_cooldown = 1.0f;
-	[Export] private int _autoattack_number = 1;
+	[Export] private int _autoattack_number = 5;
 	private float _autoattack_homing = 0.1f;
 	private int _autoattack_damage = 10;
 	private float _autoattack_bullet_speed = 20.0f;
@@ -127,6 +128,7 @@ public partial class Player : CharacterBody3D, IHurtable
 		_autoattack_timer.WaitTime = _autoattack_cooldown;
 		_autoattack_timer.Timeout += () =>
 		{
+			
 			if (!IsDead && GetActiveNonBlockedEnemiesInArea().Count > 0)
 			{
 				for (var i = 0; i < _autoattack_number; i++) BulletManager.AddBullet(
@@ -136,7 +138,7 @@ public partial class Player : CharacterBody3D, IHurtable
 						shot_direction: Vector3.Forward.Rotated(Vector3.Up, Random.Shared.NextSingle() * Mathf.Tau),
 						speed: _autoattack_bullet_speed,
 						homing_rate: _autoattack_homing,
-						color: new Color(0,1,1,1)
+						color: new Color(0, 1, 1, 1)
 					);
 				_autoattack_timer.WaitTime = _autoattack_cooldown;
 				_autoattack_timer.Start();
@@ -158,6 +160,7 @@ public partial class Player : CharacterBody3D, IHurtable
 		{
 			if (body is Pickup pickup)
 			{
+				GD.Print("Pickup entered");
 				pickup.ActivatePickup = true;
 			}
 		};
@@ -509,11 +512,20 @@ public partial class Player : CharacterBody3D, IHurtable
 	{
 		Instance._money += amount;
 	}
-
 	public static int GetMoney()
 	{
 		return Instance._money;
 	}
+
+	public static void AddXP(int amount)
+	{
+		Instance._XP += amount;
+	}
+	public static int GetXP()
+	{
+		return Instance._XP;
+	}
+
 	public static int GetHealth()
 	{
 		return Instance._current_health;

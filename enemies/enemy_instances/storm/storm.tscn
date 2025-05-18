@@ -283,6 +283,7 @@ MaxHealth = 20
 Speed = 10.0
 PainChance = 1.0
 Tags = Array[int]([1])
+Attacks = Array[int]([1])
 AnimTree = NodePath("AnimationTree")
 Sprite = NodePath("AnimatedSprite3D")
 CollisionShape = NodePath("CollisionShape3D")

@@ -7,7 +7,7 @@
 
 [node name="Enemy" type="RigidBody3D" node_paths=PackedStringArray("MovementAgent", "GroundRay")]
 collision_layer = 256
-collision_mask = 271
+collision_mask = 267
 axis_lock_angular_x = true
 axis_lock_angular_z = true
 physics_material_override = ExtResource("1_a6vjd")

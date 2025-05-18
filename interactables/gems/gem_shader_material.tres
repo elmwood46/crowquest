@@ -1,0 +1,30 @@
+[gd_resource type="ShaderMaterial" load_steps=6 format=3 uid="uid://wxgyryo8rtu0"]
+
+[ext_resource type="Texture2D" uid="uid://bypmm8lfove87" path="res://interactables/gems/Texture/Stone1/Albedo Stone1.png" id="1_knoc4"]
+[ext_resource type="Shader" uid="uid://bpdwnx7ptb2uf" path="res://interactables/gems/gem_shader.gdshader" id="1_spp5o"]
+[ext_resource type="Texture2D" uid="uid://dcn2pndteyt4k" path="res://interactables/gems/Texture/Stone1/AO Stone1.png" id="2_spp5o"]
+[ext_resource type="Texture2D" uid="uid://h0gpdxlvslp3" path="res://interactables/gems/Texture/Stone1/Stone1_Emissive.png" id="3_5xlbl"]
+[ext_resource type="Texture2D" uid="uid://bcrs8a7lje1nq" path="res://interactables/gems/Texture/Stone1/Metall Stone1.png" id="4_vg2lh"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_spp5o")
+shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/texture_albedo = ExtResource("1_knoc4")
+shader_parameter/albedo_texture_size = Vector2i(2048, 2048)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/texture_metallic = ExtResource("4_vg2lh")
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_emission = ExtResource("3_5xlbl")
+shader_parameter/emission = Color(0, 0, 0, 1)
+shader_parameter/emission_energy = 1.0
+shader_parameter/texture_ambient_occlusion = ExtResource("2_spp5o")
+shader_parameter/ao_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/ao_light_affect = 0.0
+shader_parameter/uv1_scale = Vector3(1, 1, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)

@@ -13,6 +13,7 @@ public partial class ChunkPlane : StaticBody3D
     [Export] public CollisionShape3D CollisionShape { get; set; }
     [Export] public NavigationRegion3D NavRegion { get; set; }
     [Export] public bool DisableCSGWallGeneration { get; set; } = true;
+    [Export] public bool SuperFlatMode { get; set; } = true;
     [Export] public bool DisableLampGeneration { get; set; } = false;
     [Export] public bool DisableSarcophagusGeneration { get; set; } = false;
     [Export] public bool DrawDebugMeshes = false;
@@ -244,21 +245,25 @@ public partial class ChunkPlane : StaticBody3D
         // ====== generate walls =====
         var chunk_offset = ChunkManager.Instance.ChunkSize * chunk_pos;
         var path_set = SimpleWfc.GetTilePaths(chunk_tile_id);
-        var static_wall_set = SimpleWfc.GetTileStaticWall(chunk_tile_id, has_diagonal_walls ? 1:0);
-        foreach (var wall in static_wall_set)
+
+        if (!SuperFlatMode)
         {
-            var wall_copy = wall.Duplicate() as StaticBody3D;
-            if (!DisableCSGWallGeneration)
+            var static_wall_set = SimpleWfc.GetTileStaticWall(chunk_tile_id, has_diagonal_walls ? 1:0);
+            foreach (var wall in static_wall_set)
             {
-                foreach (var child in wall_copy.GetChildren())
+                var wall_copy = wall.Duplicate() as StaticBody3D;
+                if (!DisableCSGWallGeneration)
                 {
-                    if (child is MeshInstance3D mesh)
+                    foreach (var child in wall_copy.GetChildren())
                     {
-                        mesh.QueueFree();
+                        if (child is MeshInstance3D mesh)
+                        {
+                            mesh.QueueFree();
+                        }
                     }
                 }
+                NavRegion.AddChild(wall_copy);
             }
-            NavRegion.AddChild(wall_copy);
         }
 
         var nodePaths = new List<string>();
@@ -269,7 +274,7 @@ public partial class ChunkPlane : StaticBody3D
 
             NavRegion.AddChild(path_copy);
 
-            if (DisableCSGWallGeneration)
+            if (DisableCSGWallGeneration || SuperFlatMode)
             {
                 nodePaths.Add(path_copy.GetPath());
                 path_copy.GlobalPosition *= 0.5f;
@@ -604,8 +609,13 @@ public partial class ChunkPlane : StaticBody3D
                 mesh = GenerateHeightmapMesh(global_xz_offset);
             });
             MeshInstance.Mesh = mesh;
-            CollisionShape.Shape = new BoxShape3D() {Size = new Vector3(32,1,32)};//MeshInstance.Mesh.CreateTrimeshShape();
-            CollisionShape.Position = Vector3.Down*0.5f;
+            CollisionShape.Shape = new BoxShape3D() { Size = new Vector3(32, 1, 32) };//MeshInstance.Mesh.CreateTrimeshShape();
+            CollisionShape.Position = Vector3.Down * 0.5f;
+            SetCollisionLayerValue(1, true);
+            SetCollisionLayerValue(2, true);
+            SetCollisionLayerValue(3, true);
+            SetCollisionLayerValue(4, true);
+            SetCollisionLayerValue(9, true);
         }
 
         // regen chunk features 
@@ -622,6 +632,11 @@ public partial class ChunkPlane : StaticBody3D
             Position = Vector3.Down*0.5f
         };
         NavRegion.AddChild(bigplane);
+        bigplane.SetCollisionLayerValue(1, true);
+        bigplane.SetCollisionLayerValue(2, true);
+        bigplane.SetCollisionLayerValue(3, true);
+        bigplane.SetCollisionLayerValue(4, true);
+        bigplane.SetCollisionLayerValue(9, true);
         bigplane.AddChild(shape);
         bigplane.AddToGroup(NAV_GROUP_NAME+Name);
         NavRegion.BakeNavigationMesh();

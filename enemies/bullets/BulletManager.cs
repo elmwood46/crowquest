@@ -126,6 +126,7 @@ public partial class BulletManager : Node
             if (Player.Instance.HasRollIFrames()) exclusion_map[i].Add(player_tracker);
 
             if (!(bool)_basic_bullets[i]["harms_enemies"]) foreach (var e in enemies_trackers_list) exclusion_map[i].Add(e);
+            else foreach (var e in enemies_trackers_list) if (!((PhysicsBody3D)e.ParentBody).Visible) exclusion_map[i].Add(e);
         }
 
         // do collisions and position updates in background thread

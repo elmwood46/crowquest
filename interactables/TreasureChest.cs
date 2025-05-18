@@ -112,13 +112,7 @@ public partial class TreasureChest : StaticBody3D
 				ChestType.BasicWooden => Random.Shared.Next(5, 15),
 				_ => Random.Shared.Next(1, 5)
 			};
-			var spawn_particles = TreasureSpawner.MoneyParticlesScene().Instantiate<GpuParticles3D>();
-			GetTree().GetCurrentScene().AddChild(spawn_particles);
-			spawn_particles.Amount = amount == 0 ? 1 : amount;
-			spawn_particles.Lifetime = 3.0f;
-			spawn_particles.GlobalPosition = SpawnParticleLocation.GlobalPosition;
-			AudioManager.TryPlay(Coin.PickupSound, AudioBus.Misc, SpawnParticleLocation.GlobalPosition);
-			Player.AddMoney(amount);
+			if (amount > 0) TreasureSpawner.PickupCoinsAtNode(SpawnParticleLocation, amount, 3.0f);
 			// else
 			// {
 			// 	var spawner = TreasureSpawner.Create(GlobalPosition, 10, 1.0);
@@ -129,7 +123,7 @@ public partial class TreasureChest : StaticBody3D
 			// 	}
 			// 	AddChild(spawner);
 			// }
-			
+
 		};
 		AddChild(t);
 		t.Start();

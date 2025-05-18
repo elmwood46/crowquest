@@ -158,6 +158,7 @@ radius = 2.0
 [node name="Elijah" type="Node3D"]
 
 [node name="Enemy" parent="." node_paths=PackedStringArray("AnimTree", "Sprite", "CollisionShape") instance=ExtResource("1_et8eb")]
+Speed = 10.0
 PainChance = 1.0
 Attacks = Array[int]([2])
 PainSounds = Array[AudioStream]([ExtResource("2_u1rpk")])

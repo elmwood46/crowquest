@@ -79,9 +79,6 @@ public partial class Enemy : RigidBody3D, IHurtable
     // ==================================================================
     // ====== State ========
     // ==================================================================
-    public bool Deactivated {get;set;} = false; // monster is inactive
-    public bool Ambush {get;set;} = false; // monster in ambush mode
-
     public enum TagEnum
     {
         Flying,
@@ -120,7 +117,7 @@ public partial class Enemy : RigidBody3D, IHurtable
                 //GD.Print("Enemy touched player while picked up");
                 if (body is Player p)
                 {
-                    if (p.HasRollIFrames()) p.ForceStopRolling();
+                    if (p.HasRollIFrames()) p.ForceStopRolling(); // player roll does not block toss attack
                     p.TakeDamage(20*TouchDamageAmount, TouchDamageType);
                     p.AddCameraShake(0.3f);
                     GD.Print($"DID HIGH DAMAGE TO PLAYER {p} while picked up");
@@ -224,33 +221,43 @@ public partial class Enemy : RigidBody3D, IHurtable
         }
 
         if (_flag_force_zero_velocity)
+        {
+            state.LinearVelocity = Vector3.Zero;
+            state.AngularVelocity = Vector3.Zero;
+            _flag_force_zero_velocity = false;
+        }
+        else if (!IsDead()
+            && !IsStunned()
+            && !CurrentAttackBlocksMovement()
+            && IsOnFloor())
+        {
+            // keep velocity below max speed when moving on floor   
+            if (MovementAgent.State == EnemyMoveAgent.MoveState.PATH_TO_PLAYER)
             {
-                state.LinearVelocity = Vector3.Zero;
-                state.AngularVelocity = Vector3.Zero;
-                _flag_force_zero_velocity = false;
+                state.LinearVelocity = state.LinearVelocity.Lerp(state.LinearVelocity.Normalized() * Speed * 2f, 0.45f);
             }
-            else if (!IsDead()
-                && !IsStunned()
-                && !CurrentAttackBlocksMovement()
-                && IsOnFloor())
+            else if (state.LinearVelocity.LengthSquared() > Speed * Speed)
             {
-                // keep velocity below max speed when moving on floor   
-                if (MovementAgent.State == EnemyMoveAgent.MoveState.PATH_TO_PLAYER)
-                {
-                    state.LinearVelocity = state.LinearVelocity.Lerp(state.LinearVelocity.Normalized() * Speed * 2f, 0.45f);
-                }
-                else if (state.LinearVelocity.LengthSquared() > Speed * Speed)
-                {
-                    state.LinearVelocity = state.LinearVelocity.Lerp(state.LinearVelocity.Normalized() * Speed, 0.2f);
-                }
+                state.LinearVelocity = state.LinearVelocity.Lerp(state.LinearVelocity.Normalized() * Speed, 0.2f);
             }
+        }
     }
 
     public override void _PhysicsProcess(double delta)
     {
-        if (Deactivated) return;
+        if (IsDead())
+        {
+            if (!_stun_timer.IsStopped()) _stun_timer.Stop();
+            if (State == StateEnum.IsPickedUp)
+            {
+                State = StateEnum.Dead;
+                AudioManager.TryPlay(AttackManager.TossEnemyImpactSound, AudioBus.Enemies, GlobalPosition);
+            }
+            StopAttacking();
+            DeathAnimation();
+            return;
+        }
 
-        if (IsDead()) { DeathAnimation(); return; }
         if (!IsInstanceValid(this) || !IsInsideTree() || Freeze) return;
 
         if (State == StateEnum.IsPickedUp)
@@ -258,7 +265,7 @@ public partial class Enemy : RigidBody3D, IHurtable
             if (IsOnFloor())
             {
                 State = StateEnum.Idle;
-                SetStun(0.5f);
+                SetStun(2f);
                 AnimStateMachine.Travel("base_idle", true);
                 AudioManager.TryPlay(AttackManager.TossEnemyImpactSound, AudioBus.Enemies, GlobalPosition);
             }
@@ -278,7 +285,7 @@ public partial class Enemy : RigidBody3D, IHurtable
         }
 
         // do attack logic and move if player is not dead
-        if (!Player.Instance.IsDead && !Ambush)
+        if (!Player.Instance.IsDead)
         {
             DoAttackLogic();
 
@@ -370,17 +377,6 @@ public partial class Enemy : RigidBody3D, IHurtable
         }
     }
 
-    public void Deactivate()
-    {
-        if (IsDead() || !_deathTimer.IsStopped()) return;
-        Deactivated = true;
-        _footstep_timer.Stop();
-        _idle_sound_timer.Stop();
-        _stun_timer.Stop();
-        StopIdleSoundTimer();
-        AnimStateMachine.Travel("base_idle");
-    }
-
     public void TakeDamage(int damage, DamageTypeFlagEnum damageType)
     {
         Health -= damage;
@@ -401,14 +397,16 @@ public partial class Enemy : RigidBody3D, IHurtable
                     }
                     AnimStateMachine.Travel("base_idle");
                     StopIdleSoundTimer();
-                    var stream = PainSounds[Random.Shared.Next(0, PainSounds.Count)];
-                    AudioManager.TryPlay(stream, AudioBus.Enemies, GlobalPosition);
+                    if (PainSounds.Count > 0)
+                    {
+                        var stream = PainSounds[Random.Shared.Next(0, PainSounds.Count)];
+                        AudioManager.TryPlay(stream, AudioBus.Enemies, GlobalPosition);
+                    }
                     _stun_timer.WaitTime = StunDuration;
                     _stun_timer.Start();
                 }
             }
         }
-        else _stun_timer.Stop();
     }
 
     public void DeathAnimation()
@@ -430,7 +428,6 @@ public partial class Enemy : RigidBody3D, IHurtable
 
             if (_deathTimer.IsStopped() && Visible)
             {
-                GD.Print("added death smoke");
                 var blood_fountain = _death_blood_fountain.Instantiate() as GpuParticles3D;
                 blood_fountain.Emitting = true;
                 blood_fountain.Finished += blood_fountain.QueueFree;
@@ -448,7 +445,13 @@ public partial class Enemy : RigidBody3D, IHurtable
                 {
                     coinAmount += Mathf.FloorToInt(Random.Shared.NextSingle() * (int)CoinDropDice) + 1;
                 }
-                GetTree().CurrentScene.AddChild(TreasureSpawner.Create(GlobalPosition + Vector3.Up * 0.5f, coinAmount, 0.5f));
+                //GetTree().CurrentScene.AddChild(TreasureSpawner.Create(GlobalPosition + Vector3.Up * 0.5f, coinAmount, 0.5f));
+
+                // spawn coins and XP gems
+                TreasureSpawner.PickupCoinsAtNode(this, Mathf.Max(coinAmount,1));
+                var spawner = TreasureSpawner.Create(GlobalPosition+Vector3.Up*0.5f, Random.Shared.Next(1,4), 0.5f, true);
+                GetTree().CurrentScene.AddChild(spawner);
+                spawner.GlobalPosition = GlobalPosition + Vector3.Up * 0.5f;
 
                 Visible = false;
             }
@@ -461,8 +464,11 @@ public partial class Enemy : RigidBody3D, IHurtable
         else
         {
             _idle_sound_timer.Stop();
-            var stream = DeathSounds[Random.Shared.Next(0, DeathSounds.Count)];
-            AudioManager.TryPlay(stream, AudioBus.Enemies, GlobalPosition);
+            if (DeathSounds.Count > 0)
+            {
+                var stream = DeathSounds[Random.Shared.Next(0, DeathSounds.Count)];
+                AudioManager.TryPlay(stream, AudioBus.Enemies, GlobalPosition);
+            }
             AnimStateMachine.Travel("base_die", true);
             _deathTimer.WaitTime = AnimTree.GetAnimation("base_die").Length;
             _deathTimer.Start();
@@ -495,10 +501,17 @@ public partial class Enemy : RigidBody3D, IHurtable
             _footstep_timer.Start();
         }      
     }
+
+    public override void _ExitTree()
+    {
+        // ensure current attack resets params/frees any objects its controlling
+        StopAttacking();
+    }
+
     public void ImpulseTowardsPlayer(float impulseMagnitude)
     {
         if ((this != null) && IsInstanceValid(this) && IsInsideTree()
-        && Player.Instance != null && IsInstanceValid(Player.Instance) && Player.Instance.IsInsideTree()) 
+        && Player.Instance != null && IsInstanceValid(Player.Instance) && Player.Instance.IsInsideTree())
         {
             var dir = (Player.Instance.GlobalPosition - GlobalPosition).Normalized();
             ApplyCentralImpulse(dir * impulseMagnitude * Mass);

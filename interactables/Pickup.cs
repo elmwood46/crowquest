@@ -1,60 +1,91 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 
 
 public partial class Pickup : RigidBody3D, IPickup
 {
     private const double PICKUP_LIFETIME = 60;
-    protected Timer _deathtimer = new() {WaitTime = 1, Autostart = false, OneShot = true};
+    protected Timer _deathtimer = new() {WaitTime = 1d, Autostart = false, OneShot = true};
     protected Timer _lifetime = new() {WaitTime = PICKUP_LIFETIME,Autostart = false,OneShot = true};
     public bool ActivatePickup = false;
     [Export] public Godot.Collections.Array<AudioStream> PickupSounds {get;set;}
     [Export] public Godot.Collections.Array<AudioStream> ImpactSounds {get;set;}
     [Export] public AudioBus Bus {get;set;} = AudioBus.Misc;
-    protected const float _lerpfactor = 0.5f;
-    protected Vector3 _base_scale; 
+    protected const float _lerpfactor = 0.2f;
+    protected Vector3 _base_mesh_scale;
+    protected Vector3 _base_collision_scale;
+    protected MeshInstance3D _mesh;
+    protected CollisionShape3D _collision;
 
     protected InteractableComponent _interactable;
+    protected bool _spawn_position_set = false;
 
     protected string _base_name;
-
+    protected Vector3 _spawn_position;
     public override void _Ready()
     {
+        if (PhysicsMaterialOverride == null)
+        {
+            PhysicsMaterialOverride = new PhysicsMaterial()
+            {
+                Friction = 1.0f,
+                Bounce = 0.2f
+            };
+        }
+        else PhysicsMaterialOverride.Friction = 1.0f;
+        LinearDamp = 1.0f;
+        AngularDamp = 1.0f;
+
         // play impact sound
-        BodyEntered += (body) => {
+        BodyEntered += (body) =>
+        {
             if (!(body is StaticBody3D || body is RigidBody3D)) return;
-            
+
             if (ImpactSounds.Count > 0 && !Freeze && LinearVelocity.LengthSquared() > 0.2f)
             {
-                var stream = ImpactSounds[Random.Shared.Next(0,ImpactSounds.Count)];
+                var stream = ImpactSounds[Random.Shared.Next(0, ImpactSounds.Count)];
                 AudioManager.TryPlay(stream, Bus, GlobalPosition);
             }
         };
 
-        SetCollisionLayerValue(1,false);
-        SetCollisionLayerValue(2,false);
-        SetCollisionLayerValue(3,true);
-        SetCollisionMaskValue(1,true);
-        SetCollisionMaskValue(2,false);
-        SetCollisionMaskValue(3,true);
-        SetCollisionMaskValue(9,true);
-
-        _base_scale = ((MeshInstance3D)GetChild(0)).Scale;
-        _lifetime.Timeout += () => {
+        SetCollisionLayerValue(1, false);
+        SetCollisionLayerValue(2, false);
+        SetCollisionLayerValue(3, true);
+        SetCollisionMaskValue(1, true);
+        SetCollisionMaskValue(2, false);
+        SetCollisionMaskValue(3, true);
+        SetCollisionMaskValue(9, false);
+        _mesh = GetChildren().OfType<MeshInstance3D>().FirstOrDefault();
+        _collision = GetChildren().OfType<CollisionShape3D>().FirstOrDefault();
+        _base_mesh_scale = _mesh.Scale;
+        _base_collision_scale = _collision.Scale;
+        _lifetime.Timeout += () =>
+        {
             _deathtimer.Start();
         };
         _deathtimer.Timeout += Deactivate;
         AddChild(_deathtimer);
         AddChild(_lifetime);
+        _lifetime.Start();
 
         if (this is not Coin)
         {
             _interactable = new();
             AddChild(_interactable);
-            _interactable.Connect(nameof(InteractableComponent.Interacted),Callable.From(()=>{ActivatePickup = true;}));
+            _interactable.Connect(nameof(InteractableComponent.Interacted), Callable.From(() => { ActivatePickup = true; }));
         }
+
+        Visible = true;
+        Freeze = false;
+    }
+
+    public void SetSpawnPosition(Vector3 spawn_position)
+    {
+        _spawn_position = spawn_position;
+        _spawn_position_set = true;
     }
 
     public void ForcePhysicsStateUpdate(Vector3 translate, Vector3 linear_velocity, Vector3 angular_velocity)
@@ -78,26 +109,32 @@ public partial class Pickup : RigidBody3D, IPickup
         GlobalPosition = translate;
     }
 
+    public override void _IntegrateForces(PhysicsDirectBodyState3D state)
+    {
+        AngularVelocity = new Vector3(0, 1, 0);
+        if (_spawn_position_set) GlobalPosition = new Vector3(GlobalPosition.X, (_spawn_position.Y < 0.5f ? 0.5f : _spawn_position.Y) + 0.1f * Mathf.Sin(GlobalPosition.X+GlobalPosition.Z+Mathf.Tau*Engine.GetPhysicsFrames()/60f), GlobalPosition.Z);
+        base._IntegrateForces(state);
+    }
+
     public override void _PhysicsProcess(double delta)
     {
-        // disable
-        if (Freeze) return;
-
         // shrink effect
         if (!_deathtimer.IsStopped())
         {
-            ((MeshInstance3D)GetChild(0)).Scale = _base_scale*(float)Math.Max(_deathtimer.TimeLeft/_deathtimer.WaitTime,0.1f);
-            ((CollisionShape3D)GetChild(1)).Scale = _base_scale*(float)Math.Max(_deathtimer.TimeLeft/_deathtimer.WaitTime,0.1f);
+            _mesh.Scale = _base_mesh_scale * (float)Math.Max(_deathtimer.TimeLeft / _deathtimer.WaitTime, 0.1f);
+            _collision.Scale = _base_collision_scale * (float)Math.Max(_deathtimer.TimeLeft / _deathtimer.WaitTime, 0.1f);
         }
-        else 
+        else
         {
-            ((MeshInstance3D)GetChild(0)).Scale = _base_scale;
-            ((CollisionShape3D)GetChild(1)).Scale = _base_scale;        
+            _mesh.Scale = _base_mesh_scale;
+            _collision.Scale = _base_collision_scale;
         }
 
         // pickup effect
         if (ActivatePickup && Player.Instance != null)
         {
+            Freeze = true;
+            FreezeMode = FreezeModeEnum.Static;
             LerpTowardsPlayer();
         }
     }
@@ -106,12 +143,12 @@ public partial class Pickup : RigidBody3D, IPickup
     {
         SetCollisionMaskValue(1,false);
         SetCollisionMaskValue(3,false);
-        float dx,dy,dz;
+        SetCollisionMaskValue(9,false);
+        SetCollisionLayerValue(1,false);
+        SetCollisionLayerValue(3,false);
+        SetCollisionLayerValue(9,false);
         var targ_pos = Player.Instance.GlobalPosition+Vector3.Up*0.5f;
-        dx = Mathf.Lerp(GlobalPosition.X,targ_pos.X,_lerpfactor);
-        dy = Mathf.Lerp(GlobalPosition.Y,targ_pos.Y,_lerpfactor);
-        dz = Mathf.Lerp(GlobalPosition.Z,targ_pos.Z,_lerpfactor);
-        GlobalPosition = new Vector3(dx,dy,dz);
+        GlobalPosition = GlobalPosition.Lerp(targ_pos,_lerpfactor);
         if (GlobalPosition.DistanceSquaredTo(targ_pos) <= 0.5f)
         {
             OnPickup();
@@ -126,6 +163,7 @@ public partial class Pickup : RigidBody3D, IPickup
 
     virtual public void Deactivate()
     {
+        GD.Print("Deactivating pickup "+this);
         QueueFree();
     }
 
