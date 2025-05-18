@@ -3,8 +3,9 @@ using System;
 
 public partial class ScratchAttack : Node3D, IAttack
 {
-    private static readonly PackedScene ScratchAttackHitbox = ResourceLoader.Load("res://enemies/attack_hitboxes/scratch_hitbox.tscn") as PackedScene; 
-    public int AttackState {get;private set;} = 0;
+    private static readonly PackedScene ScratchAttackHitbox = ResourceLoader.Load("res://enemies/attack_hitboxes/scratch_hitbox.tscn") as PackedScene;
+    public int BaseDamage { get; set; } = 1;
+    public int AttackState { get; private set; } = 0;
     private Node3D _hitbox;
     public bool CanBeInterrupted => true;
     public bool CanMoveDuring => true;
@@ -81,7 +82,7 @@ public partial class ScratchAttack : Node3D, IAttack
                 {
                     if (body is Player p)
                     {
-                        p.TakeDamage(5, DamageTypeFlagEnum.Physical);
+                        p.TakeDamage(BaseDamage, DamageTypeFlagEnum.Physical);
                     }
                 }
             }

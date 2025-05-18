@@ -1,0 +1,117 @@
+[gd_scene load_steps=17 format=3 uid="uid://c6vfdlaxgm2oe"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_5lslw"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_tuqob"]
+size = Vector3(0.8, 0.8, 0.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_6py2y"]
+size = Vector3(0.8, 2, 0.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_41d3i"]
+size = Vector3(2, 2, 0.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_bc2e6"]
+size = Vector3(0.4, 2, 2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_032in"]
+size = Vector3(0.8, 0.8, 2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_pb4jy"]
+size = Vector3(2, 0.4, 2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_r5br4"]
+size = Vector3(2, 0.8, 0.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_m5vx5"]
+size = Vector3(1, 1.5, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_k00pt"]
+size = Vector3(0.8, 1.3, 0.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_vyomd"]
+size = Vector3(0.8, 2, 0.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0temo"]
+size = Vector3(2, 2, 0.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_3xg03"]
+size = Vector3(0.4, 2, 2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_sn2c7"]
+size = Vector3(0.8, 1.3, 2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_mdr6q"]
+size = Vector3(2, 0.8, 2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_cx1us"]
+size = Vector3(2, 1.3, 0.8)
+
+[node name="Node3D" type="Node3D"]
+
+[node name="CSGCombiner3D" type="CSGCombiner3D" parent="."]
+
+[node name="CSGMesh3D" type="CSGMesh3D" parent="CSGCombiner3D"]
+mesh = SubResource("BoxMesh_5lslw")
+
+[node name="CSGMesh3D2" type="CSGMesh3D" parent="CSGCombiner3D"]
+operation = 2
+mesh = SubResource("BoxMesh_tuqob")
+
+[node name="CSGMesh3D3" type="CSGMesh3D" parent="CSGCombiner3D"]
+operation = 2
+mesh = SubResource("BoxMesh_6py2y")
+
+[node name="CSGMesh3D8" type="CSGMesh3D" parent="CSGCombiner3D"]
+operation = 2
+mesh = SubResource("BoxMesh_41d3i")
+
+[node name="CSGMesh3D7" type="CSGMesh3D" parent="CSGCombiner3D"]
+operation = 2
+mesh = SubResource("BoxMesh_bc2e6")
+
+[node name="CSGMesh3D4" type="CSGMesh3D" parent="CSGCombiner3D"]
+operation = 2
+mesh = SubResource("BoxMesh_032in")
+
+[node name="CSGMesh3D6" type="CSGMesh3D" parent="CSGCombiner3D"]
+operation = 2
+mesh = SubResource("BoxMesh_pb4jy")
+
+[node name="CSGMesh3D5" type="CSGMesh3D" parent="CSGCombiner3D"]
+operation = 2
+mesh = SubResource("BoxMesh_r5br4")
+
+[node name="CSGCombiner3D2" type="CSGCombiner3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.54527, 0)
+
+[node name="CSGMesh3D" type="CSGMesh3D" parent="CSGCombiner3D2"]
+mesh = SubResource("BoxMesh_m5vx5")
+
+[node name="CSGMesh3D2" type="CSGMesh3D" parent="CSGCombiner3D2"]
+operation = 2
+mesh = SubResource("BoxMesh_k00pt")
+
+[node name="CSGMesh3D3" type="CSGMesh3D" parent="CSGCombiner3D2"]
+operation = 2
+mesh = SubResource("BoxMesh_vyomd")
+
+[node name="CSGMesh3D8" type="CSGMesh3D" parent="CSGCombiner3D2"]
+operation = 2
+mesh = SubResource("BoxMesh_0temo")
+
+[node name="CSGMesh3D7" type="CSGMesh3D" parent="CSGCombiner3D2"]
+operation = 2
+mesh = SubResource("BoxMesh_3xg03")
+
+[node name="CSGMesh3D4" type="CSGMesh3D" parent="CSGCombiner3D2"]
+operation = 2
+mesh = SubResource("BoxMesh_sn2c7")
+
+[node name="CSGMesh3D6" type="CSGMesh3D" parent="CSGCombiner3D2"]
+operation = 2
+mesh = SubResource("BoxMesh_mdr6q")
+
+[node name="CSGMesh3D5" type="CSGMesh3D" parent="CSGCombiner3D2"]
+operation = 2
+mesh = SubResource("BoxMesh_cx1us")

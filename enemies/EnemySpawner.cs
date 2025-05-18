@@ -25,7 +25,7 @@ public partial class EnemySpawner : Node3D
     {
         for (int i=0; i < EnemyCount; i++)
         {
-            var enemy = EnemyScenes[1].Instantiate();
+            var enemy = EnemyScenes[i%EnemyScenes.Length].Instantiate();
             
             if (i >= 300)
             {

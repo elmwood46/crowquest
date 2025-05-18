@@ -12,7 +12,9 @@ public static class SimpleWfc
     private static readonly Node3D _tile_path_nodes = GD.Load<PackedScene>("res://terrain_generator/simple_wfc/TilePaths.tscn").Instantiate<Node3D>();
     private static readonly Node3D _tile_static_wall = GD.Load<PackedScene>("res://terrain_generator/simple_wfc/GenWallsStraight.tscn").Instantiate<Node3D>();
     private static readonly Node3D _tile_static_wall_diag = GD.Load<PackedScene>("res://terrain_generator/simple_wfc/GenWallsDiag.tscn").Instantiate<Node3D>();
-    private static readonly Dictionary<Vector2I,int> _cell_walls = new()
+    private static readonly Node3D _hedge_static_wall = GD.Load<PackedScene>("res://terrain_generator/simple_wfc/static_low_hedges_straight.tscn").Instantiate<Node3D>();
+
+    private static readonly Dictionary<Vector2I, int> _cell_walls = new()
     {
         { new Vector2I(0, -1), North }, // N
         { new Vector2I(1, 0), East },  // E

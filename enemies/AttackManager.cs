@@ -20,6 +20,7 @@ public static class AttackManager
         Scratch,
         SpiralBullet,
         StormToss,
+        StormLazerAttack,
     }
 
     public static readonly AudioStream TossEnemyImpactSound = ResourceLoader.Load("res://enemies/enemy_instances/storm/storm_impact.ogg") as AudioStream;
@@ -28,7 +29,8 @@ public static class AttackManager
     {
         {AttackName.Scratch,typeof(ScratchAttack)},
         {AttackName.SpiralBullet,typeof(SpiralBulletAttack)},
-        {AttackName.StormToss,typeof(StormTossAttack)}
+        {AttackName.StormToss,typeof(StormTossAttack)},
+        {AttackName.StormLazerAttack, typeof(StormLazerAttack)}
     };
 
     public static int SphereDamageDropoff(Vector3 sphereCentre, Vector3 bodyGlobalPosition, float base_damage, float explosion_radius) {

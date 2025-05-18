@@ -53,14 +53,14 @@ shadow_mesh = SubResource("ArrayMesh_juhyl")
 albedo_texture = ExtResource("2_5351f")
 roughness_texture = ExtResource("4_ntljb")
 emission_enabled = true
-emission = Color(0.995168, 0.000623197, 0.961118, 1)
-emission_energy_multiplier = 5.0
+emission = Color(0, 1, 0, 1)
+emission_energy_multiplier = 6.79
 emission_texture = ExtResource("3_ruioa")
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_y0gww"]
 radius = 0.33
 
-[node name="green_gem" type="RigidBody3D"]
+[node name="green_gem" type="RigidBody3D" node_paths=PackedStringArray("GroundCheckRaycast")]
 axis_lock_angular_x = true
 axis_lock_angular_z = true
 physics_material_override = SubResource("PhysicsMaterial_as7ab")
@@ -69,6 +69,7 @@ contact_monitor = true
 max_contacts_reported = 1
 script = ExtResource("1_8ylai")
 Bus = 0
+GroundCheckRaycast = NodePath("RayCast3D")
 
 [node name="Stone5" type="MeshInstance3D" parent="."]
 transform = Transform3D(50, 7.8162e-13, 4.37114e-06, 1.91069e-13, 50, -1.11263e-05, -4.37114e-06, 1.11263e-05, 50, 0, 0, 0)
@@ -78,3 +79,6 @@ surface_material_override/0 = SubResource("StandardMaterial3D_ucbv1")
 
 [node name="CollisionShape3D2" type="CollisionShape3D" parent="."]
 shape = SubResource("SphereShape3D_y0gww")
+
+[node name="RayCast3D" type="RayCast3D" parent="."]
+target_position = Vector3(0, -0.5, 0)

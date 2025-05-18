@@ -25,7 +25,10 @@ public partial  class AudioManager : Node
         {AudioBus.Footsteps, new(16, AudioBus.Footsteps)},
         {AudioBus.Master, new(64, AudioBus.Master)}
     };
-    public static readonly Vector3 FootstepWaitTimes = new(0.35f,0.25f,0.5f); // walk speed, sprint speed, crouch speed (time is delay between footsteps in seconds)
+
+
+    public static readonly Dictionary<string, (AudioBus,AudioStreamPlayer3D)> TrackedPlayers = [];
+    public static readonly Vector3 FootstepWaitTimes = new(0.35f, 0.25f, 0.5f); // walk speed, sprint speed, crouch speed (time is delay between footsteps in seconds)
     public static readonly Dictionary<string,List<AudioStream>> FootstepSounds = new()
     {
         {
@@ -138,6 +141,73 @@ public partial  class AudioManager : Node
     public static void TryPlayAtPlayer(AudioStream stream)
     {
         if (Player.Instance != null) keyValuePairs[AudioBus.Master].PlaySoundIfAvailable(stream, Player.Instance.GlobalPosition);
+    }
+
+    public static bool TryPlayTrackedSound(string key, AudioStream stream, AudioBus buskey = AudioBus.Master, Vector3? position = null, float volumedb = 0.0f, float pitch_scale = 1.0f)
+    {
+        if (TrackedPlayers.ContainsKey(key)) return false;
+        
+        if (keyValuePairs.TryGetValue(buskey, out AudioStreamQueue value))
+            {
+                var player = value.PlaySoundIfAvailable(stream, position, volumedb, pitch_scale);
+                if (player == null) return false;
+                else
+                {
+                    TrackedPlayers.TryAdd(key, (buskey,player));
+                    return true;
+                }
+            }
+        return false;
+    }
+
+    public static bool TryStopTrackedSound(string key)
+    {
+        if (TrackedPlayers.TryGetValue(key, out var pair))
+        {
+            var (bus, value) = pair; 
+            if (value.IsPlaying()) value.Stop();
+            var queue = keyValuePairs[bus];
+            queue.EnqueuePlayer(value);
+            
+            string key_to_remove = null;
+            foreach (var (str, tracked) in TrackedPlayers)
+            {
+                if (tracked.Equals(value))
+                {
+                    key_to_remove = str;
+                    break;
+                }
+            }
+            if (key_to_remove != null) TrackedPlayers.Remove(key_to_remove);
+            
+            TrackedPlayers.Remove(key);
+            GD.Print($"removed tracked sound {key}");
+            GD.Print($"remaining tracked sounds: {TrackedPlayers.Count}");
+            return true;
+        }
+        return false;
+    }
+
+    public static bool TryUpdateTrackedSoundPosition(string key, Vector3 new_global_position)
+    {
+        if (TrackedPlayers.TryGetValue(key, out var pair))
+        {
+            var (_, value) = pair;
+            value.GlobalPosition =  Player.GetCameraPosition() + 0.1f * (new_global_position - Player.GetCameraPosition());
+            return true;
+        }
+        return false;
+    }
+
+    public static bool TryUpdateTrackedSoundVolume(string key, float new_volume_db)
+    {
+        if (TrackedPlayers.TryGetValue(key, out var pair))
+        {
+            var (_, value) = pair;
+            value.VolumeDb = new_volume_db;
+            return true;
+        }
+        return false;
     }
 
     public static void TryPlay(AudioStream stream, AudioBus key = AudioBus.Master, Vector3? position = null, float volumedb = 0.0f)

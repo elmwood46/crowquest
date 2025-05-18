@@ -164,7 +164,7 @@ public partial class EnemyMoveAgent : Node
         {
             if (_agent.IsNavigationFinished())
             {
-                GD.Print("Finished path to player");
+                //GD.Print("Finished path to player");
                 State = MoveState.SWITCH_STATES;
                 move_dir = Player.Instance.GlobalPosition - _parent.GlobalPosition;
                 move_dir = (move_dir*new Vector3(1,0,1)).Normalized();

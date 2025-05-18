@@ -1,0 +1,30 @@
+[gd_scene load_steps=6 format=3 uid="uid://cgb1dhffiey7h"]
+
+[sub_resource type="Curve" id="Curve_fld4g"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_gah5e"]
+curve = SubResource("Curve_fld4g")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_gbhcm"]
+direction = Vector3(0, 1, 0)
+initial_velocity_min = 5.0
+initial_velocity_max = 6.0
+scale_min = 0.2
+scale_max = 0.3
+scale_curve = SubResource("CurveTexture_gah5e")
+color = Color(1, 0, 0, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_31c0s"]
+vertex_color_use_as_albedo = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_x6yo4"]
+material = SubResource("StandardMaterial3D_31c0s")
+
+[node name="BloodSpray" type="GPUParticles3D"]
+amount = 128
+speed_scale = 3.0
+fixed_fps = 60
+process_material = SubResource("ParticleProcessMaterial_gbhcm")
+draw_pass_1 = SubResource("BoxMesh_x6yo4")

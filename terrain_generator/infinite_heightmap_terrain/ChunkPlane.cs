@@ -13,7 +13,7 @@ public partial class ChunkPlane : StaticBody3D
     [Export] public CollisionShape3D CollisionShape { get; set; }
     [Export] public NavigationRegion3D NavRegion { get; set; }
     [Export] public bool DisableCSGWallGeneration { get; set; } = true;
-    [Export] public bool SuperFlatMode { get; set; } = true;
+    [Export] public bool SuperFlatMode { get; set; } = false;
     [Export] public bool DisableLampGeneration { get; set; } = false;
     [Export] public bool DisableSarcophagusGeneration { get; set; } = false;
     [Export] public bool DrawDebugMeshes = false;
@@ -34,6 +34,7 @@ public partial class ChunkPlane : StaticBody3D
     private static readonly StandardMaterial3D _ground_material = GD.Load<StandardMaterial3D>("res://terrain_generator/grass/dark_green.tres"); //GD.Load<StandardMaterial3D>("res://terrain_generator/infinite_heightmap_terrain/ground_material.tres");
     private static readonly StandardMaterial3D _ground_material_2 = GD.Load<StandardMaterial3D>("res://terrain_generator/grass/dark_green.tres");///GD.Load<StandardMaterial3D>("res://terrain_generator/infinite_heightmap_terrain/ground_light_material.tres");
     private static readonly PackedScene _csg_brick_wall_scene = GD.Load<PackedScene>("res://terrain_generator/procedural_brick_wall/csg/csg_brick_wall.tscn");
+    private static readonly PackedScene _csg_low_hedge_scene = GD.Load<PackedScene>("res://terrain_generator/procedural_brick_wall/csg/csg_low_hedge.tscn");
     private static readonly PackedScene _lamp_post_scene = GD.Load<PackedScene>("res://environment_models/street_lamps/streetlamp_small.tscn");
     private static readonly Noise _grass_noise = GD.Load<FastNoiseLite>("res://terrain_generator/grass/grass_fast_noise_lite.tres");
     
@@ -263,6 +264,7 @@ public partial class ChunkPlane : StaticBody3D
                     }
                 }
                 NavRegion.AddChild(wall_copy);
+                wall_copy.GlobalPosition += Vector3.Down * 3.8f;
             }
         }
 
@@ -292,6 +294,20 @@ public partial class ChunkPlane : StaticBody3D
             nodePaths.Add(wall.PathNode);
             path_copy.GlobalPosition *= 0.5f; // ???? the global position is doubled for some reason
         }
+
+        // DEBUG make hedges
+        // foreach (var path_str in nodePaths)
+        // {
+        //     var path_node = GetNodeOrNull<Path3D>(path_str);
+        //     var hedge = _csg_low_hedge_scene.Instantiate<CsgPolygon3D>();
+        //     hedge.UseCollision = false;
+        //     if (has_diagonal_walls)
+        //     {
+        //         hedge.PathInterval = 10.0f;
+        //     }
+        //     path_node.AddChild(hedge);
+        //     hedge.PathNode = path_node.GetPath();
+        // }
 
         //====== generate lamps =====
         var centerPoint = new Vector3(chunk_offset.X,0,chunk_offset.Y);

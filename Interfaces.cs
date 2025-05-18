@@ -35,7 +35,8 @@ public interface ISaveStateLoadable
 public interface IAttack
 {
     public static readonly string AttackName;
-    public bool CanMoveDuring {get;}
+    public int BaseDamage { get; set; }
+    public bool CanMoveDuring { get; }
     public bool CanBeInterrupted {get;}
     public bool IsFinished {get;set;}
     abstract public bool CanTrigger(Enemy enemy);

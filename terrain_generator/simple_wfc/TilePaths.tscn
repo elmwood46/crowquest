@@ -230,124 +230,124 @@ point_count = 20
 
 [node name="Corner0" type="Node3D" parent="CornerPieces"]
 
-[node name="@Path3D@513306" type="Path3D" parent="CornerPieces/Corner0"]
+[node name="@Path3D@28276" type="Path3D" parent="CornerPieces/Corner0"]
 curve = SubResource("Curve3D_6mday")
 
-[node name="@Path3D@513307" type="Path3D" parent="CornerPieces/Corner0"]
+[node name="@Path3D@28277" type="Path3D" parent="CornerPieces/Corner0"]
 curve = SubResource("Curve3D_fcisd")
 
 [node name="Corner1" type="Node3D" parent="CornerPieces"]
 
-[node name="@Path3D@513309" type="Path3D" parent="CornerPieces/Corner1"]
+[node name="@Path3D@28279" type="Path3D" parent="CornerPieces/Corner1"]
 curve = SubResource("Curve3D_gp8uw")
 
-[node name="@Path3D@513310" type="Path3D" parent="CornerPieces/Corner1"]
+[node name="@Path3D@28280" type="Path3D" parent="CornerPieces/Corner1"]
 curve = SubResource("Curve3D_mi6vc")
 
 [node name="Corner2" type="Node3D" parent="CornerPieces"]
 
-[node name="@Path3D@513312" type="Path3D" parent="CornerPieces/Corner2"]
+[node name="@Path3D@28282" type="Path3D" parent="CornerPieces/Corner2"]
 curve = SubResource("Curve3D_mdc8m")
 
-[node name="@Path3D@513313" type="Path3D" parent="CornerPieces/Corner2"]
+[node name="@Path3D@28283" type="Path3D" parent="CornerPieces/Corner2"]
 curve = SubResource("Curve3D_m7ba8")
 
 [node name="Corner3" type="Node3D" parent="CornerPieces"]
 
-[node name="@Path3D@513315" type="Path3D" parent="CornerPieces/Corner3"]
+[node name="@Path3D@28285" type="Path3D" parent="CornerPieces/Corner3"]
 curve = SubResource("Curve3D_t78d7")
 
-[node name="@Path3D@513316" type="Path3D" parent="CornerPieces/Corner3"]
+[node name="@Path3D@28286" type="Path3D" parent="CornerPieces/Corner3"]
 curve = SubResource("Curve3D_uclsv")
 
 [node name="DeadEnds" type="Node3D" parent="."]
 
-[node name="@Path3D@513318" type="Path3D" parent="DeadEnds"]
+[node name="@Path3D@28288" type="Path3D" parent="DeadEnds"]
 curve = SubResource("Curve3D_1heu6")
 
-[node name="@Path3D@513319" type="Path3D" parent="DeadEnds"]
+[node name="@Path3D@28289" type="Path3D" parent="DeadEnds"]
 curve = SubResource("Curve3D_1smob")
 
-[node name="@Path3D@513320" type="Path3D" parent="DeadEnds"]
+[node name="@Path3D@28290" type="Path3D" parent="DeadEnds"]
 curve = SubResource("Curve3D_00ay0")
 
-[node name="@Path3D@513321" type="Path3D" parent="DeadEnds"]
+[node name="@Path3D@28291" type="Path3D" parent="DeadEnds"]
 curve = SubResource("Curve3D_yvtii")
 
 [node name="StraightPaths" type="Node3D" parent="."]
 
 [node name="StraightPathVert" type="Node3D" parent="StraightPaths"]
 
-[node name="@Path3D@513325" type="Path3D" parent="StraightPaths/StraightPathVert"]
+[node name="@Path3D@28295" type="Path3D" parent="StraightPaths/StraightPathVert"]
 curve = SubResource("Curve3D_gjoxf")
 
-[node name="@Path3D@513326" type="Path3D" parent="StraightPaths/StraightPathVert"]
+[node name="@Path3D@28296" type="Path3D" parent="StraightPaths/StraightPathVert"]
 curve = SubResource("Curve3D_gqi60")
 
 [node name="StraightPathHor" type="Node3D" parent="StraightPaths"]
 
-[node name="@Path3D@513327" type="Path3D" parent="StraightPaths/StraightPathHor"]
+[node name="@Path3D@28297" type="Path3D" parent="StraightPaths/StraightPathHor"]
 curve = SubResource("Curve3D_vde03")
 
-[node name="@Path3D@513328" type="Path3D" parent="StraightPaths/StraightPathHor"]
+[node name="@Path3D@28298" type="Path3D" parent="StraightPaths/StraightPathHor"]
 curve = SubResource("Curve3D_3y7dv")
 
 [node name="TJunctions" type="Node3D" parent="."]
 
 [node name="TJunction0" type="Node3D" parent="TJunctions"]
 
-[node name="@Path3D@513331" type="Path3D" parent="TJunctions/TJunction0"]
+[node name="@Path3D@28301" type="Path3D" parent="TJunctions/TJunction0"]
 curve = SubResource("Curve3D_fs7et")
 
-[node name="@Path3D@513332" type="Path3D" parent="TJunctions/TJunction0"]
+[node name="@Path3D@28302" type="Path3D" parent="TJunctions/TJunction0"]
 curve = SubResource("Curve3D_l3ua2")
 
-[node name="@Path3D@513333" type="Path3D" parent="TJunctions/TJunction0"]
+[node name="@Path3D@28303" type="Path3D" parent="TJunctions/TJunction0"]
 curve = SubResource("Curve3D_x58wj")
 
 [node name="TJunction1" type="Node3D" parent="TJunctions"]
 
-[node name="@Path3D@513335" type="Path3D" parent="TJunctions/TJunction1"]
+[node name="@Path3D@28305" type="Path3D" parent="TJunctions/TJunction1"]
 curve = SubResource("Curve3D_u77sv")
 
-[node name="@Path3D@513336" type="Path3D" parent="TJunctions/TJunction1"]
+[node name="@Path3D@28306" type="Path3D" parent="TJunctions/TJunction1"]
 curve = SubResource("Curve3D_2m2sg")
 
-[node name="@Path3D@513337" type="Path3D" parent="TJunctions/TJunction1"]
+[node name="@Path3D@28307" type="Path3D" parent="TJunctions/TJunction1"]
 curve = SubResource("Curve3D_cbu6k")
 
 [node name="TJunction2" type="Node3D" parent="TJunctions"]
 
-[node name="@Path3D@513339" type="Path3D" parent="TJunctions/TJunction2"]
+[node name="@Path3D@28309" type="Path3D" parent="TJunctions/TJunction2"]
 curve = SubResource("Curve3D_f1civ")
 
-[node name="@Path3D@513340" type="Path3D" parent="TJunctions/TJunction2"]
+[node name="@Path3D@28310" type="Path3D" parent="TJunctions/TJunction2"]
 curve = SubResource("Curve3D_ikjwr")
 
-[node name="@Path3D@513341" type="Path3D" parent="TJunctions/TJunction2"]
+[node name="@Path3D@28311" type="Path3D" parent="TJunctions/TJunction2"]
 curve = SubResource("Curve3D_vosno")
 
 [node name="TJunction3" type="Node3D" parent="TJunctions"]
 
-[node name="@Path3D@513343" type="Path3D" parent="TJunctions/TJunction3"]
+[node name="@Path3D@28313" type="Path3D" parent="TJunctions/TJunction3"]
 curve = SubResource("Curve3D_fv4uh")
 
-[node name="@Path3D@513344" type="Path3D" parent="TJunctions/TJunction3"]
+[node name="@Path3D@28314" type="Path3D" parent="TJunctions/TJunction3"]
 curve = SubResource("Curve3D_thcpr")
 
-[node name="@Path3D@513345" type="Path3D" parent="TJunctions/TJunction3"]
+[node name="@Path3D@28315" type="Path3D" parent="TJunctions/TJunction3"]
 curve = SubResource("Curve3D_q8fk2")
 
 [node name="Intersection" type="Node3D" parent="."]
 
-[node name="@Path3D@513347" type="Path3D" parent="Intersection"]
+[node name="@Path3D@28317" type="Path3D" parent="Intersection"]
 curve = SubResource("Curve3D_0cfv0")
 
-[node name="@Path3D@513348" type="Path3D" parent="Intersection"]
+[node name="@Path3D@28318" type="Path3D" parent="Intersection"]
 curve = SubResource("Curve3D_c14ff")
 
-[node name="@Path3D@513349" type="Path3D" parent="Intersection"]
+[node name="@Path3D@28319" type="Path3D" parent="Intersection"]
 curve = SubResource("Curve3D_vu56f")
 
-[node name="@Path3D@513350" type="Path3D" parent="Intersection"]
+[node name="@Path3D@28320" type="Path3D" parent="Intersection"]
 curve = SubResource("Curve3D_fwc6q")

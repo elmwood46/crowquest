@@ -5,7 +5,8 @@ using System.Linq;
 
 public partial class StormTossAttack : Node3D, IAttack
 {
-    public int AttackState {get;private set;} = 0;
+    public int BaseDamage { get; set; } = 10;
+    public int AttackState { get; private set; } = 0;
     public bool CanBeInterrupted => false;
     public bool CanMoveDuring => false;
     public bool IsFinished {get;set;} = false;

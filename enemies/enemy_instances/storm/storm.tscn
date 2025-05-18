@@ -1,6 +1,8 @@
-[gd_scene load_steps=36 format=3 uid="uid://bm8d0at72lm43"]
+[gd_scene load_steps=38 format=3 uid="uid://bm8d0at72lm43"]
 
 [ext_resource type="PackedScene" uid="uid://b0orkkctg2j5s" path="res://enemies/enemy.tscn" id="1_sol84"]
+[ext_resource type="PackedScene" uid="uid://csxtuicwp0ffn" path="res://enemies/enemy_instances/storm/targeting_line.tscn" id="2_5lslw"]
+[ext_resource type="PackedScene" uid="uid://cof3gofryjuol" path="res://enemies/enemy_instances/storm/targeting_box.tscn" id="4_6py2y"]
 [ext_resource type="SpriteFrames" uid="uid://b8g30s5ben3p6" path="res://enemies/enemy_instances/storm/storm_sprite_frames.tres" id="4_tuqob"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_fyy25"]
@@ -283,7 +285,7 @@ MaxHealth = 20
 Speed = 10.0
 PainChance = 1.0
 Tags = Array[int]([1])
-Attacks = Array[int]([1])
+Attacks = Array[int]([3])
 AnimTree = NodePath("AnimationTree")
 Sprite = NodePath("AnimatedSprite3D")
 CollisionShape = NodePath("CollisionShape3D")
@@ -307,9 +309,16 @@ libraries = {
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0.640605, 0)
 shape = SubResource("SphereShape3D_6py2y")
 
+[node name="TargetingLine" parent="Enemy" instance=ExtResource("2_5lslw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.727966, 0)
+
+[node name="TargetingBox" parent="Enemy" instance=ExtResource("4_6py2y")]
+visible = false
+
 [node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="Enemy"]
 transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, -0.0607479, 0.779212, 0)
 billboard = 1
+shaded = true
 texture_filter = 0
 render_priority = 1
 sprite_frames = ExtResource("4_tuqob")

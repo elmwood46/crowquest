@@ -106,6 +106,11 @@ public partial class ChunkManager : Node
         else _frame++;
     }
 
+    public List<ChunkPlane> GetChunks()
+    {
+        return _chunks;
+    }
+
     public void UpdateAllChunks()
     {
         foreach (var chunk in _chunks)

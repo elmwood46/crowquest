@@ -22,7 +22,6 @@ size = Vector3(1, 1.36664, 0.805908)
 
 [node name="ScratchHitbox" type="Node3D"]
 script = SubResource("GDScript_vvut4")
-debug_show_hitbox = true
 
 [node name="Area3D" type="Area3D" parent="."]
 

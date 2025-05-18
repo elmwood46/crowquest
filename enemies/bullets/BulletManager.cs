@@ -240,8 +240,6 @@ public partial class BulletManager : Node
                             foreach (PhysBodyTracker tracker in trackers)
                             {
                                 if (exclude_trackers.Contains(tracker)) continue;
-                                
-
                                 if (PhysBodyTracker.TryGetTrackerData(tracker, out var shape_data))
                                 {
                                     foreach (var tracked_shape in shape_data)
@@ -265,7 +263,7 @@ public partial class BulletManager : Node
                         catch (Exception e)
                         {
                             // can get concurrent modification exception if multiple threads are trying to access the same cell
-                            GD.PushError("Error in BulletManager.CheckForCollision: ", e);
+                            GD.PushWarning("Error in BulletManager.CheckForCollision: ", e);
                             continue;
                         }
                     }

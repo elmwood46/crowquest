@@ -117,8 +117,9 @@ public partial class Enemy : RigidBody3D, IHurtable
                 //GD.Print("Enemy touched player while picked up");
                 if (body is Player p)
                 {
+                    var atk = _attackList.Where(x => x is StormTossAttack).FirstOrDefault() ?? throw new Exception($"Enemy {this} must have a StormTossAttack in its attack list to be picked up?? This error should never happen");
                     if (p.HasRollIFrames()) p.ForceStopRolling(); // player roll does not block toss attack
-                    p.TakeDamage(20*TouchDamageAmount, TouchDamageType);
+                    p.TakeDamage(atk.BaseDamage, TouchDamageType);
                     p.AddCameraShake(0.3f);
                     GD.Print($"DID HIGH DAMAGE TO PLAYER {p} while picked up");
                     // TODO  do some player stunning thing here when thrown enemy hits them
@@ -214,6 +215,28 @@ public partial class Enemy : RigidBody3D, IHurtable
 
     public override void _IntegrateForces(PhysicsDirectBodyState3D state)
     {
+        if (GlobalPosition.Y < -100f)
+        {
+            var min_dist = float.MaxValue;
+            var chunks = ChunkManager.Instance.GetChunks();
+            ChunkPlane chunk_to_teleport = null;
+            foreach (var chunk in chunks)
+            {
+                var dist = chunk.GlobalPosition.DistanceSquaredTo(GlobalPosition);
+                if (dist < min_dist)
+                {
+                    min_dist = dist;
+                    chunk_to_teleport = chunk;
+                }
+            }
+
+            if (chunk_to_teleport != null)
+            {
+                LinearVelocity = Vector3.Zero;
+                GlobalPosition = chunk_to_teleport.GlobalPosition + Vector3.Up * 5f;
+            } 
+        }
+
         if (IsDead())
         {
             state.LinearVelocity = Vector3.Zero;
@@ -246,19 +269,25 @@ public partial class Enemy : RigidBody3D, IHurtable
     public override void _PhysicsProcess(double delta)
     {
         if (IsDead())
-        {
-            if (!_stun_timer.IsStopped()) _stun_timer.Stop();
-            if (State == StateEnum.IsPickedUp)
             {
-                State = StateEnum.Dead;
-                AudioManager.TryPlay(AttackManager.TossEnemyImpactSound, AudioBus.Enemies, GlobalPosition);
+                if (!_stun_timer.IsStopped()) _stun_timer.Stop();
+                if (State == StateEnum.IsPickedUp)
+                {
+                    State = StateEnum.Dead;
+                    AudioManager.TryPlay(AttackManager.TossEnemyImpactSound, AudioBus.Enemies, GlobalPosition);
+                }
+                StopAttacking();
+                DeathAnimation();
+                return;
             }
-            StopAttacking();
-            DeathAnimation();
-            return;
-        }
 
         if (!IsInstanceValid(this) || !IsInsideTree() || Freeze) return;
+
+        if (Tags.Contains(TagEnum.Flying)) GravityScale = 0.0f;
+        // if (IsOnFloor() || Tags.Contains(TagEnum.Flying)) GravityScale = 0.0f;
+        // else if (!Tags.Contains(TagEnum.Flying)) GravityScale = 1.0f;
+
+        UpdateHitFlashShader();
 
         if (State == StateEnum.IsPickedUp)
         {
@@ -269,28 +298,23 @@ public partial class Enemy : RigidBody3D, IHurtable
                 AnimStateMachine.Travel("base_idle", true);
                 AudioManager.TryPlay(AttackManager.TossEnemyImpactSound, AudioBus.Enemies, GlobalPosition);
             }
+            return;
         }
-
-        if (Tags.Contains(TagEnum.Flying)) GravityScale = 0.0f;
-        // if (IsOnFloor() || Tags.Contains(TagEnum.Flying)) GravityScale = 0.0f;
-        // else if (!Tags.Contains(TagEnum.Flying)) GravityScale = 1.0f;
-
-        UpdateHitFlashShader();
 
         // timer to play idle sounds
         if (_currentAttack == null && _idle_sound_timer.IsStopped())
         {
-            _idle_sound_timer.WaitTime = Random.Shared.Next(_idle_sound_wait_range.X,_idle_sound_wait_range.Y);
+            _idle_sound_timer.WaitTime = Random.Shared.Next(_idle_sound_wait_range.X, _idle_sound_wait_range.Y);
             _idle_sound_timer.Start();
         }
 
-        // do attack logic and move if player is not dead
+        // do attack logic and move if player is not dead and we are not picked up
         if (!Player.Instance.IsDead)
         {
             DoAttackLogic();
 
             // skip movement if attacking and can't move during attack
-            if (CurrentAttackBlocksMovement()) return;
+            if (CurrentAttackBlocksMovement() || IsStunned()) return;
 
             MovementAgent.GetMovementVector(delta, out var vel_dir, out var speed_mult);
 

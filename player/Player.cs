@@ -20,16 +20,9 @@ public partial class Player : CharacterBody3D, IHurtable
 	[Export] public float MaxCameraSize { get; set; } = 40.0f;
 	public const float PLAYER_HEIGHT = 1.32f;
 
-
-	[ExportCategory("Node References")]
-	[Export] public MeltingEffect ScreenMeltEffect { get; set; }
-	[Export] public MeshInstance3D DamageVignette { get; set; }
-	[Export] public ShapeCast3D ShapeCast { get; set; } = null;
-	[Export] public Label3D HoverText { get; set; } = null;
-	[Export] public Area3D CoinPickupArea { get; set; } = null;
-	[Export] public RayCast3D GroundCheckRay { get; set; } = null;
-	[Export] public CollisionShape3D PlayerCollisionShape { get; set; } = null;
-	[Export] public Area3D AutoAttackArea { get; set; } = null;
+	[ExportCategory("Debug Set Instance Vars")]
+	[Export] public int ForceAutoAttackNumber { get; set; } = 5;
+	[Export] public long ForceIFramesAmount { get; set; } = 32L;
 
 	// =======================================================================
 	// instance vars
@@ -38,7 +31,7 @@ public partial class Player : CharacterBody3D, IHurtable
 	private bool _player_is_active = true;
 	private Timer _autoattack_timer = new() { WaitTime = 0.2f, OneShot = true };
 	private float _autoattack_cooldown = 1.0f;
-	[Export] private int _autoattack_number = 5;
+	private int _autoattack_number = 5;
 	private float _autoattack_homing = 0.1f;
 	private int _autoattack_damage = 10;
 	private float _autoattack_bullet_speed = 20.0f;
@@ -67,7 +60,7 @@ public partial class Player : CharacterBody3D, IHurtable
 	// =======================================================================
 	// damage & death vars
 	private readonly Stopwatch _iFramesStopwatch = new();
-	private float _iFramesWaitTime = 32L;
+	private long _iFramesWaitTime = 32L;
 	private float _timeSinceDeath = 0.0f;
 	public bool IsDead => _current_health <= 0;
 	private float _min_damage_vignette_ratio = 0.0f;
@@ -75,6 +68,9 @@ public partial class Player : CharacterBody3D, IHurtable
 	private int _current_health;
 	private Timer _pulse_damage_timer = new() { Autostart = true, WaitTime = 0.3 };
 	private Vector2 _damage_pulse_time = new(0.3f, 2.0f);
+	private Timer _blood_spray_timer = new() { OneShot=true, WaitTime = 0.1f };
+	private double _blood_spray_duration = 0.25d;
+	private ShaderMaterial _player_hurt_next_pass;
 
 	// =======================================================================
 	// camera vars
@@ -82,7 +78,7 @@ public partial class Player : CharacterBody3D, IHurtable
 	private Node3D _camera_gimbal;
 	private float _cameraXRotation = 0.0f;
 	private float _camera_zoom;
-	private float _default_camera_zoom => 25f;//(MinCameraSize + MaxCameraSize)/3f;
+	private float _default_camera_zoom => (MinCameraSize + MaxCameraSize)/2f;
 	private Vector3 _default_camera_rotation;
 	private Camera3D _camera_3d;
 	private Label _angle_label;
@@ -109,6 +105,17 @@ public partial class Player : CharacterBody3D, IHurtable
 	// =======================================================================
 	public static Player Instance { get; private set; }
 
+	[ExportCategory("Node References")]
+	[Export] public MeltingEffect ScreenMeltEffect { get; set; }
+	[Export] public MeshInstance3D DamageVignette { get; set; }
+	[Export] public ShapeCast3D ShapeCast { get; set; } = null;
+	[Export] public Label3D HoverText { get; set; } = null;
+	[Export] public Area3D CoinPickupArea { get; set; } = null;
+	[Export] public RayCast3D GroundCheckRay { get; set; } = null;
+	[Export] public CollisionShape3D PlayerCollisionShape { get; set; } = null;
+	[Export] public Area3D AutoAttackArea { get; set; } = null;
+	[Export] public GpuParticles3D BloodSprayParticles { get; set; } = null;
+
 	// =======================================================================
 
 	public override void _Ready()
@@ -122,13 +129,14 @@ public partial class Player : CharacterBody3D, IHurtable
 		_current_health = MaxHealth;
 		_pulse_damage_timer.WaitTime = _damage_pulse_time.Y;
 		_iFramesStopwatch.Start();
+		_iFramesWaitTime = ForceIFramesAmount;
 		AddChild(_pulse_damage_timer);
 
 		// autoattack
 		_autoattack_timer.WaitTime = _autoattack_cooldown;
 		_autoattack_timer.Timeout += () =>
 		{
-			
+
 			if (!IsDead && GetActiveNonBlockedEnemiesInArea().Count > 0)
 			{
 				for (var i = 0; i < _autoattack_number; i++) BulletManager.AddBullet(
@@ -151,6 +159,15 @@ public partial class Player : CharacterBody3D, IHurtable
 		};
 		AddChild(_autoattack_timer);
 		_autoattack_timer.Start();
+		_autoattack_number = ForceAutoAttackNumber;
+		
+
+		// blood spray when damaged
+		AddChild(_blood_spray_timer);
+		_blood_spray_timer.WaitTime = _blood_spray_duration;
+		BloodSprayParticles.AmountRatio = 0.0f;
+		var player_model = GetNode<MeshInstance3D>("%Gobot");
+		_player_hurt_next_pass = (ShaderMaterial)player_model.GetSurfaceOverrideMaterial(0).NextPass;
 
 		// set mouse mode and capture
 		Input.SetMouseMode(Input.MouseModeEnum.Captured);
@@ -204,8 +221,8 @@ public partial class Player : CharacterBody3D, IHurtable
 			_can_roll = true;
 		};
 		AddChild(_roll_cooldown_timer);
-		_roll_animation_speedscale = _anim_tree.GetAnimation("Flip").Length/_roll_duration;
-		_anim_tree.GetAnimation("Flip").Set("speed_scale",_roll_animation_speedscale);
+		_roll_animation_speedscale = _anim_tree.GetAnimation("Flip").Length / _roll_duration;
+		_anim_tree.GetAnimation("Flip").Set("speed_scale", _roll_animation_speedscale);
 		_anim_tree.AnimationFinished += (anim_name) =>
 		{
 			if (anim_name == "Flip")
@@ -349,8 +366,34 @@ public partial class Player : CharacterBody3D, IHurtable
 		return null;
 	}
 
+	private void DoBloodSpray()
+	{
+		if (IsDead)
+		{
+			BloodSprayParticles.AmountRatio = 1f;
+			_player_hurt_next_pass.SetShaderParameter("amount", 1f);
+			return;
+		}
+		
+		// animate blood spray timer
+		if (_blood_spray_timer.TimeLeft <= 0)
+		{
+			BloodSprayParticles.AmountRatio = 0.0f;
+			_player_hurt_next_pass.SetShaderParameter("amount", 0.0f);
+			_blood_spray_timer.Stop();
+		}
+		else
+		{
+			var amount = (float)(_blood_spray_timer.TimeLeft / _blood_spray_timer.WaitTime);
+			BloodSprayParticles.AmountRatio = amount;
+			_player_hurt_next_pass.SetShaderParameter("amount", amount);
+		}
+	}
+
 	public override void _Process(double delta)
 	{
+		DoBloodSpray();
+
 		if (IsDead)
 		{
 			_timeSinceDeath += (float)delta;
@@ -542,6 +585,7 @@ public partial class Player : CharacterBody3D, IHurtable
 		if (HasRollIFrames()) return; //{ GD.Print("player has roll iframes"); return; }
 		if (_iFramesStopwatch.ElapsedMilliseconds > _iFramesWaitTime)
 		{
+			_blood_spray_timer.Start(_blood_spray_duration);
 			var damage_ratio = 1.0f * damage / MaxHealth;
 			AddCameraShake(damage_ratio);//10*damage/MaxHealth);
 			_iFramesStopwatch.Restart();
@@ -592,6 +636,8 @@ public partial class Player : CharacterBody3D, IHurtable
 
 	private void LoadSavedState()
 	{
+		_blood_spray_timer.Stop();
+
 		// reset camera
 		ResetCameraZoom();
 		SetCameraSize(_camera_zoom);

@@ -1,0 +1,50 @@
+[gd_scene load_steps=7 format=3 uid="uid://dtcsh8m06lagh"]
+
+[ext_resource type="Material" uid="uid://ctx4tpghicm8h" path="res://textures/Marble012_1K-JPG/marble.tres" id="1_i2hq4"]
+[ext_resource type="PackedScene" uid="uid://detrvp0t5teeu" path="res://enemies/bullets/PhysBodyTracker.tscn" id="2_qo46w"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_1bvp3"]
+material = ExtResource("1_i2hq4")
+top_radius = 12.0
+bottom_radius = 12.5
+height = 0.5
+radial_segments = 16
+rings = 0
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_i2hq4"]
+points = PackedVector3Array(0, -0.25, -12.5, -4.78416, -0.25, -11.5505, 0, 0.25, -12.0008, 4.78172, -0.25, -11.5505, -4.59328, 0.25, -11.088, -8.83908, -0.25, -8.83908, -8.48669, 0.25, -8.48669, 4.59084, 0.25, -11.088, 8.48424, 0.25, -8.48669, 8.83663, -0.25, -8.83908, -11.5505, -0.25, -4.78416, -11.088, 0.25, -4.59328, 11.0856, 0.25, -4.59328, 11.5481, -0.25, -4.78416, -12.5, -0.25, 0, -12.0008, 0.25, 0, 11.9983, 0.25, 0, 12.5, -0.25, 0, -11.5505, -0.25, 4.78172, -11.088, 0.25, 4.59084, 11.0856, 0.25, 4.59084, 11.5481, -0.25, 4.78172, -8.83908, -0.25, 8.83663, -8.48669, 0.25, 8.48424, 8.48424, 0.25, 8.48424, 8.83663, -0.25, 8.83663, -4.78416, -0.25, 11.5481, -4.59328, 0.25, 11.0856, 4.59084, 0.25, 11.0856, 4.78172, -0.25, 11.5481, 0, -0.25, 12.5, 0, 0.25, 11.9983)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_lquwl"]
+material = ExtResource("1_i2hq4")
+top_radius = 8.0
+bottom_radius = 8.5
+height = 0.5
+radial_segments = 16
+rings = 0
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_qo46w"]
+points = PackedVector3Array(0, -0.25, -8.5, -3.25323, -0.25, -7.85435, 0, 0.25, -8.00078, 3.25157, -0.25, -7.85435, -3.06186, 0.25, -7.39174, -6.01057, -0.25, -6.01057, -5.65779, 0.25, -5.65779, 3.0602, 0.25, -7.39174, 5.65613, 0.25, -5.65779, 6.00891, -0.25, -6.01057, -7.85435, -0.25, -3.25323, -7.39174, 0.25, -3.06186, 7.39007, 0.25, -3.06186, 7.85268, -0.25, -3.25323, -8.5, -0.25, 0, -8.00078, 0.25, 0, 7.99912, 0.25, 0, 8.5, -0.25, 0, -7.85435, -0.25, 3.25157, -7.39174, 0.25, 3.0602, 7.39007, 0.25, 3.0602, 7.85268, -0.25, 3.25157, -6.01057, -0.25, 6.00891, -5.65779, 0.25, 5.65613, 5.65613, 0.25, 5.65613, 6.00891, -0.25, 6.00891, -3.25323, -0.25, 7.85268, -3.06186, 0.25, 7.39007, 3.0602, 0.25, 7.39007, 3.25157, -0.25, 7.85268, 0, -0.25, 8.5, 0, 0.25, 7.99912)
+
+[node name="Starting_Plinth" type="StaticBody3D"]
+collision_layer = 271
+collision_mask = 271
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+mesh = SubResource("CylinderMesh_1bvp3")
+skeleton = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+shape = SubResource("ConvexPolygonShape3D_i2hq4")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+mesh = SubResource("CylinderMesh_lquwl")
+skeleton = NodePath("../..")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+shape = SubResource("ConvexPolygonShape3D_qo46w")
+
+[node name="PhysBodyTracker" parent="." instance=ExtResource("2_qo46w")]

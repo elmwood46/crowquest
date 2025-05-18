@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" load_steps=5 format=3 uid="uid://lfr7e7y2lmbk"]
+
+[ext_resource type="Shader" uid="uid://crkb8bso7tgy1" path="res://player/player_flash_red.gdshader" id="1_6axbj"]
+[ext_resource type="Texture2D" uid="uid://bt5o0sr6peltq" path="res://character_models/gdquest_gobot/model/gobot_gobot_diffuse.png" id="2_6sdwm"]
+[ext_resource type="Texture2D" uid="uid://d28w5bql3g21l" path="res://character_models/gdquest_gobot/model/gobot_gobot_normal.png" id="3_dluxu"]
+[ext_resource type="Texture2D" uid="uid://cgkj45d67dalm" path="res://character_models/gdquest_gobot/model/gobot_gobot_roughness.png" id="4_8crkh"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_6axbj")
+shader_parameter/amount = 0.0
+shader_parameter/albedo = ExtResource("2_6sdwm")
+shader_parameter/roughness = ExtResource("4_8crkh")
+shader_parameter/normal = ExtResource("3_dluxu")

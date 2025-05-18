@@ -1,0 +1,21 @@
+[gd_scene load_steps=2 format=3 uid="uid://dxyib7eno50wy"]
+
+[ext_resource type="Material" uid="uid://b3sfpwraj58wq" path="res://terrain_generator/simple_wfc/hedge_texture.tres" id="1_uuq8o"]
+
+[node name="CSGPolygon3D" type="CSGPolygon3D"]
+use_collision = true
+collision_priority = 11.0
+polygon = PackedVector2Array(-0.625, 0, -0.625, 0.9, -0.236, 1.2, 0.248, 1.2, 0.625, 0.9, 0.625, 0)
+mode = 2
+path_node = NodePath("")
+path_interval_type = 1
+path_interval = 8.0
+path_simplify_angle = 45.0
+path_rotation = 1
+path_rotation_accurate = false
+path_local = false
+path_continuous_u = false
+path_u_distance = 4.0
+path_joined = false
+smooth_faces = true
+material = ExtResource("1_uuq8o")

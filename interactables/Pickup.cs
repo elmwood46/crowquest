@@ -14,6 +14,7 @@ public partial class Pickup : RigidBody3D, IPickup
     [Export] public Godot.Collections.Array<AudioStream> PickupSounds {get;set;}
     [Export] public Godot.Collections.Array<AudioStream> ImpactSounds {get;set;}
     [Export] public AudioBus Bus {get;set;} = AudioBus.Misc;
+    [Export] public RayCast3D GroundCheckRaycast {get;set;}
     protected const float _lerpfactor = 0.2f;
     protected Vector3 _base_mesh_scale;
     protected Vector3 _base_collision_scale;
@@ -22,6 +23,7 @@ public partial class Pickup : RigidBody3D, IPickup
 
     protected InteractableComponent _interactable;
     protected bool _spawn_position_set = false;
+    protected bool _floated_to_ground = false;
 
     protected string _base_name;
     protected Vector3 _spawn_position;
@@ -112,7 +114,19 @@ public partial class Pickup : RigidBody3D, IPickup
     public override void _IntegrateForces(PhysicsDirectBodyState3D state)
     {
         AngularVelocity = new Vector3(0, 1, 0);
-        if (_spawn_position_set) GlobalPosition = new Vector3(GlobalPosition.X, (_spawn_position.Y < 0.5f ? 0.5f : _spawn_position.Y) + 0.1f * Mathf.Sin(GlobalPosition.X+GlobalPosition.Z+Mathf.Tau*Engine.GetPhysicsFrames()/60f), GlobalPosition.Z);
+        if (_spawn_position_set)
+        {
+            if (!_floated_to_ground)
+            {
+                if (IsOnFloor()) _floated_to_ground = true;
+                else
+                {
+                    _spawn_position = new Vector3(_spawn_position.X, _spawn_position.Y - 0.1f, _spawn_position.Z);
+                    GlobalPosition = _spawn_position;
+                }
+            }
+            else GlobalPosition = new Vector3(GlobalPosition.X, _spawn_position.Y + 0.1f * Mathf.Sin(GlobalPosition.X + GlobalPosition.Z + Mathf.Tau * Engine.GetPhysicsFrames() / 60f), GlobalPosition.Z);
+        }
         base._IntegrateForces(state);
     }
 
@@ -137,25 +151,38 @@ public partial class Pickup : RigidBody3D, IPickup
             FreezeMode = FreezeModeEnum.Static;
             LerpTowardsPlayer();
         }
+
+        if (GlobalPosition.Y < -100f)
+        {
+            Deactivate();
+            QueueFree();
+        }
+    }
+    
+    public bool IsOnFloor()
+    {
+        GroundCheckRaycast.ForceRaycastUpdate();
+        var col = GroundCheckRaycast.GetCollider();
+        return col != null && (col is StaticBody3D || col is RigidBody3D);
     }
 
     public void LerpTowardsPlayer()
     {
-        SetCollisionMaskValue(1,false);
-        SetCollisionMaskValue(3,false);
-        SetCollisionMaskValue(9,false);
-        SetCollisionLayerValue(1,false);
-        SetCollisionLayerValue(3,false);
-        SetCollisionLayerValue(9,false);
-        var targ_pos = Player.Instance.GlobalPosition+Vector3.Up*0.5f;
-        GlobalPosition = GlobalPosition.Lerp(targ_pos,_lerpfactor);
+        SetCollisionMaskValue(1, false);
+        SetCollisionMaskValue(3, false);
+        SetCollisionMaskValue(9, false);
+        SetCollisionLayerValue(1, false);
+        SetCollisionLayerValue(3, false);
+        SetCollisionLayerValue(9, false);
+        var targ_pos = Player.Instance.GlobalPosition + Vector3.Up * 0.5f;
+        GlobalPosition = GlobalPosition.Lerp(targ_pos, _lerpfactor);
         if (GlobalPosition.DistanceSquaredTo(targ_pos) <= 0.5f)
         {
             OnPickup();
             if (PickupSounds.Count > 0)
             {
-                var pickup_sound = PickupSounds[Random.Shared.Next(0,PickupSounds.Count)];
-                AudioManager.TryPlay(pickup_sound,Bus,Player.Instance.GlobalPosition);
+                var pickup_sound = PickupSounds[Random.Shared.Next(0, PickupSounds.Count)];
+                AudioManager.TryPlay(pickup_sound, Bus, Player.Instance.GlobalPosition);
             }
             Deactivate();
         }
