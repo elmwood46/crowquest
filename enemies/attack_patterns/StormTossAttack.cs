@@ -6,6 +6,7 @@ using System.Linq;
 public partial class StormTossAttack : Node3D, IAttack
 {
     public int BaseDamage { get; set; } = 10;
+    public static int StaticBaseDamage { get; set; } 
     public int AttackState { get; private set; } = 0;
     public bool CanBeInterrupted => false;
     public bool CanMoveDuring => false;
@@ -20,6 +21,7 @@ public partial class StormTossAttack : Node3D, IAttack
         if (!_cooldown.IsInsideTree())
         {
             enemy.AddChild(_cooldown);
+            StaticBaseDamage = BaseDamage;
         }
         _target_node_when_holding ??= (enemy.GetNodeOrNull<Node3D>("PositionToHoldEnemy") ?? throw new Exception("PositionToHoldEnemy node not found"));
 

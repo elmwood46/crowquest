@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://bdu5ju8murprr"]
+
+[ext_resource type="PackedScene" uid="uid://jav7l0ri4uwi" path="res://cards/mouse.tscn" id="2_pu1ch"]
+[ext_resource type="PackedScene" uid="uid://bbrv2vhphdu8w" path="res://cards/level_up_card_selection.tscn" id="2_tbynh"]
+
+[node name="Cardtest" type="Node2D"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="Mouse" parent="." instance=ExtResource("2_pu1ch")]
+
+[node name="LevelUp" parent="." instance=ExtResource("2_tbynh")]

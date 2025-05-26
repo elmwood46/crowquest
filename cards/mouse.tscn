@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3 uid="uid://jav7l0ri4uwi"]
+
+[ext_resource type="Texture2D" uid="uid://2d8e7uu1r20n" path="res://cards/cursor-sprites/hand_point.png" id="1_7a5qm"]
+[ext_resource type="Script" uid="uid://bc4xdtfce7o6s" path="res://cards/Mouse.cs" id="2_vxmq7"]
+
+[node name="Mouse" type="Node2D" node_paths=PackedStringArray("MouseSprite", "MouseShadowSprite")]
+script = ExtResource("2_vxmq7")
+MouseSprite = NodePath("MouseSprite")
+MouseShadowSprite = NodePath("MouseSprite/Shadow")
+
+[node name="MouseSprite" type="Sprite2D" parent="."]
+z_index = 4096
+scale = Vector2(2, 2)
+texture = ExtResource("1_7a5qm")
+offset = Vector2(10, 12)
+
+[node name="Shadow" type="Sprite2D" parent="MouseSprite"]
+modulate = Color(0, 0, 0, 0.392157)
+show_behind_parent = true
+texture = ExtResource("1_7a5qm")
+offset = Vector2(10, 12)

@@ -42,19 +42,20 @@ func _process(delta: float) -> void:
 	#l_label.text+="\nwait_t: "+str(wait_t)
 	
 	if (state=="transition" || state=="transition_sky"):
-		if (state == "transition"):
-			transition_time = day_transition_time
-		else:
-			transition_time = sky_transition_time
+		transition_time = day_transition_time if (state == "transition") else sky_transition_time
+
 		t += delta
 		var cosval = (cos(PI*t/transition_time)+1)/2
 		var light_val = 1-cosval if getting_brighter else cosval
+
 		if state=="transition":
 			light_energy = light_val
 			particle_shader.set_shader_parameter("force_alpha_value", 1-light_val)
 			butterfly_shader.set_shader_parameter("force_alpha_value", light_val)
 		else:
 			$"..".environment.sky.sky_material.energy_multiplier = light_val
+			$"../../Player".PlayerLight.light_energy = $"../../Player".PlayerLightMaxEnergy * (1-light_val)
+
 		if (t >= transition_time):
 			t = 0
 			if (getting_brighter):

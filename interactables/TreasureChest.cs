@@ -108,9 +108,9 @@ public partial class TreasureChest : StaticBody3D
 			t.QueueFree();
 			var amount = Type switch
 			{
-				ChestType.Sarcophagus => Random.Shared.Next(0, 3),
-				ChestType.BasicWooden => Random.Shared.Next(5, 15),
-				_ => Random.Shared.Next(1, 5)
+				ChestType.Sarcophagus => Random.Shared.Next(1, 4),
+				ChestType.BasicWooden => Random.Shared.Next(5, 16),
+				_ => Random.Shared.Next(1, 6)
 			};
 			if (amount > 0) TreasureSpawner.PickupCoinsAtNode(SpawnParticleLocation, amount, 3.0f);
 			// else

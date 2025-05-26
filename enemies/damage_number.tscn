@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=3 uid="uid://c0gqu5klt3l8"]
+
+[ext_resource type="Script" uid="uid://bmityefse03vi" path="res://enemies/DamagePopupText.cs" id="1_tnjwn"]
+
+[node name="DamageNumber" type="Node3D"]
+script = ExtResource("1_tnjwn")
+Duration = 0.5
+
+[node name="Anchor" type="Node3D" parent="."]
+
+[node name="Label3D" type="Label3D" parent="Anchor"]
+transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 0, 0)
+billboard = 1
+fixed_size = true
+texture_filter = 0
+modulate = Color(1, 0.8, 0, 1)
+text = "300"
+font_size = 50
+outline_size = 10

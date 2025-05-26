@@ -266,18 +266,18 @@ public partial class PlayerIMPORT : CharacterBody3D
 	}
 
 	private void SaveCameraPosForSmoothing() {
-		if (_savedCameraGlobalPos==_cameraPosReset) {
+		if (_savedCameraGlobalPos.IsEqualApprox(_cameraPosReset)) {
 			_savedCameraGlobalPos = CameraSmooth.GlobalPosition;
 		}
 	}
 
 	private void ResetCameraSmooth(float delta) {
-		if (_savedCameraGlobalPos==_cameraPosReset) return;
+        if (_savedCameraGlobalPos.IsEqualApprox(_cameraPosReset)) { _savedCameraGlobalPos = _cameraPosReset; return; }
 		CameraSmooth.GlobalPosition = new Vector3 (CameraSmooth.GlobalPosition.X,_savedCameraGlobalPos.Y, CameraSmooth.GlobalPosition.Z);
 		CameraSmooth.Position = new Vector3(CameraSmooth.Position.X,Mathf.Clamp(CameraSmooth.Position.Y, -0.7f, 0.7f),CameraSmooth.Position.Z);
 		var move_amount = Mathf.Max(Velocity.Length() * delta, WalkSpeed/2 * delta);
 		CameraSmooth.Position = new Vector3(CameraSmooth.Position.X,Mathf.Lerp(CameraSmooth.Position.Y, 0f, move_amount),CameraSmooth.Position.Z);
-		if (CameraSmooth.Position.Y == 0f) {
+		if (Mathf.IsEqualApprox(CameraSmooth.Position.Y,0f)) {
 			_savedCameraGlobalPos = _cameraPosReset;
 		}
 	}

@@ -27,11 +27,11 @@ public partial class Coin : Pickup
     {
         //_coinMesh = GetChildren().OfType<MeshInstance3D>().FirstOrDefault();
         Bus = AudioBus.Coins;
-        ImpactSounds = [.. _coin_fall_sounds];
-        PickupSounds =
-        [
-            PickupSound
-        ];
+        // ImpactSounds = [.. _coin_fall_sounds];
+        // PickupSounds =
+        // [
+        //     PickupSound
+        // ];
 
         base._Ready();
         _lifetime.Start();

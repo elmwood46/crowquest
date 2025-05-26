@@ -37,7 +37,6 @@ public partial class Enemy : RigidBody3D, IHurtable
     [Export] public Godot.Collections.Array<AudioStream> PainSounds { get; set; } = [];
     [Export] public Godot.Collections.Array<AudioStream> DeathSounds { get; set; } = [];
     [Export] public Godot.Collections.Array<AudioStream> IdleSounds { get; set; } = [];
-    [Export] public Godot.Collections.Array<AudioStream> SeeSound { get; set; } = [];
     private Timer _footstep_timer = new(){WaitTime = 0.5f, Autostart = false, OneShot = true};
     private Timer _idle_sound_timer = new(){WaitTime = Random.Shared.Next(_idle_sound_wait_range.X,_idle_sound_wait_range.Y), Autostart = false, OneShot = true};
     public void StopIdleSoundTimer() =>  _idle_sound_timer.Stop();   
@@ -59,6 +58,7 @@ public partial class Enemy : RigidBody3D, IHurtable
     private bool _flag_force_zero_velocity = false; // when set to true, forces the enemy velocity to 0
     public void ForceZeroVelocity() => _flag_force_zero_velocity = true;
     public static readonly PhysicsMaterial DefaultPhysicsMaterial = GD.Load("res://enemies/enemy_physics_material.tres") as PhysicsMaterial;
+    private bool _has_LOS_to_player_this_frame = false;
 
     // ==================================================================
     // ====== Animation and Effects ========
@@ -117,9 +117,8 @@ public partial class Enemy : RigidBody3D, IHurtable
                 //GD.Print("Enemy touched player while picked up");
                 if (body is Player p)
                 {
-                    var atk = _attackList.Where(x => x is StormTossAttack).FirstOrDefault() ?? throw new Exception($"Enemy {this} must have a StormTossAttack in its attack list to be picked up?? This error should never happen");
                     if (p.HasRollIFrames()) p.ForceStopRolling(); // player roll does not block toss attack
-                    p.TakeDamage(atk.BaseDamage, TouchDamageType);
+                    p.TakeDamage(StormTossAttack.StaticBaseDamage, TouchDamageType);
                     p.AddCameraShake(0.3f);
                     GD.Print($"DID HIGH DAMAGE TO PLAYER {p} while picked up");
                     // TODO  do some player stunning thing here when thrown enemy hits them
@@ -268,18 +267,25 @@ public partial class Enemy : RigidBody3D, IHurtable
 
     public override void _PhysicsProcess(double delta)
     {
+        // check if player visible to this enemy
+        // run once every 2 physics frames, to save performance
+        if (Engine.GetPhysicsFrames() % 2ul == 0ul)
+        {
+            _has_LOS_to_player_this_frame = CalculatePlayerLOS();
+        }
+
         if (IsDead())
+        {
+            if (!_stun_timer.IsStopped()) _stun_timer.Stop();
+            if (State == StateEnum.IsPickedUp)
             {
-                if (!_stun_timer.IsStopped()) _stun_timer.Stop();
-                if (State == StateEnum.IsPickedUp)
-                {
-                    State = StateEnum.Dead;
-                    AudioManager.TryPlay(AttackManager.TossEnemyImpactSound, AudioBus.Enemies, GlobalPosition);
-                }
-                StopAttacking();
-                DeathAnimation();
-                return;
+                State = StateEnum.Dead;
+                AudioManager.TryPlay(AttackManager.TossEnemyImpactSound, AudioBus.Enemies, GlobalPosition);
             }
+            StopAttacking();
+            DeathAnimation();
+            return;
+        }
 
         if (!IsInstanceValid(this) || !IsInsideTree() || Freeze) return;
 
@@ -403,12 +409,16 @@ public partial class Enemy : RigidBody3D, IHurtable
 
     public void TakeDamage(int damage, DamageTypeFlagEnum damageType)
     {
+        if (Health > 0) AttackManager.DamagePopup(damage, this, targ_scale:Vector3.One*(0.8f + damage / MaxHealth));
+        
         Health -= damage;
 
         var _stun = damage > Health / 2 ? 1.0 : PainChance;
+        if (damage > 0) AudioManager.TryPlay(AttackManager.HitSound, AudioBus.Enemies, GlobalPosition, pitch_scale: 0.9f + 0.2f * Random.Shared.NextSingle());
 
         if (Health > 0)
         {
+            
             if (!IsStunned() && Random.Shared.NextSingle() < _stun)
             {
                 if (_currentAttack == null || (_currentAttack != null && _currentAttack.CanBeInterrupted))
@@ -580,6 +590,12 @@ public partial class Enemy : RigidBody3D, IHurtable
     }
     public bool IsPlayerVisible()
     {
+        return _has_LOS_to_player_this_frame;
+        
+    }
+
+    private bool CalculatePlayerLOS()
+    {
         if (!IsPlayerInRange(MaxViewRange)) return false;
         for (int i=0; i<_num_rays; i++)
         {
@@ -608,9 +624,10 @@ public partial class Enemy : RigidBody3D, IHurtable
         }
         return false;
     }
+
     public Vector3 XZDirectionToPlayer()
     {
-        return 
+        return
             new Vector3(GlobalPosition.X, 0.0f, GlobalPosition.Z)
             .DirectionTo(new Vector3(Player.Instance.GlobalPosition.X, 0.0f, Player.Instance.GlobalPosition.Z));
     }

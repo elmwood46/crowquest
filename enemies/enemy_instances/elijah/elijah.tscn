@@ -1,10 +1,15 @@
-[gd_scene load_steps=16 format=3 uid="uid://dcyv0jjt08ld8"]
+[gd_scene load_steps=21 format=3 uid="uid://dcyv0jjt08ld8"]
 
 [ext_resource type="PackedScene" uid="uid://b0orkkctg2j5s" path="res://enemies/enemy.tscn" id="1_et8eb"]
 [ext_resource type="SpriteFrames" uid="uid://bpu0paevpvhdt" path="res://enemies/enemy_instances/elijah/eli_walk.tres" id="2_2140p"]
 [ext_resource type="AnimationNodeStateMachine" uid="uid://0nudusaglqy" path="res://enemies/enemy_base_animation_state_machine.tres" id="2_g64l5"]
 [ext_resource type="AudioStream" uid="uid://bysru72jholvi" path="res://enemies/enemy_instances/elijah/audio/cat_pain.wav" id="2_u1rpk"]
+[ext_resource type="AudioStream" uid="uid://pbqmotxcs6d3" path="res://enemies/enemy_instances/elijah/audio/cat-pain.ogg" id="3_ix3o0"]
 [ext_resource type="AudioStream" uid="uid://fxbtvp74jit3" path="res://enemies/enemy_instances/elijah/audio/cat_idle.wav" id="3_mamhs"]
+[ext_resource type="AudioStream" uid="uid://ceex7vrkfi768" path="res://enemies/enemy_instances/elijah/audio/cat-idle-01.ogg" id="4_6v6rc"]
+[ext_resource type="AudioStream" uid="uid://dd7cqrhgm4rkw" path="res://enemies/enemy_instances/elijah/audio/cat-die.ogg" id="5_2esm4"]
+[ext_resource type="AudioStream" uid="uid://d073j4fnnti1h" path="res://enemies/enemy_instances/elijah/audio/cat-idle-02.ogg" id="7_30iti"]
+[ext_resource type="AudioStream" uid="uid://bbnvh1s5ndrmo" path="res://enemies/enemy_instances/elijah/audio/cat-idle-03.ogg" id="8_7wbe5"]
 
 [sub_resource type="Animation" id="Animation_uax0s"]
 length = 0.001
@@ -161,10 +166,9 @@ radius = 2.0
 Speed = 10.0
 PainChance = 1.0
 Attacks = Array[int]([2, 0])
-PainSounds = Array[AudioStream]([ExtResource("2_u1rpk")])
-DeathSounds = Array[AudioStream]([ExtResource("2_u1rpk")])
-IdleSounds = Array[AudioStream]([ExtResource("3_mamhs")])
-SeeSound = Array[AudioStream]([ExtResource("3_mamhs")])
+PainSounds = Array[AudioStream]([ExtResource("2_u1rpk"), ExtResource("3_ix3o0"), ExtResource("4_6v6rc")])
+DeathSounds = Array[AudioStream]([ExtResource("2_u1rpk"), ExtResource("5_2esm4"), ExtResource("4_6v6rc"), ExtResource("3_ix3o0")])
+IdleSounds = Array[AudioStream]([ExtResource("3_mamhs"), ExtResource("7_30iti"), ExtResource("8_7wbe5")])
 AnimTree = NodePath("AnimationTree")
 Sprite = NodePath("AnimatedSprite3D")
 CollisionShape = NodePath("CollisionShape3D")

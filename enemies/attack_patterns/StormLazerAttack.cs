@@ -109,7 +109,7 @@ public partial class StormLazerAttack : Node3D, IAttack
             _targeting_box.GlobalPosition = _targeting_box.GlobalPosition.Lerp(Player.Instance.GlobalPosition, 0.25f);
 
             // check for blocking LOS
-            if (Engine.GetPhysicsFrames() % 2ul == 0) return; // basic optimization to not run every frame
+            if (Engine.GetPhysicsFrames() % 2ul == 0ul) return; // basic optimization to not run every frame
 
             if (!IsPlayerInHitscan(enemy))
             {

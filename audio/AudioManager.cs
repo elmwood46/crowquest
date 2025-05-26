@@ -138,7 +138,12 @@ public partial  class AudioManager : Node
         }
     };
 
-    public static void TryPlayAtPlayer(AudioStream stream)
+    public override void _Ready()
+    {
+        ProcessMode = ProcessModeEnum.Always;
+    }
+
+    public static void TryPlayAtPcPos(AudioStream stream)
     {
         if (Player.Instance != null) keyValuePairs[AudioBus.Master].PlaySoundIfAvailable(stream, Player.Instance.GlobalPosition);
     }
@@ -210,11 +215,11 @@ public partial  class AudioManager : Node
         return false;
     }
 
-    public static void TryPlay(AudioStream stream, AudioBus key = AudioBus.Master, Vector3? position = null, float volumedb = 0.0f)
+    public static void TryPlay(AudioStream stream, AudioBus key = AudioBus.Master, Vector3? position = null, float volumedb = 0.0f, float pitch_scale = 1.0f)
     {
         if (keyValuePairs.TryGetValue(key, out AudioStreamQueue value))
         {
-            value.PlaySoundIfAvailable(stream, position, volumedb);
+            value.PlaySoundIfAvailable(stream, position, volumedb, pitch_scale);
         }
     }
 

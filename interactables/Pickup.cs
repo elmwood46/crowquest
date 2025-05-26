@@ -49,7 +49,7 @@ public partial class Pickup : RigidBody3D, IPickup
             if (ImpactSounds.Count > 0 && !Freeze && LinearVelocity.LengthSquared() > 0.2f)
             {
                 var stream = ImpactSounds[Random.Shared.Next(0, ImpactSounds.Count)];
-                AudioManager.TryPlay(stream, Bus, GlobalPosition);
+                AudioManager.TryPlay(stream, Bus, GlobalPosition, pitch_scale:0.9f+0.2f*Random.Shared.NextSingle());
             }
         };
 
@@ -182,7 +182,17 @@ public partial class Pickup : RigidBody3D, IPickup
             if (PickupSounds.Count > 0)
             {
                 var pickup_sound = PickupSounds[Random.Shared.Next(0, PickupSounds.Count)];
-                AudioManager.TryPlay(pickup_sound, Bus, Player.Instance.GlobalPosition);
+                float pitch_scale;
+                if (this is Coin) 
+                {
+                    pitch_scale = 0.8f + 0.4f * Player.Instance.GetXpRatio();
+                    AudioManager.TryPlayTrackedSound("player_gem"+GetHashCode(),pickup_sound, Bus, Player.Instance.GlobalPosition,pitch_scale:pitch_scale);
+                }
+                else 
+                {
+                    pitch_scale = 0.9f + 0.2f * Random.Shared.NextSingle();
+                    AudioManager.TryPlayTrackedSound("player_pickup"+GetHashCode(),pickup_sound, Bus, Player.Instance.GlobalPosition,pitch_scale:pitch_scale);
+                }
             }
             Deactivate();
         }

@@ -20,6 +20,7 @@ public partial class ChunkPlane : StaticBody3D
     [Export] public bool DisableGrassGeneration = false;
     private bool _only_generate_mesh_once = true;
     private const int MAX_FLOWERS_PER_CHUNK = 1000;
+    private static readonly PackedScene _starting_plinth = GD.Load("res://environment_models/starting_plinth.tscn") as PackedScene;
 
     // ==================================================================
     // ====== Navigation Regions ========
@@ -242,9 +243,15 @@ public partial class ChunkPlane : StaticBody3D
         seeded_random = seeded_random * 0.5f + 0.5f; // remap to 0-1
         var chunk_tile_id = SimpleWfc.GetTileID(chunk_pos);
         var has_diagonal_walls = seeded_random < 0.5 || is_starting_chunk;
+
+        if (is_starting_chunk) // spawn starting plinth
+        {
+            var s = _starting_plinth.Instantiate<StaticBody3D>();
+            NavRegion.AddChild(s);
+        }
         
         // ====== generate walls =====
-        var chunk_offset = ChunkManager.Instance.ChunkSize * chunk_pos;
+            var chunk_offset = ChunkManager.Instance.ChunkSize * chunk_pos;
         var path_set = SimpleWfc.GetTilePaths(chunk_tile_id);
 
         if (!SuperFlatMode)

@@ -3,8 +3,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 public class PhysBodyTrackerData
 {
@@ -158,6 +156,23 @@ public partial class PhysBodyTracker : Node
         // ManualUpdateBodyInGrid
     }
 
+    /// <summary>
+    ///  This cleans up empty cells
+    /// It's called in BulletManager's _PhysicsProcess instead iwth the "ManualCleanupEmptyCells" method
+    /// </summary>
+    /// <param name="delta"></param>
+    public override void _Process(double delta)
+    {
+        // if (Engine.IsEditorHint()) return;
+        // if (!_already_clean_up_this_frame)
+        // {
+        //     _already_clean_up_this_frame = true;
+        //     CleanupEmptyCells((float)delta);
+        //     CallDeferred(MethodName.ResetCleanupFlag);
+        // }
+    }
+
+
     public void ManualUpdateTrackerInGrid()
     {
         // do not run in editor
@@ -177,16 +192,7 @@ public partial class PhysBodyTracker : Node
         }
     }
 
-    public override void _Process(double delta)
-    {
-        if (Engine.IsEditorHint()) return;
-        if (!_already_clean_up_this_frame)
-        {
-            _already_clean_up_this_frame = true;
-            CleanupEmptyCells((float)delta);
-            CallDeferred(MethodName.ResetCleanupFlag);
-        }
-    }
+
 
     private static void ResetCleanupFlag()
     {
@@ -360,6 +366,11 @@ public partial class PhysBodyTracker : Node
                 }
             }
         }
+    }
+
+    public static void ManualCleanupEmptyCells(float delta)
+    {
+        CleanupEmptyCells(delta);
     }
 
     private static void CleanupEmptyCells(float delta)

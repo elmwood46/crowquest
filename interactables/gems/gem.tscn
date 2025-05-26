@@ -1,9 +1,13 @@
-[gd_scene load_steps=11 format=4 uid="uid://cgtgevw4a3kii"]
+[gd_scene load_steps=15 format=4 uid="uid://cgtgevw4a3kii"]
 
 [ext_resource type="Script" uid="uid://cyuufrdh5hifk" path="res://interactables/coin/Coin.cs" id="1_8ylai"]
 [ext_resource type="Texture2D" uid="uid://11hccy6yaimo" path="res://interactables/gems/Texture/Stone5/Albedo Stone5.png" id="2_5351f"]
+[ext_resource type="AudioStream" uid="uid://bwoonued1n3jw" path="res://interactables/gems/gem_chime.ogg" id="2_y0gww"]
+[ext_resource type="AudioStream" uid="uid://bel8dnb7ficcg" path="res://interactables/gems/gem_clink_01.ogg" id="3_a6wed"]
 [ext_resource type="Texture2D" uid="uid://b56a108cik77s" path="res://interactables/gems/Texture/Stone5/Stone5_Emissive.png" id="3_ruioa"]
 [ext_resource type="Texture2D" uid="uid://bb86twop8e1to" path="res://interactables/gems/Texture/Stone5/Stone5_Roughness.png" id="4_ntljb"]
+[ext_resource type="AudioStream" uid="uid://bapxpqul0kohg" path="res://interactables/gems/gem-clink-02.ogg" id="4_rcbxp"]
+[ext_resource type="AudioStream" uid="uid://sjg2nhplnh0u" path="res://interactables/gems/gem-clink-03.ogg" id="5_ogp8y"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_as7ab"]
 bounce = 0.2
@@ -68,6 +72,8 @@ gravity_scale = 2.0
 contact_monitor = true
 max_contacts_reported = 1
 script = ExtResource("1_8ylai")
+PickupSounds = Array[AudioStream]([ExtResource("2_y0gww")])
+ImpactSounds = Array[AudioStream]([ExtResource("3_a6wed"), ExtResource("4_rcbxp"), ExtResource("5_ogp8y")])
 Bus = 0
 GroundCheckRaycast = NodePath("RayCast3D")
 

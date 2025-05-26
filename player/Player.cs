@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 public partial class Player : CharacterBody3D, IHurtable
@@ -23,11 +24,15 @@ public partial class Player : CharacterBody3D, IHurtable
 	[ExportCategory("Debug Set Instance Vars")]
 	[Export] public int ForceAutoAttackNumber { get; set; } = 5;
 	[Export] public long ForceIFramesAmount { get; set; } = 32L;
+	private List<Enemy> _enemies_non_blocked_in_area = [];
 
 	// =======================================================================
 	// instance vars
 	private int _money = 0;
 	private int _XP = 0;
+	private int _XP_to_next_level = 10;
+	private int _XP_growth_constant = 5;
+	private static readonly AudioStream _level_up_sound = GD.Load<AudioStream>("res://player/level-up-chimes-sound-effect-337396.ogg");
 	private bool _player_is_active = true;
 	private Timer _autoattack_timer = new() { WaitTime = 0.2f, OneShot = true };
 	private float _autoattack_cooldown = 1.0f;
@@ -68,7 +73,7 @@ public partial class Player : CharacterBody3D, IHurtable
 	private int _current_health;
 	private Timer _pulse_damage_timer = new() { Autostart = true, WaitTime = 0.3 };
 	private Vector2 _damage_pulse_time = new(0.3f, 2.0f);
-	private Timer _blood_spray_timer = new() { OneShot=true, WaitTime = 0.1f };
+	private Timer _blood_spray_timer = new() { OneShot = true, WaitTime = 0.1f };
 	private double _blood_spray_duration = 0.25d;
 	private ShaderMaterial _player_hurt_next_pass;
 
@@ -78,7 +83,7 @@ public partial class Player : CharacterBody3D, IHurtable
 	private Node3D _camera_gimbal;
 	private float _cameraXRotation = 0.0f;
 	private float _camera_zoom;
-	private float _default_camera_zoom => (MinCameraSize + MaxCameraSize)/2f;
+	private float _default_camera_zoom => (MinCameraSize + MaxCameraSize) / 2f;
 	private Vector3 _default_camera_rotation;
 	private Camera3D _camera_3d;
 	private Label _angle_label;
@@ -101,6 +106,7 @@ public partial class Player : CharacterBody3D, IHurtable
 	private Timer _footstep_timer = new() { WaitTime = 0.2f, OneShot = true, Autostart = false };
 	private float _velocity_sq_last_frame = 0.0f;
 	private ulong _lastFrameOnFloor = ulong.MaxValue;
+	private PackedScene _level_up_menu_scene = GD.Load<PackedScene>("res://cards/level_up_card_selection.tscn");
 
 	// =======================================================================
 	public static Player Instance { get; private set; }
@@ -115,6 +121,8 @@ public partial class Player : CharacterBody3D, IHurtable
 	[Export] public CollisionShape3D PlayerCollisionShape { get; set; } = null;
 	[Export] public Area3D AutoAttackArea { get; set; } = null;
 	[Export] public GpuParticles3D BloodSprayParticles { get; set; } = null;
+	[Export] public OmniLight3D PlayerLight { get; set; } = null;
+	public float PlayerLightMaxEnergy { get; set; }
 
 	// =======================================================================
 
@@ -124,6 +132,10 @@ public partial class Player : CharacterBody3D, IHurtable
 
 		Instance = this;
 		HoverText.Text = "";
+
+		// set up the player light
+		PlayerLightMaxEnergy = PlayerLight.LightEnergy;
+		PlayerLight.LightEnergy = 0f;
 
 		// health and damage
 		_current_health = MaxHealth;
@@ -141,12 +153,12 @@ public partial class Player : CharacterBody3D, IHurtable
 			{
 				for (var i = 0; i < _autoattack_number; i++) BulletManager.AddBullet(
 						this,
-						_autoattack_damage,
+						Random.Shared.Next(1,4),
 						DamageTypeFlagEnum.Physical,
 						shot_direction: Vector3.Forward.Rotated(Vector3.Up, Random.Shared.NextSingle() * Mathf.Tau),
 						speed: _autoattack_bullet_speed,
 						homing_rate: _autoattack_homing,
-						color: new Color(0, 1, 1, 1)
+						color: new Color(0.2f, 1.0f, 0.1f, 1.0f)
 					);
 				_autoattack_timer.WaitTime = _autoattack_cooldown;
 				_autoattack_timer.Start();
@@ -160,7 +172,6 @@ public partial class Player : CharacterBody3D, IHurtable
 		AddChild(_autoattack_timer);
 		_autoattack_timer.Start();
 		_autoattack_number = ForceAutoAttackNumber;
-		
 
 		// blood spray when damaged
 		AddChild(_blood_spray_timer);
@@ -307,7 +318,7 @@ public partial class Player : CharacterBody3D, IHurtable
 			}
 			else if (keyEvent.Pressed && keyEvent.Keycode == Key.F4)
 			{
-				TakeDamage(5, DamageTypeFlagEnum.Physical);
+				_XP += 10;
 			}
 		}
 
@@ -374,7 +385,7 @@ public partial class Player : CharacterBody3D, IHurtable
 			_player_hurt_next_pass.SetShaderParameter("amount", 1f);
 			return;
 		}
-		
+
 		// animate blood spray timer
 		if (_blood_spray_timer.TimeLeft <= 0)
 		{
@@ -389,6 +400,40 @@ public partial class Player : CharacterBody3D, IHurtable
 			_player_hurt_next_pass.SetShaderParameter("amount", amount);
 		}
 	}
+
+	private void CheckForLevelUp()
+	{
+		if (_XP >= _XP_to_next_level)
+		{
+			AudioManager.TryPlayAtPcPos(_level_up_sound);
+			_XP -= _XP_to_next_level;
+			_XP_to_next_level += _XP_growth_constant;
+			var level_up_node = _level_up_menu_scene.Instantiate<LevelUpCardSelection>();
+			level_up_node.ProcessMode = ProcessModeEnum.Always;
+
+			level_up_node.CardSelected += (card) =>
+			{
+				if (card != null)
+				{
+					GD.Print($"Selected card: {card.CardTitle}");
+					card.ApplyCardEffect();
+				}
+				GetTree().Paused = false;
+				Input.MouseMode = Input.MouseModeEnum.Captured;
+			};
+
+			level_up_node.Finished += level_up_node.QueueFree;
+
+			_camera_3d.AddChild(level_up_node);
+			GetTree().Paused = true;
+		}
+	}
+
+	public float GetXpRatio()
+	{
+		return (float)_XP / _XP_to_next_level;
+	}
+
 
 	public override void _Process(double delta)
 	{
@@ -417,6 +462,11 @@ public partial class Player : CharacterBody3D, IHurtable
 
 	public override void _PhysicsProcess(double delta)
 	{
+		if (Engine.GetPhysicsFrames() % 2ul == 0ul)
+		{
+			UpdateAutoattackEnemiesList();
+		}
+
 		var fps_label = GetNode<Label>("%FpsLabel");
 		fps_label.Text = $"FPS: {Engine.GetFramesPerSecond()}";
 		if (!_player_is_active) return;
@@ -454,7 +504,7 @@ public partial class Player : CharacterBody3D, IHurtable
 					_velocity_sq_last_frame = 0.0f;
 					PlayFootstepSound();
 					_anim_state_machine.Travel("Roll");
-					_roll_iframe_counter = _roll_iframes+1;
+					_roll_iframe_counter = _roll_iframes + 1;
 				}
 			}
 
@@ -507,6 +557,7 @@ public partial class Player : CharacterBody3D, IHurtable
 		HandleAnimations();
 		DoCameraShake();
 		UpdateDamageVignette();
+		CheckForLevelUp();
 
 		// FOV
 		var max_vel_clamped = _is_rolling ? _roll_move_speed : sprint_speed * 2.0f;
@@ -585,6 +636,8 @@ public partial class Player : CharacterBody3D, IHurtable
 		if (HasRollIFrames()) return; //{ GD.Print("player has roll iframes"); return; }
 		if (_iFramesStopwatch.ElapsedMilliseconds > _iFramesWaitTime)
 		{
+			AttackManager.DamagePopup(damage, this, targ_scale:Vector3.One*(0.8f + 0.5f*damage / MaxHealth));
+			AudioManager.TryPlay(AttackManager.HitSound, AudioBus.Master, GlobalPosition, pitch_scale: 0.9f + 0.2f * Random.Shared.NextSingle());
 			_blood_spray_timer.Start(_blood_spray_duration);
 			var damage_ratio = 1.0f * damage / MaxHealth;
 			AddCameraShake(damage_ratio);//10*damage/MaxHealth);
@@ -690,11 +743,11 @@ public partial class Player : CharacterBody3D, IHurtable
 		}
 
 		if (!IsOnFloor())
-			{
-				if (Velocity.Y >= 0) _anim_state_machine.Travel("Jump");
-				else _anim_state_machine.Travel("Fall");
-				return;
-			}
+		{
+			if (Velocity.Y >= 0) _anim_state_machine.Travel("Jump");
+			else _anim_state_machine.Travel("Fall");
+			return;
+		}
 
 		if (Velocity.LengthSquared() <= 0.1f)
 		{
@@ -775,14 +828,22 @@ public partial class Player : CharacterBody3D, IHurtable
 
 	public List<Enemy> GetActiveNonBlockedEnemiesInArea()
 	{
-		var enemies = new List<Enemy>();
+		return [.. _enemies_non_blocked_in_area.Where(IsInstanceValid)];
+	}
+	
+	private void UpdateAutoattackEnemiesList()
+	{
+		_enemies_non_blocked_in_area.Clear();
 		foreach (var body in AutoAttackArea.GetOverlappingBodies())
 		{
-			if (body is Enemy enemy && !enemy.IsDead() && enemy.Visible && !enemy.Freeze)
+			if (body is Enemy enemy
+				&& enemy.Visible
+				&& !enemy.Freeze
+				&& !enemy.IsDead()
+				&& enemy.IsPlayerVisible())
 			{
-				if (enemy.IsPlayerVisible()) enemies.Add(enemy);
+				_enemies_non_blocked_in_area.Add(enemy);
 			}
 		}
-		return enemies;
 	}
 }

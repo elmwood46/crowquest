@@ -21,7 +21,14 @@ public partial class ScratchAttack : Node3D, IAttack
         }
         return enemy.IsPlayerInRange(16.0f) && _cooldown.IsStopped() && enemy.IsPlayerVisible();
     }
-    private static readonly AudioStream ScratchSound = ResourceLoader.Load("res://enemies/enemy_instances/elijah/audio/cat_attack.wav") as AudioStream;
+    private static readonly AudioStream[] ScratchSounds =
+    [
+        GD.Load("res://enemies/enemy_instances/elijah/audio/cat_attack.wav") as AudioStream,
+        GD.Load("res://enemies/enemy_instances/elijah/audio/angry-cat-01.ogg") as AudioStream,
+        GD.Load("res://enemies/enemy_instances/elijah/audio/angry-cat-02.ogg") as AudioStream,
+        GD.Load("res://enemies/enemy_instances/elijah/audio/angry-cat-03.ogg") as AudioStream,
+        GD.Load("res://enemies/enemy_instances/elijah/audio/angry-cat-04.ogg") as AudioStream
+    ];
 
     // this state machine is so unnecessarily messy lmao but it works
     public void Execute(Enemy enemy)
@@ -32,7 +39,7 @@ public partial class ScratchAttack : Node3D, IAttack
         {
             _attackTimer = new Timer()
             {
-                WaitTime = Random.Shared.Next(1,5)/10.0f,
+                WaitTime = Random.Shared.Next(1, 5) / 10.0f,
                 OneShot = true
             };
             enemy.AddChild(_attackTimer);
@@ -51,11 +58,11 @@ public partial class ScratchAttack : Node3D, IAttack
             _hitbox = ScratchAttackHitbox.Instantiate() as Node3D;
             enemy.AddChild(_hitbox);
             _hitbox.GlobalPosition = enemy.GlobalPosition;
-            _hitbox.LookAt(_hitbox.GlobalPosition+enemy.XZDirectionToPlayer(), Vector3.Up);
+            _hitbox.LookAt(_hitbox.GlobalPosition + enemy.XZDirectionToPlayer(), Vector3.Up);
             _attackTimer.WaitTime = 1.0f;
             _attackTimer.Start();
             enemy.StopIdleSoundTimer();
-            AudioManager.TryPlay(ScratchSound, AudioBus.Enemies, enemy.GlobalPosition);
+            AudioManager.TryPlay(ScratchSounds[Random.Shared.Next(ScratchSounds.Length)], AudioBus.Enemies, enemy.GlobalPosition);
 
             var hitbox_duration_timer = new Timer()
             {
@@ -87,7 +94,7 @@ public partial class ScratchAttack : Node3D, IAttack
                 }
             }
         }
-        else if (AttackState == 2 &&_attackTimer.IsStopped())
+        else if (AttackState == 2 && _attackTimer.IsStopped())
         {
             Finish(enemy);
         }

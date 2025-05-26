@@ -15,9 +15,13 @@ public partial class AudioStreamQueue(int channels = 8, AudioBus bus = AudioBus.
         // Create the pool of AudioStreamPlayer nodes.
         for (int i = 0; i < _num_channels; i++)
         {
-            var player = new AudioStreamPlayer3D();
+            var player = new AudioStreamPlayer3D
+            {
+                Bus = _bus.ToString()
+            };
+            if (player.Bus == "Master") ProcessMode = ProcessModeEnum.Always;
+            
             AddChild(player);
-            player.Bus = _bus.ToString();
             _available.Enqueue(player);
             player.Finished += () =>
             {

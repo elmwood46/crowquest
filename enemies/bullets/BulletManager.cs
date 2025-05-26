@@ -84,16 +84,19 @@ public partial class BulletManager : Node
         // set visible instances to number bullets
         BulletMultimesh.Multimesh.VisibleInstanceCount = _basic_bullets.Count;
 
+        // clean up empty cells in phys body tracker
+        PhysBodyTracker.ManualCleanupEmptyCells((float)delta);
+
         // early exit if no bullets -- still update the physics bodies in the grid
         var trackers_list = PhysBodyTracker.AllTrackers();
         if (_basic_bullets.Count == 0)
         {
-            if (Engine.GetPhysicsFrames() % 2ul == 0) foreach (var tracker in trackers_list)
+            if (Engine.GetPhysicsFrames() % 2ul == 0ul)
+                foreach (var tracker in trackers_list)
                 {
                     tracker.ManualUpdateTrackerInGrid();
                 }
             PhysBodyTracker.ManuallyFlushTrackers();
-
             return;
         }
 
@@ -172,6 +175,9 @@ public partial class BulletManager : Node
                         Vector3 homing_dir = (closest_enemy_pos - bullet_pos).Normalized();
                         shot_direction = shot_direction.Lerp(homing_dir, homing_rate);
                     }
+
+                    // TODO technically we should remove this if homing direction is always very small
+                    // the extra square root is not worth it
                     shot_direction = shot_direction.Normalized();
                 }
                 bullet["shot_direction"] = shot_direction;
@@ -196,7 +202,6 @@ public partial class BulletManager : Node
             }
         });
 
-
         // remove bullets flagged for removal
         while (!_bullet_idx_to_remove.IsEmpty)
         {
@@ -213,7 +218,7 @@ public partial class BulletManager : Node
         // including removing enemies
         // doing this manually here avoids concurrent modification exceptions
 
-        if (Engine.GetPhysicsFrames() % 2ul == 0) foreach (var tracker in trackers_list)
+        if (Engine.GetPhysicsFrames() % 2ul == 0ul) foreach (var tracker in trackers_list)
         {
             tracker.ManualUpdateTrackerInGrid();
         }
@@ -263,7 +268,7 @@ public partial class BulletManager : Node
                         catch (Exception e)
                         {
                             // can get concurrent modification exception if multiple threads are trying to access the same cell
-                            GD.PushWarning("Error in BulletManager.CheckForCollision: ", e);
+                            GD.PushError("SHOULD NO LONGER GET THIS Error in BulletManager.CheckForCollision: ", e);
                             continue;
                         }
                     }

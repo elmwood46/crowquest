@@ -62,7 +62,7 @@ public partial class TreasureSpawner : Node3D
         spawn_particles.Amount = amount;
         spawn_particles.Lifetime = lifetime;
         spawn_particles.GlobalPosition = node.GlobalPosition;
-        AudioManager.TryPlay(Coin.PickupSound, AudioBus.Misc, node.GlobalPosition);
+        AudioManager.TryPlay(Coin.PickupSound, AudioBus.Misc, node.GlobalPosition, pitch_scale:0.9f+Random.Shared.NextSingle()*0.2f);
         Player.AddMoney(amount);
     }
 

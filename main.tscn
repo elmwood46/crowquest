@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://dovgs2t1vyyy0"]
+[gd_scene load_steps=19 format=3 uid="uid://dovgs2t1vyyy0"]
 
 [ext_resource type="Script" uid="uid://5t4dyh7n4e26" path="res://effects/control_global_light.gd" id="1_1bvp3"]
 [ext_resource type="PackedScene" uid="uid://bjhvg8rf53fx4" path="res://player/Player.tscn" id="1_ig7tw"]
@@ -6,7 +6,6 @@
 [ext_resource type="Script" uid="uid://d3ddw82qrorxr" path="res://enemies/bullets/BulletManager.cs" id="3_4c57u"]
 [ext_resource type="MultiMesh" uid="uid://b78qnlijvoxe2" path="res://enemies/attack_patterns/bullet_multimesh.tres" id="4_efxa6"]
 [ext_resource type="Script" uid="uid://nsjwgmlaejks" path="res://terrain_generator/infinite_heightmap_terrain/ChunkManager.cs" id="4_w48qg"]
-[ext_resource type="PackedScene" uid="uid://dtcsh8m06lagh" path="res://environment_models/starting_plinth.tscn" id="8_efxa6"]
 [ext_resource type="Script" uid="uid://bcfs86hg1i20j" path="res://enemies/EnemySpawner.cs" id="9_kek77"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_0xm2m"]
@@ -92,7 +91,7 @@ multimesh = ExtResource("4_efxa6")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
 MaxHealth = 10000
 MaxCameraSize = 25.0
-ForceAutoAttackNumber = 1
+ForceAutoAttackNumber = 30
 
 [node name="Control2" type="Control" parent="Player" groups=["debug_overlay"]]
 layout_mode = 3
@@ -162,8 +161,6 @@ script = SubResource("GDScript_0xm2m")
 [node name="ChunkManager" type="Node" parent="."]
 script = ExtResource("4_w48qg")
 NoiseTexture = SubResource("FastNoiseLite_w48qg")
-
-[node name="Starting_Plinth" parent="." instance=ExtResource("8_efxa6")]
 
 [node name="EnemySpawner" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.55708, 0)
