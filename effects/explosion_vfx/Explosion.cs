@@ -87,9 +87,19 @@ public partial class Explosion : Node3D
 			// 	}
 			// }
 
-			if (node is IHurtable hurtable) {
+			if (node is EnergyShield shield)
+			{
 				var damage = AttackManager.SphereDamageDropoff(GlobalPosition, body_position, Damage, _explosion_radius);
-				GD.Print("Damaging hurtable ", hurtable, " with ", damage, " damage");
+				var rel_pos = shield.ShieldOrigin + (GlobalPosition - shield.ShieldOrigin).Normalized() * shield.ShieldRadius;
+				shield.DamageEnergyShieldAtPos(damage, DamageTypeFlagEnum.Physical, rel_pos);
+			}
+
+			if (node is IHurtable hurtable)
+			{
+				if (hurtable is Player p && p.EnergyShield.IsActive) return;
+
+				var damage = AttackManager.SphereDamageDropoff(GlobalPosition, body_position, Damage, _explosion_radius);
+				//GD.Print("Damaging hurtable ", hurtable, " with ", damage, " damage");
 				hurtable.TakeDamage(damage, DamageTypeFlagEnum.Physical);
 			}
 		}

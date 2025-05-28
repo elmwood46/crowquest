@@ -137,6 +137,11 @@ public partial class Enemy : RigidBody3D, IHurtable
                     player.TakeDamage(TouchDamageAmount, TouchDamageType);
                 }
             }
+
+            if (body is EnergyShield player_shield && player_shield.IsActive)
+            {
+                player_shield.DamageEnergyShieldAtPos(TouchDamageAmount, TouchDamageType, GlobalPosition);
+            }
         };
 
         AddChild(_deathTimer);
@@ -606,7 +611,7 @@ public partial class Enemy : RigidBody3D, IHurtable
                 Vector3 origin = GlobalPosition+Vector3.Up, end = Player.Instance.GlobalPosition+Vector3.Up*(i+0.5f)*Player.PLAYER_HEIGHT/_num_rays;
                 var dirToPlayer = (end - origin).Normalized();
                 var query = PhysicsRayQueryParameters3D.Create(origin, end+dirToPlayer*2.0f);
-                query.Exclude = [GetRid()];
+                query.Exclude = [GetRid(),Player.Instance.EnergyShield.GetRid()];
                 query.CollideWithBodies = true;
 
                 var result = spaceState.IntersectRay(query);

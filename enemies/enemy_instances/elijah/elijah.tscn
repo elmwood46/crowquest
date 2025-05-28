@@ -163,9 +163,10 @@ radius = 2.0
 [node name="Elijah" type="Node3D"]
 
 [node name="Enemy" parent="." node_paths=PackedStringArray("AnimTree", "Sprite", "CollisionShape") instance=ExtResource("1_et8eb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00384903, -2.38419e-07, -0.00854301)
 Speed = 10.0
 PainChance = 1.0
-Attacks = Array[int]([2, 0])
+Attacks = Array[int]([1, 1])
 PainSounds = Array[AudioStream]([ExtResource("2_u1rpk"), ExtResource("3_ix3o0"), ExtResource("4_6v6rc")])
 DeathSounds = Array[AudioStream]([ExtResource("2_u1rpk"), ExtResource("5_2esm4"), ExtResource("4_6v6rc"), ExtResource("3_ix3o0")])
 IdleSounds = Array[AudioStream]([ExtResource("3_mamhs"), ExtResource("7_30iti"), ExtResource("8_7wbe5")])

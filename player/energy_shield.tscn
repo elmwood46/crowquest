@@ -1,0 +1,98 @@
+[gd_scene load_steps=8 format=3 uid="uid://3emhh43uqgo2"]
+
+[ext_resource type="Script" uid="uid://bj1e58xge5b5t" path="res://addons/nojoule-energy-shield/EnergyShield.cs" id="1_fxtan"]
+[ext_resource type="Shader" uid="uid://d0a35fsbbf048" path="res://addons/nojoule-energy-shield/shield.gdshader" id="2_tqmjw"]
+[ext_resource type="Texture2D" uid="uid://dnqegf8mxqli" path="res://addons/nojoule-energy-shield/shield_noise.tres" id="3_b8w1s"]
+
+[sub_resource type="Curve" id="Curve_ibf8e"]
+resource_local_to_scene = true
+resource_name = "animation_curve"
+_data = [Vector2(0, 0), 0.0, 2.60088, 0, 0, Vector2(0.996183, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ofhxi"]
+render_priority = 0
+shader = ExtResource("2_tqmjw")
+shader_parameter/_quantization = true
+shader_parameter/_steps_quantization = 5
+shader_parameter/_object_scale = 3.0
+shader_parameter/_object_size = 1.0
+shader_parameter/_only_on_wave_visibility = false
+shader_parameter/_start_falloff_visibility = 0.5
+shader_parameter/_end_falloff_visibility = 0.3
+shader_parameter/_time_multiplier_activation = 1.0
+shader_parameter/_distance_multiplier_activation = 1.0
+shader_parameter/_width_time_activation = 1.0
+shader_parameter/_enable_highlight_intersection = true
+shader_parameter/_width_highlight_intersection = 1.0
+shader_parameter/_noise_texture = ExtResource("3_b8w1s")
+shader_parameter/_speed_noise = Vector2(0.02, 0.02)
+shader_parameter/_origin_generate = Vector3(0, 0.5, 0)
+shader_parameter/_relative_origin_generate = true
+shader_parameter/_time_generate = 1.0
+shader_parameter/_thickness_generate = 0.25
+shader_parameter/_collapse = false
+shader_parameter/_color_shield = Color(0.26, 0.975, 1, 1)
+shader_parameter/_color_brightness_shield = 15.0
+shader_parameter/_intensity_shield = 4.0
+shader_parameter/glow_enabled = true
+shader_parameter/glow_strength = 1.0
+shader_parameter/_active_static = true
+shader_parameter/_origin_static = Vector3(0, 0.5, 0)
+shader_parameter/_speed_static = 0.1
+shader_parameter/_frequency_static = 80.0
+shader_parameter/_amplitude_static = 0.05
+shader_parameter/_normal_amplitude_static = 0.002
+shader_parameter/_effect_radius_static = 2.0
+shader_parameter/_active_static_offset_hl = false
+shader_parameter/_strength_static_offset_hl = 1.0
+shader_parameter/_intensity_static_offset_hl = 5.0
+shader_parameter/_origin_impact = PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/_time_impact = PackedFloat32Array(0, 0, 0, 0, 0)
+shader_parameter/_frequency_impact = 20.0
+shader_parameter/_waves_impact = 0.0
+shader_parameter/_fade_waves_impact = 2.0
+shader_parameter/_amplitude_impact = 0.02
+shader_parameter/_normal_amplitude_impact = 0.05
+shader_parameter/_radius_impact = 1.0
+shader_parameter/_active_impact_offset_hl = true
+shader_parameter/_strength_impact_offset_hl = 2.0
+shader_parameter/_intensity_impact_offset_hl = 5.0
+shader_parameter/_active_border = false
+shader_parameter/_intensity_border = 2.0
+shader_parameter/_percentage_border = 0.1
+shader_parameter/_show_normals = false
+
+[sub_resource type="SphereMesh" id="SphereMesh_yu5hk"]
+material = SubResource("ShaderMaterial_ofhxi")
+radius = 1.5
+height = 3.0
+radial_segments = 256
+rings = 256
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_v4f8b"]
+radius = 1.5
+
+[node name="EnergyShield" type="RigidBody3D" node_paths=PackedStringArray("ShieldMesh", "ShieldCollisionShape")]
+collision_layer = 0
+collision_mask = 0
+gravity_scale = 0.0
+can_sleep = false
+lock_rotation = true
+freeze = true
+freeze_mode = 1
+custom_integrator = true
+script = ExtResource("1_fxtan")
+ShieldMesh = NodePath("TestShieldSphere")
+ShieldCollisionShape = NodePath("CollisionShape3D")
+AnimationCurve = SubResource("Curve_ibf8e")
+Health = 10000
+MaxHealth = 10000
+ShieldMaxColor = Color(0.26, 0.975, 1, 1)
+
+[node name="TestShieldSphere" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_yu5hk")
+skeleton = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_v4f8b")

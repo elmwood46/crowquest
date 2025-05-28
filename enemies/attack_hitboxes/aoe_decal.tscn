@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://dsstkr0if8vv0"]
+
+[ext_resource type="Texture2D" uid="uid://5vytpwi2hkkh" path="res://enemies/attack_hitboxes/aoe_decal_albedo.png" id="1_50any"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_eoiw2"]
+
+[node name="AOEDecal" type="Node3D"]
+
+[node name="Decal" type="Decal" parent="."]
+size = Vector3(1, 1, 1)
+texture_albedo = ExtResource("1_50any")
+texture_emission = ExtResource("1_50any")
+modulate = Color(1, 0, 0, 0.501961)
+
+[node name="Area3D" type="Area3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+shape = SubResource("SphereShape3D_eoiw2")

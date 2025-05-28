@@ -1,6 +1,7 @@
-[gd_scene load_steps=36 format=4 uid="uid://bjhvg8rf53fx4"]
+[gd_scene load_steps=40 format=4 uid="uid://bjhvg8rf53fx4"]
 
 [ext_resource type="Script" uid="uid://5t1nwwrdxlah" path="res://player/Player.cs" id="1_e80uo"]
+[ext_resource type="PackedScene" uid="uid://dsstkr0if8vv0" path="res://enemies/attack_hitboxes/aoe_decal.tscn" id="2_b32pr"]
 [ext_resource type="Material" uid="uid://5rhf3ag2kwra" path="res://player/player_surf_0_material_override.tres" id="2_ndjxb"]
 [ext_resource type="AnimationNodeStateMachine" uid="uid://qjxoq2tva757" path="res://character_models/gdquest_gobot/animation_tree.tres" id="5_cxr5p"]
 [ext_resource type="Texture2D" uid="uid://dq675fmt1rg8c" path="res://character_models/gdquest_gobot/textures/open_eye.png" id="5_tdg3f"]
@@ -11,6 +12,7 @@
 [ext_resource type="Material" uid="uid://dm5h8sv5b2ina" path="res://effects/damage_and_death/sh_player_damage_vignette.tres" id="9_hbkom"]
 [ext_resource type="PackedScene" uid="uid://cgb1dhffiey7h" path="res://player/blood-spray.tscn" id="11_5qrx2"]
 [ext_resource type="PackedScene" uid="uid://detrvp0t5teeu" path="res://enemies/bullets/PhysBodyTracker.tscn" id="12_b32pr"]
+[ext_resource type="PackedScene" uid="uid://3emhh43uqgo2" path="res://player/energy_shield.tscn" id="13_hbkom"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4cut1"]
 
@@ -2033,7 +2035,7 @@ _data = {
 radius = 1.7
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_kne1u"]
-height = 1.44905
+height = 1.25
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_d4g0h"]
 shader = ExtResource("7_5qrx2")
@@ -2067,18 +2069,34 @@ func _process(_delta: float) -> void:
 	text = \"Health: 💗\"+str($\"../../../..\".GetHealth())
 "
 
+[sub_resource type="GDScript" id="GDScript_v4f8b"]
+script/source = "extends Label
+
+func _process(_delta: float) -> void:
+	text = \"Shield HP: 🧿\"+str($\"../../../..\".EnergyShield.Health)
+"
+
 [sub_resource type="SphereShape3D" id="SphereShape3D_06mnu"]
 radius = 1.5
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_b32pr"]
 radius = 16.0
 
-[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("ScreenMeltEffect", "DamageVignette", "ShapeCast", "HoverText", "CoinPickupArea", "GroundCheckRay", "PlayerCollisionShape", "AutoAttackArea", "BloodSprayParticles", "PlayerLight")]
+[sub_resource type="Curve" id="Curve_d4g0h"]
+resource_local_to_scene = true
+resource_name = "animation_curve"
+_data = [Vector2(0, 0), 0.0, 2.60088, 0, 0, Vector2(0.996183, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("DecalTarget", "EnergyShield", "ScreenMeltEffect", "DamageVignette", "ShapeCast", "HoverText", "CoinPickupArea", "GroundCheckRay", "PlayerCollisionShape", "AutoAttackArea", "BloodSprayParticles", "PlayerLight")]
 floor_max_angle = 0.872665
 script = ExtResource("1_e80uo")
+DecalTarget = NodePath("AOEDecal")
 MoveSpeed = 10.0
 MinCameraSize = 10.0
 MaxCameraSize = 30.0
+ForceAutoAttackNumber = 0
+EnergyShield = NodePath("EnergyShield")
 ScreenMeltEffect = NodePath("CameraGimbal/Camera3D/ColorRect")
 DamageVignette = NodePath("CameraGimbal/Camera3D/DamageVignette")
 ShapeCast = NodePath("gobot/ShapeCast3D")
@@ -2089,6 +2107,10 @@ PlayerCollisionShape = NodePath("CollisionShape3D")
 AutoAttackArea = NodePath("AutoAttack_Range")
 BloodSprayParticles = NodePath("BloodSpray")
 PlayerLight = NodePath("OmniLight3D")
+
+[node name="AOEDecal" parent="." instance=ExtResource("2_b32pr")]
+
+[node name="PhysBodyTracker" parent="." instance=ExtResource("12_b32pr")]
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.946598, 0)
@@ -2120,50 +2142,50 @@ bones/2/name = "Body"
 bones/2/parent = -1
 bones/2/rest = Transform3D(1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, 1, 0, 0.388826, 0)
 bones/2/enabled = true
-bones/2/position = Vector3(0, 0.367266, 0)
-bones/2/rotation = Quaternion(0.069756, 0.00368826, -0.000257908, 0.997557)
+bones/2/position = Vector3(0, 0.366299, 0)
+bones/2/rotation = Quaternion(0.069755, 0.00649742, -0.000454344, 0.997543)
 bones/2/scale = Vector3(1, 1, 1)
 bones/3/name = "Hips"
 bones/3/parent = 2
 bones/3/rest = Transform3D(1, 0, -1.50996e-07, 0, -1, 0, -1.50996e-07, 0, -1, 0, 0, 0)
 bones/3/enabled = true
 bones/3/position = Vector3(0, 0, 0)
-bones/3/rotation = Quaternion(1, -1.96333e-11, -7.56549e-08, 2.23975e-09)
+bones/3/rotation = Quaternion(1, -3.4497e-11, -7.56825e-08, -6.73024e-09)
 bones/3/scale = Vector3(1, 1, 1)
 bones/4/name = "UpperLeg.L"
 bones/4/parent = 3
 bones/4/rest = Transform3D(1, 1.11022e-16, 6.35179e-08, -2.64443e-09, 0.999133, 0.0416328, -6.34628e-08, -0.0416328, 0.999133, 0.0975467, 0.0688788, -6.18939e-09)
 bones/4/enabled = true
 bones/4/position = Vector3(0.0975467, 0.0688788, -6.18939e-09)
-bones/4/rotation = Quaternion(-0.352026, -0.164042, -0.0329949, 0.920912)
+bones/4/rotation = Quaternion(-0.363879, -0.160792, -0.0341598, 0.916827)
 bones/4/scale = Vector3(1, 1, 1)
 bones/5/name = "LowerLeg.L"
 bones/5/parent = 4
 bones/5/rest = Transform3D(1, 2.24914e-06, 2.2026e-06, -2.10413e-06, 0.997965, -0.063758, -2.34152e-06, 0.063758, 0.997965, 8.04412e-09, 0.0954144, -4.65661e-10)
 bones/5/enabled = true
 bones/5/position = Vector3(8.04412e-09, 0.0954144, -4.65661e-10)
-bones/5/rotation = Quaternion(0.154104, 1.12573e-06, -5.26199e-06, 0.988055)
+bones/5/rotation = Quaternion(0.172487, 1.11158e-06, -5.88566e-06, 0.985012)
 bones/5/scale = Vector3(1, 1, 1)
 bones/6/name = "UpperLeg.R"
 bones/6/parent = 3
 bones/6/rest = Transform3D(1, 1.11022e-16, 6.35179e-08, -2.64443e-09, 0.999133, 0.0416328, -6.34628e-08, -0.0416328, 0.999133, -0.0975467, 0.0688788, 6.21329e-09)
 bones/6/enabled = true
 bones/6/position = Vector3(-0.0975467, 0.0688788, 6.21329e-09)
-bones/6/rotation = Quaternion(-0.170592, 0.540401, 0.166911, 0.806849)
+bones/6/rotation = Quaternion(-0.172973, 0.542437, 0.171396, 0.804031)
 bones/6/scale = Vector3(1, 1, 1)
 bones/7/name = "LowerLeg.R"
 bones/7/parent = 6
 bones/7/rest = Transform3D(1, -2.25442e-06, -2.20226e-06, 2.10942e-06, 0.997965, -0.063758, 2.34152e-06, 0.063758, 0.997965, -6.85704e-09, 0.0954144, -4.65662e-10)
 bones/7/enabled = true
 bones/7/position = Vector3(-6.85704e-09, 0.0954144, -4.65662e-10)
-bones/7/rotation = Quaternion(0.379472, -1.04392e-06, 1.29777e-05, 0.925203)
+bones/7/rotation = Quaternion(0.388619, -1.05059e-06, 1.32963e-05, 0.921399)
 bones/7/scale = Vector3(1, 1, 1)
 bones/8/name = "UpperArm.L"
 bones/8/parent = 2
 bones/8/rest = Transform3D(0.0145381, 0.999894, 7.04782e-07, 7.15256e-07, -7.15256e-07, 1, 0.999894, -0.0145381, -7.25579e-07, 0.129051, 0.136329, 6.30673e-08)
 bones/8/enabled = true
 bones/8/position = Vector3(0.129051, 0.136329, 6.30673e-08)
-bones/8/rotation = Quaternion(-0.599388, -0.291215, -0.703056, 0.248274)
+bones/8/rotation = Quaternion(-0.599837, -0.291056, -0.702673, 0.24846)
 bones/8/scale = Vector3(1, 1, 1)
 bones/9/name = "LowerArm.L"
 bones/9/parent = 8
@@ -2219,7 +2241,7 @@ bones/16/parent = 2
 bones/16/rest = Transform3D(0.0145378, -0.999894, -7.04782e-07, -7.15256e-07, -7.15256e-07, 1, -0.999894, -0.0145378, -7.25578e-07, -0.129051, 0.136329, 8.56313e-08)
 bones/16/enabled = true
 bones/16/position = Vector3(-0.129051, 0.136329, 8.56313e-08)
-bones/16/rotation = Quaternion(-0.711696, 0.244014, 0.589103, 0.294794)
+bones/16/rotation = Quaternion(-0.711319, 0.244203, 0.589558, 0.294638)
 bones/16/scale = Vector3(1, 1, 1)
 bones/17/name = "LowerArm.R"
 bones/17/parent = 16
@@ -2301,12 +2323,12 @@ exclude_parent = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.758601, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.625, 0)
 shape = SubResource("CapsuleShape3D_kne1u")
 
 [node name="CameraGimbal" type="Node3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.816138, 0, 0.577858, 0, 1, 0, -0.577858, 0, 0.816138, 0, 0, 0)
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 0, 0, 0)
 
 [node name="Camera3D" type="Camera3D" parent="CameraGimbal"]
 transform = Transform3D(-1, -8.9407e-08, 8.9407e-08, 0, 0.816138, 0.577858, -1.49012e-07, 0.577858, -0.816138, -0.019577, 95.8874, -134.816)
@@ -2377,6 +2399,11 @@ script = SubResource("GDScript_mhpjh")
 layout_mode = 2
 text = "HEALTH: "
 script = SubResource("GDScript_5qrx2")
+
+[node name="EnShieldLabel" type="Label" parent="Control/PanelContainer/VBoxContainer"]
+layout_mode = 2
+text = "Shield Hp: "
+script = SubResource("GDScript_v4f8b")
 
 [node name="HSeparator" type="HSeparator" parent="Control/PanelContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 20)
@@ -2449,8 +2476,6 @@ monitorable = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.606311, 0)
 shape = SubResource("SphereShape3D_06mnu")
 
-[node name="PhysBodyTracker" parent="." instance=ExtResource("12_b32pr")]
-
 [node name="BloodSpray" parent="." instance=ExtResource("11_5qrx2")]
 amount = 256
 amount_ratio = 0.0
@@ -2461,6 +2486,12 @@ collision_mask = 257
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="AutoAttack_Range"]
 shape = SubResource("SphereShape3D_b32pr")
+
+[node name="EnergyShield" parent="." instance=ExtResource("13_hbkom")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+AnimationCurve = SubResource("Curve_d4g0h")
+Health = 100
+MaxHealth = 100
 
 [connection signal="value_changed" from="Control/PanelContainer/VBoxContainer/PanelContainer/VBoxContainer/HBoxContainer/HSlider" to="." method="SetChunkMaxHeight"]
 [connection signal="value_changed" from="Control/PanelContainer/VBoxContainer/PanelContainer/VBoxContainer/HBoxContainer2/HSlider" to="." method="SetChunkResolution"]

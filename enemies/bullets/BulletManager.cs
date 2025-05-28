@@ -110,6 +110,15 @@ public partial class BulletManager : Node
             [.. Player.Instance.GetActiveNonBlockedEnemiesInArea().Select(e => e.GlobalPosition * XZ_ONE)];
         PhysBodyTracker.TryGetTrackerFromBody(Player.Instance, out var player_tracker);
 
+        // get vars for player shield collisions
+        var player_shield_active = Player.Instance.EnergyShield.IsActive;
+        var shield_radius = Player.Instance.EnergyShield.ShieldRadius;
+        var shield_radius_sq = shield_radius * shield_radius;
+        var shield_bullet_radius = shield_radius+BulletRadius;
+        var shield_bullet_radius_sq = shield_bullet_radius * shield_bullet_radius;
+        var ratio_of_radii = BulletRadius/shield_bullet_radius;
+        var player_shield_pos = Player.Instance.EnergyShield.GlobalPosition;
+
         // create body collision exclusion map, and update multimesh
         Dictionary<int, HashSet<PhysBodyTracker>> exclusion_map = [];
         var mm = BulletMultimesh.Multimesh;
@@ -117,6 +126,28 @@ public partial class BulletManager : Node
         {
             mm.SetInstanceTransform(i, ((Transform3D)_basic_bullets[i]["transform"]).Translated(neg_multimesh_glob_pos));
             mm.SetInstanceColor(i, (Color)_basic_bullets[i]["color"]);
+
+            // check for bullet collision with player shield
+            if (player_shield_active && (bool)_basic_bullets[i]["is_enemy_bullet"])
+            {
+                var xform = (Transform3D)_basic_bullets[i]["transform"];
+                if (xform.Origin.DistanceSquaredTo(player_shield_pos) <= shield_bullet_radius_sq)
+                {
+                    // if the bullet is an enemy bullet, it should not be destroyed by the shield
+                    var rel_pos = xform.Origin - player_shield_pos;
+                    if (rel_pos.LengthSquared() > shield_radius_sq) rel_pos -= rel_pos*ratio_of_radii; // scale down the position to be within the shield radius
+
+                    Player.Instance.EnergyShield.DamageEnergyShieldAtPos(
+                        (int)_basic_bullets[i]["damage"],
+                        (DamageTypeFlagEnum)(int)_basic_bullets[i]["damage_type"],
+                        player_shield_pos + rel_pos);    
+
+                    if (Player.Instance.EnergyShield.Health <= 0) player_shield_active = false;
+                    
+                    DestroyBulletWithParticles(i, xform);
+                    continue; // skip further processing for this bullet
+                }
+            }
 
             // exclusion map
             exclusion_map[i] = [];
@@ -131,6 +162,19 @@ public partial class BulletManager : Node
             if (!(bool)_basic_bullets[i]["harms_enemies"]) foreach (var e in enemies_trackers_list) exclusion_map[i].Add(e);
             else foreach (var e in enemies_trackers_list) if (!((PhysicsBody3D)e.ParentBody).Visible) exclusion_map[i].Add(e);
         }
+
+        // remove bullets flagged for removal (they may have hit the player shield)
+        while (!_bullet_idx_to_remove.IsEmpty)
+        {
+            if (!_bullet_idx_to_remove.TryPop(out var bullet_index)) continue;
+            if (bullet_index < 0 || bullet_index >= _basic_bullets.Count)
+            {
+                continue; // this stops duplicate values in stack from causing errors
+            }
+            _basic_bullets.RemoveAt(bullet_index);
+        }
+        _bullet_idx_to_remove.Clear();
+
 
         // do collisions and position updates in background thread
         await Task.Run(() =>
@@ -268,7 +312,7 @@ public partial class BulletManager : Node
                         catch (Exception e)
                         {
                             // can get concurrent modification exception if multiple threads are trying to access the same cell
-                            GD.PushError("SHOULD NO LONGER GET THIS Error in BulletManager.CheckForCollision: ", e);
+                            GD.PushWarning("SHOULD NO LONGER GET THIS Error in BulletManager.CheckForCollision: ", e);
                             continue;
                         }
                     }
@@ -330,7 +374,7 @@ public partial class BulletManager : Node
 
     private static void DestroyBulletWithParticles(int bullet_idx, Transform3D bullet_transform)
     {
-        _bullet_idx_to_remove.Push(bullet_idx);
+        if (!_bullet_idx_to_remove.Contains(bullet_idx)) _bullet_idx_to_remove.Push(bullet_idx);
 
         if (_bullet_idx_to_remove.Count <= MAX_PARTICLE_NODES_CREATED_PER_FRAME)
         {

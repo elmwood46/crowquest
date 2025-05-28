@@ -186,8 +186,6 @@ public partial  class AudioManager : Node
             if (key_to_remove != null) TrackedPlayers.Remove(key_to_remove);
             
             TrackedPlayers.Remove(key);
-            GD.Print($"removed tracked sound {key}");
-            GD.Print($"remaining tracked sounds: {TrackedPlayers.Count}");
             return true;
         }
         return false;

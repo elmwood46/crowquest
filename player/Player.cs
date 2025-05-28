@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 public partial class Player : CharacterBody3D, IHurtable
 {
 	[ExportCategory("Player Features")]
+	[Export] public Node3D DecalTarget { get; set; } = null;
 	[Export] public int MaxHealth { get; set; } = 100;
 	[Export] public float MoveSpeed { get; set; } = 5.0f;
 	[Export] public float JumpVelocity { get; set; } = 4.8f;
@@ -89,6 +90,7 @@ public partial class Player : CharacterBody3D, IHurtable
 	private Label _angle_label;
 	private bool _lock_camera_angle = false;
 	private float _camera_shake_amount = 0.0f;
+	private Vector3 _mouse_world_projected_position = default;
 
 	// =======================================================================
 	//animation vars
@@ -112,6 +114,7 @@ public partial class Player : CharacterBody3D, IHurtable
 	public static Player Instance { get; private set; }
 
 	[ExportCategory("Node References")]
+	[Export] public EnergyShield EnergyShield { get; set; }
 	[Export] public MeltingEffect ScreenMeltEffect { get; set; }
 	[Export] public MeshInstance3D DamageVignette { get; set; }
 	[Export] public ShapeCast3D ShapeCast { get; set; } = null;
@@ -181,7 +184,8 @@ public partial class Player : CharacterBody3D, IHurtable
 		_player_hurt_next_pass = (ShaderMaterial)player_model.GetSurfaceOverrideMaterial(0).NextPass;
 
 		// set mouse mode and capture
-		Input.SetMouseMode(Input.MouseModeEnum.Captured);
+		// HACK - this sets confined hidden for testing AOE targeting
+		Input.SetMouseMode(Input.MouseModeEnum.ConfinedHidden);
 
 		// set up area 3d
 		CoinPickupArea.BodyEntered += (body) =>
@@ -201,6 +205,7 @@ public partial class Player : CharacterBody3D, IHurtable
 		_camera_3d.Size = _camera_zoom;
 		_default_camera_rotation = _camera_gimbal.Rotation;
 		_player_model = GetNode<Node3D>("gobot");
+		_lock_camera_angle = true;
 
 		// set up the player model
 		_anim_tree = GetNode<AnimationTree>("AnimationTree");
@@ -320,6 +325,10 @@ public partial class Player : CharacterBody3D, IHurtable
 			{
 				_XP += 10;
 			}
+			else if (keyEvent.Pressed && keyEvent.Keycode == Key.F5)
+			{
+				EnergyShield.InitalizeShield(EnergyShield.MaxHealth);
+			}
 		}
 
 		if (!_player_is_active) return;
@@ -382,6 +391,7 @@ public partial class Player : CharacterBody3D, IHurtable
 		if (IsDead)
 		{
 			BloodSprayParticles.AmountRatio = 1f;
+			BloodSprayParticles.Visible = true;
 			_player_hurt_next_pass.SetShaderParameter("amount", 1f);
 			return;
 		}
@@ -390,6 +400,7 @@ public partial class Player : CharacterBody3D, IHurtable
 		if (_blood_spray_timer.TimeLeft <= 0)
 		{
 			BloodSprayParticles.AmountRatio = 0.0f;
+			BloodSprayParticles.Visible = false;
 			_player_hurt_next_pass.SetShaderParameter("amount", 0.0f);
 			_blood_spray_timer.Stop();
 		}
@@ -397,6 +408,7 @@ public partial class Player : CharacterBody3D, IHurtable
 		{
 			var amount = (float)(_blood_spray_timer.TimeLeft / _blood_spray_timer.WaitTime);
 			BloodSprayParticles.AmountRatio = amount;
+			BloodSprayParticles.Visible = true;
 			_player_hurt_next_pass.SetShaderParameter("amount", amount);
 		}
 	}
@@ -462,6 +474,10 @@ public partial class Player : CharacterBody3D, IHurtable
 
 	public override void _PhysicsProcess(double delta)
 	{
+		SetMouseWorldProjectedPosition();
+		DecalTarget.GlobalPosition = _mouse_world_projected_position;
+		DecalTarget.Scale = 5f * Vector3.One;
+
 		if (Engine.GetPhysicsFrames() % 2ul == 0ul)
 		{
 			UpdateAutoattackEnemiesList();
@@ -734,6 +750,22 @@ public partial class Player : CharacterBody3D, IHurtable
 
 	// =======================================================================
 
+	public void SetMouseWorldProjectedPosition()
+	{
+		var mouse_pos = GetViewport().GetMousePosition();
+		var origin = _camera_3d.ProjectRayOrigin(mouse_pos);
+		var end = origin + _camera_3d.ProjectRayNormal(mouse_pos) * 1000f;
+		var query = PhysicsRayQueryParameters3D.Create(origin, end);
+		query.Exclude = [GetRid()]; // exclude the player itself
+		query.CollideWithAreas = false;
+		query.CollisionMask = 1; // collide with terrain (player is excluded)
+		var result = GetWorld3D().DirectSpaceState.IntersectRay(query);
+		if (result.Count > 0)
+		{
+			_mouse_world_projected_position = (Vector3)result["position"];
+		}
+	}
+
 	public void HandleAnimations()
 	{
 		if (_is_rolling)
@@ -820,10 +852,10 @@ public partial class Player : CharacterBody3D, IHurtable
 
 	public void ChangeNoiseFrequency(float new_val)
 	{
-		var res_node = GetNode<Label>("Control/PanelContainer/VBoxContainer/HBoxContainer3/Label");
-		res_node.Text = $"Noise Frequency: {new_val}";
-		((FastNoiseLite)ChunkManager.Instance.NoiseTexture).Frequency = new_val;
-		ChunkManager.Instance.UpdateAllChunks();
+		// var res_node = GetNode<Label>("Control/PanelContainer/VBoxContainer/HBoxContainer3/Label");
+		// res_node.Text = $"Noise Frequency: {new_val}";
+		// ((FastNoiseLite)ChunkManager.Instance.NoiseTexture).Frequency = new_val;
+		// ChunkManager.Instance.UpdateAllChunks();
 	}
 
 	public List<Enemy> GetActiveNonBlockedEnemiesInArea()

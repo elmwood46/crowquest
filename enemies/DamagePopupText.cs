@@ -11,7 +11,6 @@ public partial class DamagePopupText : Node3D
 
     public override void _Ready()
     {
-        GD.Print("DamagePopupText _Ready called");
         // Set the label text
         var label = GetNode<Label3D>("Anchor/Label3D");
         _base_scale = label.Scale;

@@ -91,7 +91,7 @@ multimesh = ExtResource("4_efxa6")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
 MaxHealth = 10000
 MaxCameraSize = 25.0
-ForceAutoAttackNumber = 30
+ForceAutoAttackNumber = 1
 
 [node name="Control2" type="Control" parent="Player" groups=["debug_overlay"]]
 layout_mode = 3
@@ -165,7 +165,7 @@ NoiseTexture = SubResource("FastNoiseLite_w48qg")
 [node name="EnemySpawner" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.55708, 0)
 script = ExtResource("9_kek77")
-EnemyCount = 10
+EnemyCount = 20
 SpawnBoxDimensions = Vector3(32, 1, 32)
 
 [node name="Axis_markers" type="Node3D" parent="."]

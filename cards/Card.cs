@@ -31,7 +31,13 @@ public partial class Card : Control
 
     public override void _Ready()
     {
-        MouseEntered += () => { _mouse_over = true; AudioManager.TryPlayAtPcPos(CardHoverSound); };
+
+        MouseEntered += () =>
+        {
+            _mouse_over = true;
+            if (CardManager.NodeBeingDragged == null) AudioManager.TryPlayAtPcPos(CardHoverSound);
+        };
+
         MouseExited += () => { _mouse_over = false; };
         _card_shadow_sprite = GetNode<Sprite2D>("%CardShadow");
         _base_card_sprite_scale = CardSprite.Scale;
@@ -108,7 +114,7 @@ public partial class Card : Control
         if (new_scale.IsEqualApprox(_target_scale)) { _target_scale = new_scale; return; }
 
         _scale_tween?.Kill();
-        _scale_tween = CreateTween().SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Bounce);
+        _scale_tween = CreateTween().SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Elastic);
         _scale_tween.TweenProperty(CardSprite, "scale", new_scale, 0.125f);
 
         _target_scale = new_scale;

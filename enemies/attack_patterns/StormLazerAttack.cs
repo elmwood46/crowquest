@@ -5,7 +5,7 @@ using System.Linq;
 
 public partial class StormLazerAttack : Node3D, IAttack
 {
-    public int BaseDamage { get; set; } = 10;
+    public int BaseDamage { get; set; } = 30;
     public int AttackState { get; private set; } = 0;
     public bool CanBeInterrupted => true;
     public bool CanMoveDuring => false;
@@ -38,11 +38,25 @@ public partial class StormLazerAttack : Node3D, IAttack
             _target_timer.Timeout += () =>
             {
                 if (IsFinished) return;
-                Player.Instance.AddCameraShake(0.5f);
                 _targeting_line.Visible = false;
                 _targeting_box.Visible = false;
                 AudioManager.TryPlay(ShootSound, AudioBus.Enemies, enemy.GlobalPosition);
-                Player.Instance?.TakeDamage(BaseDamage, DamageTypeFlagEnum.Electric);
+                if (Player.Instance.EnergyShield.IsActive)
+                {
+                    Vector3 en_pos = enemy.GlobalPosition + Vector3.Up * 0.728f, pc_pos = Player.Instance.GlobalPosition + Vector3.Up * 0.5f;
+                    var dirToEnemy = (en_pos - pc_pos).Normalized();
+
+                    Player.Instance.EnergyShield.DamageEnergyShieldAtPos(
+                        BaseDamage,
+                        DamageTypeFlagEnum.Electric,
+                        Player.Instance.EnergyShield.ShieldOrigin + dirToEnemy * 1.5f
+                    );
+                }
+                else
+                {
+                    Player.Instance?.TakeDamage(BaseDamage, DamageTypeFlagEnum.Electric);
+                    Player.Instance.AddCameraShake(0.5f);
+                } 
                 Finish(enemy);
             };
         }
@@ -114,7 +128,7 @@ public partial class StormLazerAttack : Node3D, IAttack
             if (!IsPlayerInHitscan(enemy))
             {
                 _stopped_early = true;
-                GD.Print("LOS broken; exiting early");
+                //GD.Print("LOS broken; exiting early");
                 Finish(enemy);
             }
         }
@@ -131,7 +145,6 @@ public partial class StormLazerAttack : Node3D, IAttack
         }
         if (_tracked_sound_ids.Count > 0) AudioManager.TryUpdateTrackedSoundVolume(_tracked_sound_ids[0], 10.0f);
 
-        GD.Print(AudioManager.TrackedPlayers.Count);
         _target_timer.Stop();
         _targeting_line.Visible = false;
         _targeting_box.Visible = false;
