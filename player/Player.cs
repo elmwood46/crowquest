@@ -10,7 +10,7 @@ public partial class Player : CharacterBody3D, IHurtable
 	[ExportCategory("Player Features")]
 	[Export] public Node3D DecalTarget { get; set; } = null;
 	[Export] public int MaxHealth { get; set; } = 100;
-	[Export] public float MoveSpeed { get; set; } = 5.0f;
+	[Export] public float MoveSpeed { get; set; } = 3.0f;
 	[Export] public float JumpVelocity { get; set; } = 4.8f;
 	[Export] public float SprintFactor { get; set; } = 1.5f;
 	[Export] public float MoveLerpFactor { get; set; } = 10.0f;
@@ -20,12 +20,14 @@ public partial class Player : CharacterBody3D, IHurtable
 	[Export(PropertyHint.Range, "0.001,0.05,0.001")] public float CameraShakeDecay { get; private set; } = 0.05f;
 	[Export] public float MinCameraSize { get; set; } = 20.0f;
 	[Export] public float MaxCameraSize { get; set; } = 40.0f;
+	private bool _forcing_camera_zoom = false;
 	public const float PLAYER_HEIGHT = 1.32f;
 
 	[ExportCategory("Debug Set Instance Vars")]
 	[Export] public int ForceAutoAttackNumber { get; set; } = 5;
 	[Export] public long ForceIFramesAmount { get; set; } = 32L;
 	private List<Enemy> _enemies_non_blocked_in_area = [];
+	private Vector3 _spawn_positon;
 
 	// =======================================================================
 	// instance vars
@@ -84,7 +86,7 @@ public partial class Player : CharacterBody3D, IHurtable
 	private Node3D _camera_gimbal;
 	private float _cameraXRotation = 0.0f;
 	private float _camera_zoom;
-	private float _default_camera_zoom => (MinCameraSize + MaxCameraSize) / 2f;
+	public float DefaultCameraZoom => (MinCameraSize + MaxCameraSize) / 2f;
 	private Vector3 _default_camera_rotation;
 	private Camera3D _camera_3d;
 	private Label _angle_label;
@@ -133,6 +135,8 @@ public partial class Player : CharacterBody3D, IHurtable
 	{
 		if (Engine.IsEditorHint()) return;
 
+		_spawn_positon = GlobalPosition;
+
 		Instance = this;
 		HoverText.Text = "";
 
@@ -156,7 +160,7 @@ public partial class Player : CharacterBody3D, IHurtable
 			{
 				for (var i = 0; i < _autoattack_number; i++) BulletManager.AddBullet(
 						this,
-						Random.Shared.Next(1,4),
+						Random.Shared.Next(1, 4),
 						DamageTypeFlagEnum.Physical,
 						shot_direction: Vector3.Forward.Rotated(Vector3.Up, Random.Shared.NextSingle() * Mathf.Tau),
 						speed: _autoattack_bullet_speed,
@@ -200,7 +204,7 @@ public partial class Player : CharacterBody3D, IHurtable
 		// set up the camera
 		_angle_label = GetNode<Label>("%AngleLabel");
 		_camera_gimbal = GetNode<Node3D>("%CameraGimbal");
-		_camera_zoom = _default_camera_zoom;
+		_camera_zoom = DefaultCameraZoom;
 		_camera_3d = GetNode<Camera3D>("%CameraGimbal/Camera3D");
 		_camera_3d.Size = _camera_zoom;
 		_default_camera_rotation = _camera_gimbal.Rotation;
@@ -350,7 +354,7 @@ public partial class Player : CharacterBody3D, IHurtable
 			_angle_label.Text = $"Pitch: {_cameraXRotation} Yaw: {_camera_gimbal.Rotation.Y}";
 		}
 
-		if (@event is InputEventMouseButton)
+		if (@event is InputEventMouseButton && !_forcing_camera_zoom)
 		{
 			var mouseButton = @event as InputEventMouseButton;
 			if (mouseButton.Pressed && mouseButton.ButtonIndex == MouseButton.WheelUp)
@@ -431,7 +435,7 @@ public partial class Player : CharacterBody3D, IHurtable
 					card.ApplyCardEffect();
 				}
 				GetTree().Paused = false;
-				Input.MouseMode = Input.MouseModeEnum.Captured;
+				Input.MouseMode = Input.MouseModeEnum.ConfinedHidden;
 			};
 
 			level_up_node.Finished += level_up_node.QueueFree;
@@ -474,6 +478,8 @@ public partial class Player : CharacterBody3D, IHurtable
 
 	public override void _PhysicsProcess(double delta)
 	{
+		if (GlobalPosition.Y < -16 && !IsDead) TakeDamage(9999, DamageTypeFlagEnum.Physical);
+
 		SetMouseWorldProjectedPosition();
 		DecalTarget.GlobalPosition = _mouse_world_projected_position;
 		DecalTarget.Scale = 5f * Vector3.One;
@@ -670,6 +676,7 @@ public partial class Player : CharacterBody3D, IHurtable
 				GD.Print("Player died");
 				//ResetCameraZoom();
 				_camera_zoom = MinCameraSize;
+				StopForcingCameraZoom();
 				UpdateDamageVignette();
 			}
 		} //else GD.Print("player is invincible");
@@ -687,11 +694,13 @@ public partial class Player : CharacterBody3D, IHurtable
 		var shake = new Vector3((float)GD.RandRange(-_camera_shake_amount, _camera_shake_amount), (float)GD.RandRange(-_camera_shake_amount, _camera_shake_amount), (float)GD.RandRange(-_camera_shake_amount, _camera_shake_amount));
 		_camera_gimbal.Position = shake;
 		_camera_shake_amount = Mathf.Max(_camera_shake_amount - CameraShakeDecay, 0.0f);
-		if (_camera_shake_amount <= 0)
-		{
-			_camera_shake_amount = 0;
-			_camera_gimbal.Position = Vector3.Zero;
-		}
+		if (_camera_shake_amount <= 0) ResetCameraShake();
+	}
+
+	private void ResetCameraShake()
+	{
+		_camera_shake_amount = 0.0f;
+		_camera_gimbal.Position = Vector3.Zero;
 	}
 
 	private void SetCameraSize(float size)
@@ -703,6 +712,18 @@ public partial class Player : CharacterBody3D, IHurtable
 		_camera_3d.Size = Mathf.Lerp(_camera_3d.Size, size, 0.2f);
 	}
 
+
+	public void ForceCameraZoom(float size)
+	{
+		_forcing_camera_zoom = true;
+		_camera_zoom = size;
+	}
+	public void StopForcingCameraZoom()
+	{
+		_forcing_camera_zoom = false;
+		_camera_zoom = MaxCameraSize;
+	}
+
 	private void LoadSavedState()
 	{
 		_blood_spray_timer.Stop();
@@ -710,14 +731,16 @@ public partial class Player : CharacterBody3D, IHurtable
 		// reset camera
 		ResetCameraZoom();
 		SetCameraSize(_camera_zoom);
+		StopForcingCameraZoom();
 		_camera_gimbal.Rotation = _default_camera_rotation;
 		_lock_camera_angle = false;
+		ResetCameraShake();
 
 		// reset player model
 		//WeaponManager.Instance.CurrentWeapon = GD.Load("res://fpscontroller/weaponmanager/weapons/p90/p90.tres") as WeaponResource;
 		_timeSinceDeath = 0.0f;
 		_current_health = MaxHealth;
-		GlobalPosition = Vector3.Zero + Vector3.Up * 2.0f; //SaveManager.GetCachedPlayerPosition();
+		GlobalPosition = _spawn_positon; //SaveManager.GetCachedPlayerPosition();
 		_player_is_active = true;
 		_autoattack_timer.Start();
 
@@ -806,7 +829,7 @@ public partial class Player : CharacterBody3D, IHurtable
 
 	public void ResetCameraZoom()
 	{
-		_camera_zoom = _default_camera_zoom;
+		_camera_zoom = DefaultCameraZoom;
 	}
 
 	private void PlayFootstepSound(bool force_play = false)

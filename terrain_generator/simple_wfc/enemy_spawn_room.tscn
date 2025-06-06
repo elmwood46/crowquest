@@ -1,0 +1,104 @@
+[gd_scene load_steps=10 format=4 uid="uid://dtfvqqgonllpa"]
+
+[ext_resource type="Script" uid="uid://c0ttmtsaod1yq" path="res://terrain_generator/simple_wfc/EnemySpawnRoom.cs" id="1_c05jl"]
+[ext_resource type="Material" uid="uid://b3ygie72svtqk" path="res://terrain_generator/procedural_brick_wall/materials/brick_texture.tres" id="2_g0ynd"]
+[ext_resource type="PackedScene" uid="uid://detrvp0t5teeu" path="res://enemies/bullets/PhysBodyTracker.tscn" id="3_g0ynd"]
+[ext_resource type="PackedScene" uid="uid://b07kddjqq6fbl" path="res://terrain_generator/simple_wfc/wall_rising_particles.tscn" id="10_1lx3n"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_d4qli"]
+_surfaces = [{
+"aabb": AABB(-16.625, -5, -16.625, 33.0669, 5, 33.0669),
+"attribute_data": PackedByteArray("AAAAAAAAgD4AAIA/AACAPgAAgD+rqqo+AAAAAKuqqj0AAIA/q6qqPQAAgD+rqio+AAAAAKuqKj4AAIA/q6oqPgAAgD8AAIA+AAAAAAAAgD4AAIA/AACAPgAAgD+rqqo+AAAAAFVV1T4AAIA/VVXVPgAAgD8AAAA/AAAAAAAAAAAAAIA/AAAAAAAAgD+rqqo9AACAPwAAAD8AAAAAAAAAPwAAAABVVdU+AACAP1VV1T4AAAAAVVXVPgAAAACrqqo+AACAPwAAAD8AAAAAAAAAPwAAAABVVdU+AACAP1VV1T4AAAAAVVXVPgAAAACrqqo+AAAAAFVV1T4AAIA/VVXVPgAAgD8AAAA/AAAAAAAAAAAAAIA/AAAAAAAAgD+rqqo9AAAAAKuqqj4AAIA/q6qqPgAAgD9VVdU+AAAAAKuqqj0AAIA/q6qqPQAAgD+rqio+AAAAAKuqqj4AAIA/q6qqPgAAgD9VVdU+AAAAAKuqKj4AAIA/q6oqPgAAgD8AAIA+AACAP6uqqj0AAAAAq6qqPQAAAAAAAAAAAACAP6uqqj4AAAAAq6qqPgAAAAAAAIA+AACAP6uqKj4AAAAAq6oqPgAAAACrqqo9AACAPwAAgD4AAAAAAACAPgAAAACrqio+AACAP6uqqj0AAAAAq6qqPQAAAAAAAAAAAACAP6uqqj4AAAAAq6qqPgAAAAAAAIA+AACAP6uqKj4AAAAAq6oqPgAAAACrqqo9AACAPwAAgD4AAAAAAACAPgAAAACrqio+AAAAAKuqqj4AAIA/q6qqPgAAgD9VVdU+AAAAAKuqqj0AAIA/q6qqPQAAgD+rqio+AAAAAAAAgD4AAIA/AACAPgAAgD+rqqo+AAAAAKuqKj4AAIA/q6oqPgAAgD8AAIA+AAAAAKuqqj4AAIA/q6qqPgAAgD9VVdU+AAAAPxWuBz8AAAA/AACAPwAAAAAAAIA/AACAPwAAgD8AAAA/AACAPwAAAD8Vrgc/AAAAAAAAAAAAAIA/AAAAAAAAgD+rqqo9AACAPwAAAD8AAAAAAAAAPwAAAABVVdU+AACAP1VV1T4AAAAAVVXVPgAAAACrqqo+AACAPwAAAD8AAAAAAAAAPwAAAABVVdU+AACAP1VV1T4AAAAAVVXVPgAAAACrqqo+AAAAAFVV1T4AAIA/VVXVPgAAgD8AAAA/AAAAAAAAAAAAAIA/AAAAAAAAgD+rqqo9mSpYPwAAAD8AAIA/Fa4HPwAAgD8AAIA/AAAAAAAAgD8AAAAAFa4HP5tVHz4AAAA/AACAPwAAgD8AAAA/Fa4HP5kqWD8AAAA/m1UfPgAAAD8AAAA/Fa4HPwAAAAAAAIA/AAAAAFVV1T4AAIA/VVXVPgAAgD8AAAA/m1UfPgAAAD9YyrI+AAAAPwAAAD8Vrgc/AAAAPxWuBz/UmiY/AAAAP5kqWD8AAAA/AAAAAKuqqj0AAIA/q6qqPQAAgD+rqio+AAAAAAAAgD4AAIA/AACAPgAAgD+rqqo+AAAAAKuqKj4AAIA/q6oqPgAAgD8AAIA+AACAP6uqqj0AAAAAq6qqPQAAAAAAAAAAAACAP6uqqj4AAAAAq6qqPgAAAAAAAIA+AACAP6uqKj4AAAAAq6oqPgAAAACrqqo9AACAPwAAgD4AAAAAAACAPgAAAACrqio+AACAP6uqqj0AAAAAq6qqPQAAAAAAAAAAAACAP6uqKj4AAAAAq6oqPgAAAACrqqo9AACAPwAAgD4AAAAAAACAPgAAAACrqio+AACAP6uqqj4AAAAAq6qqPgAAAAAAAIA+"),
+"format": 34359738391,
+"material": ExtResource("2_g0ynd"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 168,
+"vertex_data": PackedByteArray("AACAwQAAAAAxCHzBtzF9QQAAAAC3MX3Bzu14QaCZmb7O7XjBGYmDQaCZmb4ZiYNBGYmDwaCZmb4ZiYNBxFWBwQAAAADEVYFBxFWBQQAAAADEVYFBxFWBwQAAAADEVYFBtzF9wQAAAAC3MX1BtzF9QQAAAAC3MX1BtzF9wQAAAAC3MX1Bzu14waCZmb7O7XhBAACAwQAAoMAAAHbBzu14QQAAoMDO7XjBGYmDQQAAoMAZiYPBAACAwQAAoMAAAIXBGYmDQQAAoMAZiYPBGYmDQaCZmb4ZiYPBGYmDQQAAoMAZiYNBGYmDQQAAoMAZiYPBzu14QQAAoMDO7XjBz+14QQAAoMDO7XhBzu14QQAAoMDO7XjBzu14QaCZmb7O7XjBGYmDwQAAoMAZiYNBGYmDQQAAoMAZiYNBz+14QQAAoMDO7XhBzu14wQAAoMDO7XhBz+14QQAAoMDO7XhBz+14QaCZmb7O7XhBzu14QQAAoMDO7XjBz+14QQAAoMDO7XhBGYmDQQAAoMAZiYNBGYmDQQAAoMAZiYPBGYmDQQAAoMAZiYNBGYmDQaCZmb4ZiYNBAACAwaCZmb4AAHbBzu14QaCZmb7O7XjBzu14QQAAoMDO7XjBAACAwaCZmb4AAIXBGYmDQaCZmb4ZiYPBxFWBQQAAAADEVYHBz+14QaCZmb7O7XhBzu14waCZmb7O7XhBzu14wQAAoMDO7XhBAACAwQAAAABU44HBxFWBQQAAAADEVYHBtzF9QQAAAAC3MX3BGYmDQaCZmb4ZiYNBGYmDQaCZmb4ZiYPBGYmDQQAAoMAZiYPBz+14QaCZmb7O7XhBzu14QaCZmb7O7XjBtzF9QQAAAAC3MX3BxFWBQQAAAADEVYFBxFWBQQAAAADEVYHBGYmDQaCZmb4ZiYPBtzF9QQAAAAC3MX1BtzF9QQAAAAC3MX3BxFWBQQAAAADEVYHBGYmDwaCZmb4ZiYNBGYmDQaCZmb4ZiYNBGYmDQQAAoMAZiYNBzu14waCZmb7O7XhBz+14QaCZmb7O7XhBtzF9QQAAAAC3MX1BxFWBwQAAAADEVYFBxFWBQQAAAADEVYFBGYmDQaCZmb4ZiYNBtzF9wQAAAAC3MX1BtzF9QQAAAAC3MX1BxFWBQQAAAADEVYFBzu14QaCZmb7O7XjBz+14QaCZmb7O7XhBz+14QQAAoMDO7XhBGYmDQaCZmb4ZiYPBGYmDQaCZmb4ZiYNBxFWBQQAAAADEVYFBtzF9QQAAAAC3MX3BtzF9QQAAAAC3MX1Bz+14QaCZmb7O7XhBxFWBQQAAAADEVYHBxFWBQQAAAADEVYFBtzF9QQAAAAC3MX1Bzu14waCZmb7O7XhBAAB2waCZmb4AAIDBAAB2wQAAoMAAAIDBAACAwaCZmb4AAHbBAACAwQAAoMAAAHbBAACAwQAAoMAAAIXBAACFwQAAoMAAAIDBAAB2wQAAoMAAAIDBAAB2waCZmb4AAIDBGYmDwQAAoMAZiYNBAACFwQAAoMAAAIDBAACFwaCZmb4AAIDBGYmDQQAAoMAZiYPBAACAwQAAoMAAAIXBAACAwQAAoMAAAHbBzu14QQAAoMDO7XjBAACAwQAAoMAAAHbBAACAwaCZmb4AAHbBAACFwQAAoMAAAIDBGYmDwQAAoMAZiYNBzu14wQAAoMDO7XhBAAB2wQAAoMAAAIDBzu14wQAAoMDO7XhBzu14waCZmb7O7XhBz+14QQAAoMDO7XhBzu14wQAAoMDO7XhBGYmDwQAAoMAZiYNBGYmDQQAAoMAZiYNBGYmDwQAAoMAZiYNBGYmDwaCZmb4ZiYNBVOOBwQAAAAAAAIDBAACFwaCZmb4AAIDBAACFwQAAoMAAAIDBAACAwQAAoMAAAIXBAACAwaCZmb4AAIXBAACAwQAAAABU44HBAACFwQAAoMAAAIDBAAB2waCZmb4AAIDBVOOBwQAAAAAAAIDBAACAwQAAAABU44HBAACAwaCZmb4AAHbBAACAwQAAoMAAAIXBzu14wQAAoMDO7XhBAAB2wQAAoMAAAIDBAACFwQAAoMAAAIDBAACAwQAAAABU44HBAACAwQAAAAAxCHzBAACAwaCZmb4AAHbBAAB2waCZmb4AAIDBMQh8wQAAAAAAAIDBVOOBwQAAAAAAAIDBGYmDwaCZmb4ZiYNBAACFwaCZmb4AAIDBVOOBwQAAAAAAAIDBtzF9wQAAAAC3MX1BMQh8wQAAAAAAAIDBAAB2waCZmb4AAIDBxFWBwQAAAADEVYFBVOOBwQAAAAAAAIDBMQh8wQAAAAAAAIDBGYmDQaCZmb4ZiYPBAACAwaCZmb4AAIXBAACAwQAAoMAAAIXBzu14QaCZmb7O7XjBAACAwaCZmb4AAHbBAACAwQAAAAAxCHzBxFWBQQAAAADEVYHBAACAwQAAAABU44HBAACAwaCZmb4AAIXBtzF9QQAAAAC3MX3BAACAwQAAAAAxCHzBAACAwQAAAABU44HBAACFwaCZmb4AAIDBGYmDwaCZmb4ZiYNBGYmDwQAAoMAZiYNBVOOBwQAAAAAAAIDBxFWBwQAAAADEVYFBGYmDwaCZmb4ZiYNBMQh8wQAAAAAAAIDBtzF9wQAAAAC3MX1BxFWBwQAAAADEVYFBAAB2waCZmb4AAIDBzu14waCZmb7O7XhBtzF9wQAAAAC3MX1BLYDo0fz/QcCSZVTYtN/9zXhPa6W4uaDQZbDZo+1Fvs9/VumlQhvmoPpy49ixDn62EJrl2LIf0c36cuPYsQ5+tnWlruffGc/OU1jF8mQTibh1pa7n3xnPzrPcP89GHxzjPoDUKrX/OcDfat8/1txGtQ7Avyoxx37VfdV6AEf//78OwL8q1cY51S/cEdRQv1ayVJX/P8ZxVNUOwL8qPI5Ytd9q3z8XjmLV/z+qKsZxVLXfat8/F45i1XhPa6Vwo1WyaVUeQI8qc9xUlf8/jiNUtf8/qirjOFTV779aFV0VNq7/P6oq4zhU1UAj29PXQF6y32rfPxeOYtX/P6oqxnFUtVSV/z/GcVTVDsC/KjyOWLVUlf8/xnFU1WWw2aPwWkWykYBHnf//XcB4T2uluLmg0N9q3z/W3Ea11c6f/2D/+b8v3BHUUL9WsvOk2/IN7bK4QCPb09dAXrKz3D/PRh8c4++/WhVdFTauApfy/+7/97/zpNvyDe2yuJJlVNi03/3NZbDZo/BaRbIv3BHUbqapzw7Avyo8jli1QCPb0wtZjc94T2ulcKNVspJlVNh3hIa4EJrl2K97pLjzpNvyqIOtzC/cEdRupqnPU1jF8sx7BM6SZVTYd4SGuPOk2/Kog63Mf1bppUIb5qBlsNmj7UW+z1SV/z+OI1S1s9w/z0YfHONAI9vT10BeslNYxfJkE4m4+nLj2LEOfrYQmuXYsh/RzWWw2aPtRb7PdaWu598Zz85TWMXyZBOJuBCa5diyH9HNeE9rpXCjVbJAI9vTC1mNz/8/qirGcVS1L9wR1G6mqc9lsNmj8FpFshCa5dive6S4kmVU2HeEhrhTWMXyzHsEzkAj29MLWY3P86Tb8qiDrcwQmuXYr3ukuFNYxfLMewTOs9w/z2QbopJPz0yw8/+z/wDVflX//6D/AAD/f/9//78AAP9//3//vwAA/3//f/+//////wAA/7//////AAD/v/////8AAP+/aVUeQDkVWodpVdMqAACj/zYeqJ0AAFuADsC/KjHHftV91XoAR///vz6A1Cq1/znA32rfP9bcRrU+gNQqtf85wJGAR53//13AaVXTKmz/NoBpVR5AORVah++/WhVwKsT4ANV+Vf//oP/vv1oVcCrE+LPcP89kG6KS/z+qKuM4VNXvv1oVXRU2rmlVHkCPKnPcVJX/P44jVLVpVR5Ajypz3H9W6aVCG+ag/////wAA/7//////AAD/v/////8AAP+/AAD/f/9//78AAP9//3//vwAA/3//f/+//////wAA/7//////AAD/v/////8AAP+/AAD/f/9//78AAP9//3//vwAA/3//f/+/779aFXAqxPgA1X5V//+g/2lV0yps/zaAAAD/f/9//78AAP9//3//vwAA/3//f/+//////wAA/7//////AAD/v/////8AAP+/f1bppWAhge02HqidAABbgN5SstICAD6AdaWu5+gO0oFkl4vo7//7/0/PTLDz/7P/+nLj2KEb6/3eUrLSAgA+gGSXi+jv//v/L9wR1FC/VrLVzp//YP/5v33VegBH//+/eE9rpbi5oNCRgEed//9dwC2A6NH8/0HA86Tb8g3tsrgCl/L/7v/3v9XOn/9g//m/kmVU2LTf/c0tgOjR/P9BwAKX8v/u//e/Nh6onQAAW4B/VumlYCGB7WlVHkA5FVqH3lKy0gIAPoD6cuPYoRvr/X9W6aVgIYHtZJeL6O//+/91pa7n6A7Sgfpy49ihG+v9T89MsPP/s/+z3D/PZBuiknWlrufoDtKB")
+}]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_cklxh"]
+size = Vector3(1, 5, 32)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_g0ynd"]
+size = Vector3(1, 5, 32)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_d4qli"]
+size = Vector3(1, 5, 32)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_6cluh"]
+size = Vector3(1, 5, 32)
+
+[node name="EnemySpawnRoom" type="Node3D"]
+script = ExtResource("1_c05jl")
+
+[node name="BrickWallEnclosurePath" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -5, 0)
+
+[node name="CSGBakedMeshInstance3D2" type="MeshInstance3D" parent="BrickWallEnclosurePath"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.92786, 0)
+mesh = SubResource("ArrayMesh_d4qli")
+
+[node name="WallRisingParticles" type="Node3D" parent="."]
+
+[node name="WallRisingParticles" parent="WallRisingParticles" instance=ExtResource("10_1lx3n")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 16, 0, -16)
+visible = false
+
+[node name="WallRisingParticles2" parent="WallRisingParticles" instance=ExtResource("10_1lx3n")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 16, 0, 16)
+visible = false
+
+[node name="WallRisingParticles3" parent="WallRisingParticles" instance=ExtResource("10_1lx3n")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, 16)
+visible = false
+
+[node name="WallRisingParticles4" parent="WallRisingParticles" instance=ExtResource("10_1lx3n")]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -16, 0, -16)
+visible = false
+
+[node name="SpawnedEnemies" type="Node3D" parent="."]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0359564, 0)
+collision_layer = 271
+collision_mask = 271
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, -0.5, 0)
+shape = SubResource("BoxShape3D_cklxh")
+
+[node name="PhysBodyTracker" parent="StaticBody3D" instance=ExtResource("3_g0ynd")]
+
+[node name="StaticBody3D2" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0359564, 0)
+collision_layer = 271
+collision_mask = 271
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="StaticBody3D2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, -0.5, 0)
+shape = SubResource("BoxShape3D_g0ynd")
+
+[node name="PhysBodyTracker" parent="StaticBody3D2" instance=ExtResource("3_g0ynd")]
+
+[node name="StaticBody3D3" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0359564, 0)
+collision_layer = 271
+collision_mask = 271
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="StaticBody3D3"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, -0.5, 16)
+shape = SubResource("BoxShape3D_d4qli")
+
+[node name="PhysBodyTracker" parent="StaticBody3D3" instance=ExtResource("3_g0ynd")]
+
+[node name="StaticBody3D4" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0359564, 0)
+collision_layer = 271
+collision_mask = 271
+
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="StaticBody3D4"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, -0.5, -16)
+shape = SubResource("BoxShape3D_6cluh")
+
+[node name="PhysBodyTracker" parent="StaticBody3D4" instance=ExtResource("3_g0ynd")]

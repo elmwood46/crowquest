@@ -88,6 +88,7 @@ public partial class ChunkManager : Node
 
     public override void _PhysicsProcess(double delta)
     {
+        if (!Enabled) return;
         
         if (Player.Instance != null)
         {

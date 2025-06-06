@@ -73,6 +73,8 @@ public class CsgConvexHullData : PhysBodyTrackerData
 /// Bodies tracked like this will be used to collide with bullets spawned by the bulletmanager.
 /// To enable thousands of bullets, the physics system is circumvented using this faster cheaper method.
 /// </summary>
+[GlobalClass]
+[Tool]
 public partial class PhysBodyTracker : Node
 {
     public struct TrackerKey { }
@@ -121,23 +123,25 @@ public partial class PhysBodyTracker : Node
             throw new Exception($"PhysBodyTracker must be child of a PhysicsBody3D, not {body.GetType()}");
         }
 
-        // static body treasure chests are not tracked, but we need to update the grid when they are opened
+        // static body treasure chests are not tracked for movement, but we need to update the grid when they are opened
+        // same with doors
         if (ParentBody is TreasureChest t)
         {
-            t.Opened += () =>
-            {
-                //GD.Print("updating treasure chest in grid!");
-                UpdateTrackerInGrid(this);
-            };
+            t.Opened += () => UpdateTrackerInGrid(this);
         }
-        // special case, big chest node structure is nested for no reason...
         else if (((Node3D)ParentBody).GetParent() is TreasureChest big_chest)
         {
-            big_chest.Opened += () =>
-            {
-                //GD.Print("updating big chest in grid!");
-                UpdateTrackerInGrid(this);
-            };
+            big_chest.Opened += () => UpdateTrackerInGrid(this);
+        }
+        else if (((Node3D)ParentBody).GetParent().GetParent() is Door d)
+        {
+            d.DoorOpened += () => UpdateTrackerInGrid(this);
+            d.DoorClosed += () => UpdateTrackerInGrid(this);
+        }
+        else if (((Node3D)ParentBody).GetParent() is DungeonWfc dwfc)
+        {
+            dwfc.StartedLoading += () => UpdateTrackerInGrid(this);
+            dwfc.FinishedLoading += () => UpdateTrackerInGrid(this);
         }
 
         CallDeferred(MethodName.Reparent, GetTree().Root);
@@ -218,24 +222,61 @@ public partial class PhysBodyTracker : Node
         }
 
         if (body is StaticBody3D)
+        {
+            var children = body.GetChildren();
+            var shape = children.OfType<CollisionShape3D>().FirstOrDefault();
+            if (shape.Shape is ConvexPolygonShape3D conv)
             {
-                var children = body.GetChildren();
-                var shape = children.OfType<CollisionShape3D>().FirstOrDefault();
-                if (shape.Shape is ConvexPolygonShape3D conv)
+                List<Vector3> pts = [];
+                foreach (var child in children)
                 {
-                    List<Vector3> pts = [];
-                    foreach (var child in children)
+                    if (child is CollisionShape3D cs && cs.Shape is ConvexPolygonShape3D d)
                     {
-                        if (child is CollisionShape3D cs && cs.Shape is ConvexPolygonShape3D d)
-                        {
-                            pts.AddRange(d.Points.Select(p => cs.GlobalTransform * p));
-                        }
+                        pts.AddRange(d.Points.Select(p => cs.GlobalTransform * p));
                     }
-                    UpdateBodyPointCloudInGrid(tracker, body, pts);
                 }
-                else if (shape != null) UpdateBodyAABBInGrid(tracker, body);
-                else throw new Exception($"Attempted to track StaticBody3D {body.Name} does not have a collision shape.");
+                UpdateBodyPointCloudInGrid(tracker, body, pts);
+            }
+            else if (shape != null) UpdateBodyAABBInGrid(tracker, body);
+            else throw new Exception($"Attempted to track StaticBody3D {body.Name} does not have a collision shape.");
 
+            _tracker_to_data.TryRemove(tracker, out var _);
+            var shape_data = new List<PhysBodyTrackerData>();
+            foreach (var child in body.GetChildren())
+            {
+                if (child is CollisionShape3D cs)
+                {
+                    shape_data.Add(PhysBodyTrackerData.Create(cs.GlobalTransform, cs.Shape));
+                }
+            }
+            _tracker_to_data[tracker] = shape_data;
+        }
+        else // dynamic bodies
+        {
+            UpdateBodyAABBInGrid(tracker, body);
+
+            if (body is Enemy en)
+            {
+                var shape = en.CollisionShape;
+                if (_tracker_to_data.TryGetValue(tracker, out var enemy_data))
+                {
+                    foreach (var d in enemy_data)
+                        d.GlobalTransform = shape.GlobalTransform;
+                }
+                else _tracker_to_data[tracker] = [PhysBodyTrackerData.Create(shape.GlobalTransform, shape.Shape)];
+            }
+            else if (body is Player pc)
+            {
+                var shape = pc.PlayerCollisionShape;
+                if (_tracker_to_data.TryGetValue(tracker, out var player_data))
+                {
+                    foreach (var d in player_data)
+                        d.GlobalTransform = shape.GlobalTransform;
+                }
+                else _tracker_to_data[tracker] = [PhysBodyTrackerData.Create(shape.GlobalTransform, shape.Shape)];
+            }
+            else
+            {
                 _tracker_to_data.TryRemove(tracker, out var _);
                 var shape_data = new List<PhysBodyTrackerData>();
                 foreach (var child in body.GetChildren())
@@ -247,44 +288,7 @@ public partial class PhysBodyTracker : Node
                 }
                 _tracker_to_data[tracker] = shape_data;
             }
-            else // dynamic bodies
-            {
-                UpdateBodyAABBInGrid(tracker, body);
-
-                if (body is Enemy en)
-                {
-                    var shape = en.CollisionShape;
-                    if (_tracker_to_data.TryGetValue(tracker, out var enemy_data))
-                    {
-                        foreach (var d in enemy_data)
-                            d.GlobalTransform = shape.GlobalTransform;
-                    }
-                    else _tracker_to_data[tracker] = [PhysBodyTrackerData.Create(shape.GlobalTransform, shape.Shape)];
-                }
-                else if (body is Player pc)
-                {
-                    var shape = pc.PlayerCollisionShape;
-                    if (_tracker_to_data.TryGetValue(tracker, out var player_data))
-                    {
-                        foreach (var d in player_data)
-                            d.GlobalTransform = shape.GlobalTransform;
-                    }
-                    else _tracker_to_data[tracker] = [PhysBodyTrackerData.Create(shape.GlobalTransform, shape.Shape)];
-                }
-                else
-                {
-                    _tracker_to_data.TryRemove(tracker, out var _);
-                    var shape_data = new List<PhysBodyTrackerData>();
-                    foreach (var child in body.GetChildren())
-                    {
-                        if (child is CollisionShape3D cs)
-                        {
-                            shape_data.Add(PhysBodyTrackerData.Create(cs.GlobalTransform, cs.Shape));
-                        }
-                    }
-                    _tracker_to_data[tracker] = shape_data;
-                }
-            }
+        }
     }
 
     private static void UpdateBodyPointCloudInGrid(PhysBodyTracker tracker, PhysicsBody3D body, List<Vector3> point_cloud)

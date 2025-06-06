@@ -1,11 +1,13 @@
-[gd_scene load_steps=19 format=3 uid="uid://dovgs2t1vyyy0"]
+[gd_scene load_steps=21 format=3 uid="uid://dovgs2t1vyyy0"]
 
 [ext_resource type="Script" uid="uid://5t4dyh7n4e26" path="res://effects/control_global_light.gd" id="1_1bvp3"]
 [ext_resource type="PackedScene" uid="uid://bjhvg8rf53fx4" path="res://player/Player.tscn" id="1_ig7tw"]
 [ext_resource type="Script" uid="uid://iq32r0tv8rwy" path="res://audio/AudioManager.cs" id="2_7mycd"]
+[ext_resource type="PackedScene" uid="uid://dkvoar07gxjj5" path="res://terrain_generator/dungeon_generator/block_manager.tscn" id="2_kek77"]
 [ext_resource type="Script" uid="uid://d3ddw82qrorxr" path="res://enemies/bullets/BulletManager.cs" id="3_4c57u"]
 [ext_resource type="MultiMesh" uid="uid://b78qnlijvoxe2" path="res://enemies/attack_patterns/bullet_multimesh.tres" id="4_efxa6"]
 [ext_resource type="Script" uid="uid://nsjwgmlaejks" path="res://terrain_generator/infinite_heightmap_terrain/ChunkManager.cs" id="4_w48qg"]
+[ext_resource type="PackedScene" uid="uid://d244kn7ol7u4g" path="res://terrain_generator/dungeon_generator/dungeon-wfc/dungeon_wfc_test.tscn" id="8_5vw27"]
 [ext_resource type="Script" uid="uid://bcfs86hg1i20j" path="res://enemies/EnemySpawner.cs" id="9_kek77"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_0xm2m"]
@@ -70,10 +72,13 @@ transform = Transform3D(0.403349, -0.910278, 0.0932931, 0.696466, 0.371528, 0.61
 light_energy = 0.2
 directional_shadow_max_distance = 40.0
 script = ExtResource("1_1bvp3")
+cycle_light = false
 day_transition_time = 30
 sky_transition_time = 60
 wait_time_dark = 20
 wait_time_light = 20
+
+[node name="BlockManager" parent="." instance=ExtResource("2_kek77")]
 
 [node name="AudioManager" type="Node" parent="."]
 script = ExtResource("2_7mycd")
@@ -88,10 +93,11 @@ MaxBullets = 5000
 multimesh = ExtResource("4_efxa6")
 
 [node name="Player" parent="." instance=ExtResource("1_ig7tw")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 8.5, 8)
 MaxHealth = 10000
-MaxCameraSize = 25.0
-ForceAutoAttackNumber = 1
+MinCameraSize = 10.0
+MaxCameraSize = 15.0
+ForceAutoAttackNumber = 30
 
 [node name="Control2" type="Control" parent="Player" groups=["debug_overlay"]]
 layout_mode = 3
@@ -160,12 +166,14 @@ script = SubResource("GDScript_0xm2m")
 
 [node name="ChunkManager" type="Node" parent="."]
 script = ExtResource("4_w48qg")
+Enabled = false
+RenderDistance = 10
 NoiseTexture = SubResource("FastNoiseLite_w48qg")
 
 [node name="EnemySpawner" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.55708, 0)
 script = ExtResource("9_kek77")
-EnemyCount = 20
+EnemyCount = 0
 SpawnBoxDimensions = Vector3(32, 1, 32)
 
 [node name="Axis_markers" type="Node3D" parent="."]
@@ -180,6 +188,8 @@ skeleton = NodePath("../..")
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 5, 0, 0)
 mesh = SubResource("BoxMesh_h2yge")
 skeleton = NodePath("../..")
+
+[node name="DungeonWfcTest" parent="." instance=ExtResource("8_5vw27")]
 
 [connection signal="value_changed" from="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer/HSlider" to="WorldEnvironment/DirectionalLight3D" method="_set_light_energy"]
 [connection signal="value_changed" from="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer/HSlider" to="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer/Label" method="change_label_text"]

@@ -1,0 +1,7 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://mrm2b1mxnont"]
+
+[ext_resource type="Shader" uid="uid://crlwewnqwyhui" path="res://terrain_generator/dungeon_generator/shaders/RIGID_BREAK.gdshader" id="1_0uo5h"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_0uo5h")

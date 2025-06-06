@@ -109,7 +109,7 @@ public partial class StormLazerAttack : Node3D, IAttack
                 _tracked_sound_ids.RemoveAt(idx);
             }
             _tracked_sound_ids.Add(_tracked_sound_id);
-            AudioManager.TryUpdateTrackedSoundVolume(_tracked_sound_ids[0], 10.0f);
+            AudioManager.TryUpdateTrackedSoundVolume(_tracked_sound_ids[0], -5f);
             
             AttackState = 1;
         }
@@ -143,7 +143,7 @@ public partial class StormLazerAttack : Node3D, IAttack
             var idx = _tracked_sound_ids.IndexOf(_tracked_sound_id);
             _tracked_sound_ids.RemoveAt(idx);
         }
-        if (_tracked_sound_ids.Count > 0) AudioManager.TryUpdateTrackedSoundVolume(_tracked_sound_ids[0], 10.0f);
+        if (_tracked_sound_ids.Count > 0) AudioManager.TryUpdateTrackedSoundVolume(_tracked_sound_ids[0],-5f);
 
         _target_timer.Stop();
         _targeting_line.Visible = false;

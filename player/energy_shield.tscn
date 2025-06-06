@@ -1,8 +1,16 @@
-[gd_scene load_steps=8 format=3 uid="uid://3emhh43uqgo2"]
+[gd_scene load_steps=16 format=3 uid="uid://3emhh43uqgo2"]
 
 [ext_resource type="Script" uid="uid://bj1e58xge5b5t" path="res://addons/nojoule-energy-shield/EnergyShield.cs" id="1_fxtan"]
+[ext_resource type="AudioStream" uid="uid://ceiw8ni6bevl1" path="res://addons/nojoule-energy-shield/shield_down_2(reversed).ogg" id="2_dgkx4"]
 [ext_resource type="Shader" uid="uid://d0a35fsbbf048" path="res://addons/nojoule-energy-shield/shield.gdshader" id="2_tqmjw"]
 [ext_resource type="Texture2D" uid="uid://dnqegf8mxqli" path="res://addons/nojoule-energy-shield/shield_noise.tres" id="3_b8w1s"]
+[ext_resource type="AudioStream" uid="uid://cv7lg5mrjxjwf" path="res://addons/nojoule-energy-shield/shield_up.ogg" id="3_g1h2n"]
+[ext_resource type="AudioStream" uid="uid://bpggnjtbkuluv" path="res://addons/nojoule-energy-shield/shield_hit_1.ogg" id="4_fb7ax"]
+[ext_resource type="AudioStream" uid="uid://bxccpdbu51v2o" path="res://addons/nojoule-energy-shield/shield_hit_2.ogg" id="5_l1ky5"]
+[ext_resource type="AudioStream" uid="uid://dimwsjtbjamc4" path="res://addons/nojoule-energy-shield/shield_hit_3.ogg" id="6_32xea"]
+[ext_resource type="AudioStream" uid="uid://dd1embp2qktg" path="res://addons/nojoule-energy-shield/shield_hit_4.ogg" id="7_uetun"]
+[ext_resource type="AudioStream" uid="uid://h3d12gi1l6bk" path="res://addons/nojoule-energy-shield/shield_hit_5.ogg" id="8_jwlx0"]
+[ext_resource type="AudioStream" uid="uid://cmmnyp8sy7n16" path="res://addons/nojoule-energy-shield/shield_hit_6.ogg" id="9_lah82"]
 
 [sub_resource type="Curve" id="Curve_ibf8e"]
 resource_local_to_scene = true
@@ -84,6 +92,9 @@ freeze_mode = 1
 custom_integrator = true
 script = ExtResource("1_fxtan")
 ShieldMesh = NodePath("TestShieldSphere")
+ShieldDownSound = ExtResource("2_dgkx4")
+ShieldPowerUpSound = ExtResource("3_g1h2n")
+ShieldImpactSounds = Array[AudioStream]([ExtResource("4_fb7ax"), ExtResource("5_l1ky5"), ExtResource("6_32xea"), ExtResource("7_uetun"), ExtResource("8_jwlx0"), ExtResource("9_lah82")])
 ShieldCollisionShape = NodePath("CollisionShape3D")
 AnimationCurve = SubResource("Curve_ibf8e")
 Health = 10000

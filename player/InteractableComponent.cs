@@ -2,6 +2,8 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
+[GlobalClass]
+[Tool]
 public partial class InteractableComponent : Node
 {
 	[Signal] public delegate void InteractedEventHandler();
@@ -15,7 +17,8 @@ public partial class InteractableComponent : Node
 		EmitSignal(SignalName.Interacted);
 	}
 
-	public void HoverCursor(CharacterBody3D c) {
+	public void HoverCursor(CharacterBody3D c)
+	{
 		_charactersHovering[c] = Engine.GetProcessFrames();
 	}
 
@@ -29,9 +32,12 @@ public partial class InteractableComponent : Node
 	// 	return null;
 	// }
 
-	public override void _Process(double delta) {
-		foreach (CharacterBody3D c in _charactersHovering.Keys) {
-			if (Engine.GetProcessFrames() - _charactersHovering[c] > 1) {
+	public override void _Process(double delta)
+	{
+		foreach (CharacterBody3D c in _charactersHovering.Keys)
+		{
+			if (Engine.GetProcessFrames() - _charactersHovering[c] > 1)
+			{
 				_charactersHovering.Remove(c);
 			}
 		}

@@ -7,6 +7,9 @@ public partial class EnergyShield : RigidBody3D
     private const int MaxImpacts = 10;
 
     [Export] public MeshInstance3D ShieldMesh { get; set; }
+    [Export] public AudioStream ShieldDownSound { get; set; }
+    [Export] public AudioStream ShieldPowerUpSound { get; set; }
+    [Export] public AudioStream[] ShieldImpactSounds { get; set; }
     [Export] public CollisionShape3D ShieldCollisionShape { get; set; }
     [Export] public Curve AnimationCurve { get; set; }
     [Export] public float AnimTime { get; set; } = 4.0f;
@@ -19,7 +22,7 @@ public partial class EnergyShield : RigidBody3D
     [Export] public int MaxHealth { get; set; } = 100;
     [Export] public Color ShieldMaxColor { get; set; } = new Color(0.0f, 1.0f, 0.0f, 1.0f);
     [Export] public Color ShieldMinColor { get; set; } = new Color(1.0f, 0.0f, 0.0f, 1.0f);
-    
+
     public bool IsActive => Visible && Health > 0;
 
     public float ShieldRadius => ShieldCollisionShape.Scale.X * ((SphereShape3D)ShieldCollisionShape.Shape).Radius;
@@ -49,8 +52,6 @@ public partial class EnergyShield : RigidBody3D
 
     public override void _Ready()
     {
-        
-
         Health = MaxHealth;
         _material = ShieldMesh.GetActiveMaterial(0) as ShaderMaterial;
 
@@ -206,6 +207,7 @@ public partial class EnergyShield : RigidBody3D
 
     public void InitalizeShield(int shield_health)
     {
+        AudioManager.TryPlay(ShieldPowerUpSound, volumedb:10, pitch_scale:3f, position:Player.Instance.GlobalPosition);
         FreezeMode = FreezeModeEnum.Kinematic;
         Health = shield_health;
         Visible = true;
@@ -239,10 +241,13 @@ public partial class EnergyShield : RigidBody3D
             _collapsed = false;
             _generatingOrCollapsing = false;
             CollapseFrom(pos);
+            AudioManager.TryPlay(ShieldDownSound, volumedb:10, pitch_scale:3f, position:Player.Instance.GlobalPosition);
         }
         else
         {
             Impact(pos);
+            AudioManager.TryStopTrackedSound("EnergyShieldImpact");
+            AudioManager.TryPlayTrackedSound("EnergyShieldImpact", ShieldImpactSounds[Random.Shared.Next(ShieldImpactSounds.Length)], buskey: AudioBus.Misc, position: Player.Instance.GlobalPosition);
             _recharge_delay_timer.Start(RechargeTime);
         }
     }

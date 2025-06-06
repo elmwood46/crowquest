@@ -4,20 +4,14 @@ using System;
 [Tool]
 public partial class brick_gen_test : Path3D
 {
-    [Export] public bool ReInitButton
+    [ExportToolButton("ReInitButton")] public Callable ReInitButton => Callable.From(GenerateBricks);
+    [ExportToolButton("ClearBricks")] public Callable ClearBricks => Callable.From(() =>
     {
-        get => false;
-        set
+        foreach (Node n in GetChildren())
         {
-            if (value)
-            {
-                if (Engine.IsEditorHint() && IsInsideTree())
-                {
-                    GenerateBricks();
-                }
-            }
+            n.QueueFree();
         }
-    }
+    });
 
     [Export] public int WallRows = 10;
 

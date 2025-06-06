@@ -1,8 +1,7 @@
-[gd_scene load_steps=12 format=3 uid="uid://dwnxmwyxjtiyl"]
+[gd_scene load_steps=79 format=3 uid="uid://dwnxmwyxjtiyl"]
 
 [ext_resource type="Script" uid="uid://babllnek2nhh0" path="res://terrain_generator/procedural_brick_wall/MultiBrick.cs" id="1_si6yj"]
 [ext_resource type="PackedScene" uid="uid://dcmunnlgiudp4" path="res://terrain_generator/procedural_brick_wall/brick_mesh.tscn" id="2_y0up5"]
-[ext_resource type="ArrayMesh" uid="uid://1qkea5d3rriw" path="res://terrain_generator/procedural_brick_wall/resources/brick_surfaced.obj" id="3_pn82h"]
 [ext_resource type="Shader" uid="uid://b87i4xg8y7ue0" path="res://terrain_generator/procedural_brick_wall/brick_size_multi.gdshader" id="4_1ljm5"]
 [ext_resource type="Texture2D" uid="uid://cqhenytsmwvwt" path="res://textures/PaintedPlaster017_1K-JPG/PaintedPlaster017_1K-JPG_Color.jpg" id="5_mcfgo"]
 [ext_resource type="Texture2D" uid="uid://duoga1tqke1y7" path="res://textures/PaintedPlaster017_1K-JPG/PaintedPlaster017_1K-JPG_NormalGL.jpg" id="6_kctc1"]
@@ -99,6 +98,1094 @@ shader_parameter/uv1_offset = Vector3(0, 0, 0)
 shader_parameter/uv2_scale = Vector3(1, 1, 1)
 shader_parameter/uv2_offset = Vector3(0, 0, 0)
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2pyyf"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5ovh2"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_oll5q"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_p2t8i"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_74hew"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mtcfg"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jmy8a"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ydmcu"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_r5lhl"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ge5d8"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_amugj"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_acjmf"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_3685t"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_moouu"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vw2j3"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_qgpw1"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_6mlqy"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_p2r82"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_msx43"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_j8hey"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_j0apo"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_oxxj4"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_kf1fv"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pju6x"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_njb8v"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_odm58"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_yoxdy"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1n482"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mtmak"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7h0pe"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_xnc3p"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fwxve"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_sc1ey"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vubat"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7affn"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pscuw"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_efvg6"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vq3op"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dteos"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_p0l2c"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_yx3yv"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rf6tn"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_afjao"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7n5ta"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jfaif"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2nr5s"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_i1vtl"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_uge27"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_q8bm8"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_u5yb0"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dxm01"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_w3pf4"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_g6iij"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5rx6y"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_msbbl"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_v0rq0"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hp1w4"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_h24wl"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5g7ul"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8jjj7"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ucvql"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_xtjv2"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lgcrt"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rwee7"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_p5rtf"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_3hxqo"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_34j0k"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_1ljm5")
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/roughness = 1.0
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_agtl4"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_24rva")
+shader_parameter/albedo = Color(1, 0.870588, 0.788235, 1)
+shader_parameter/texture_albedo = ExtResource("5_mcfgo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("7_tdcgb")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = ExtResource("6_kctc1")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(0.4, 1.25, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
 [node name="MultiBrick" type="StaticBody3D"]
 script = ExtResource("1_si6yj")
 DesiredLength = 5.0
@@ -111,12 +1198,10 @@ shape = SubResource("BoxShape3D_5ovh2")
 
 [node name="Row0" type="Node3D" parent="MultiBrickBatch"]
 
-[node name="Brick0" type="MeshInstance3D" parent="MultiBrickBatch/Row0" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -0.206503)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.104294, 0.0922835)
-instance_shader_parameters/brick_size = 0.413006
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
+[node name="Brick0" parent="MultiBrickBatch/Row0" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -0.330932)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.124338, 0.0718262)
+instance_shader_parameters/brick_size = 0.661863
 surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
 surface_material_override/1 = SubResource("ShaderMaterial_8vc8x")
 surface_material_override/2 = SubResource("ShaderMaterial_w874k")
@@ -125,472 +1210,418 @@ surface_material_override/4 = SubResource("ShaderMaterial_w874k")
 surface_material_override/5 = SubResource("ShaderMaterial_8vc8x")
 surface_material_override/6 = SubResource("ShaderMaterial_w874k")
 
-[node name="Brick1" type="MeshInstance3D" parent="MultiBrickBatch/Row0" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -0.641045)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.145221, 0.0824811)
-instance_shader_parameters/brick_size = 0.456077
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/2 = SubResource("ShaderMaterial_w874k")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_w874k")
-surface_material_override/5 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/6 = SubResource("ShaderMaterial_w874k")
+[node name="Brick1" parent="MultiBrickBatch/Row0" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -0.958921)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.130352, 0.0925172)
+instance_shader_parameters/brick_size = 0.594114
+surface_material_override/0 = SubResource("ShaderMaterial_2pyyf")
+surface_material_override/1 = SubResource("ShaderMaterial_2pyyf")
+surface_material_override/2 = SubResource("ShaderMaterial_5ovh2")
+surface_material_override/3 = SubResource("ShaderMaterial_5ovh2")
+surface_material_override/4 = SubResource("ShaderMaterial_5ovh2")
+surface_material_override/5 = SubResource("ShaderMaterial_2pyyf")
+surface_material_override/6 = SubResource("ShaderMaterial_5ovh2")
 
-[node name="Brick2" type="MeshInstance3D" parent="MultiBrickBatch/Row0" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -1.19341)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.118291, 0.08498)
-instance_shader_parameters/brick_size = 0.648654
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/2 = SubResource("ShaderMaterial_w874k")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_w874k")
-surface_material_override/5 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/6 = SubResource("ShaderMaterial_w874k")
+[node name="Brick2" parent="MultiBrickBatch/Row0" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -1.61737)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.136333, 0.0993482)
+instance_shader_parameters/brick_size = 0.722778
+surface_material_override/0 = SubResource("ShaderMaterial_oll5q")
+surface_material_override/1 = SubResource("ShaderMaterial_oll5q")
+surface_material_override/2 = SubResource("ShaderMaterial_p2t8i")
+surface_material_override/3 = SubResource("ShaderMaterial_p2t8i")
+surface_material_override/4 = SubResource("ShaderMaterial_p2t8i")
+surface_material_override/5 = SubResource("ShaderMaterial_oll5q")
+surface_material_override/6 = SubResource("ShaderMaterial_p2t8i")
 
-[node name="Brick3" type="MeshInstance3D" parent="MultiBrickBatch/Row0" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -1.86139)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.121597, 0.0573379)
-instance_shader_parameters/brick_size = 0.687304
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/2 = SubResource("ShaderMaterial_w874k")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_w874k")
-surface_material_override/5 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/6 = SubResource("ShaderMaterial_w874k")
+[node name="Brick3" parent="MultiBrickBatch/Row0" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -2.20432)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.10934, 0.093725)
+instance_shader_parameters/brick_size = 0.451133
+surface_material_override/0 = SubResource("ShaderMaterial_74hew")
+surface_material_override/1 = SubResource("ShaderMaterial_74hew")
+surface_material_override/2 = SubResource("ShaderMaterial_mtcfg")
+surface_material_override/3 = SubResource("ShaderMaterial_mtcfg")
+surface_material_override/4 = SubResource("ShaderMaterial_mtcfg")
+surface_material_override/5 = SubResource("ShaderMaterial_74hew")
+surface_material_override/6 = SubResource("ShaderMaterial_mtcfg")
 
-[node name="Brick4" type="MeshInstance3D" parent="MultiBrickBatch/Row0" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -2.71599)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.111866, 0.063772)
-instance_shader_parameters/brick_size = 1.02189
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/2 = SubResource("ShaderMaterial_w874k")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_w874k")
-surface_material_override/5 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/6 = SubResource("ShaderMaterial_w874k")
+[node name="Brick4" parent="MultiBrickBatch/Row0" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -2.90672)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.10023, 0.0941273)
+instance_shader_parameters/brick_size = 0.953667
+surface_material_override/0 = SubResource("ShaderMaterial_jmy8a")
+surface_material_override/1 = SubResource("ShaderMaterial_jmy8a")
+surface_material_override/2 = SubResource("ShaderMaterial_ydmcu")
+surface_material_override/3 = SubResource("ShaderMaterial_ydmcu")
+surface_material_override/4 = SubResource("ShaderMaterial_ydmcu")
+surface_material_override/5 = SubResource("ShaderMaterial_jmy8a")
+surface_material_override/6 = SubResource("ShaderMaterial_ydmcu")
 
-[node name="Brick5" type="MeshInstance3D" parent="MultiBrickBatch/Row0" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -3.6763)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.139453, 0.0783098)
-instance_shader_parameters/brick_size = 0.898729
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/2 = SubResource("ShaderMaterial_w874k")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_w874k")
-surface_material_override/5 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/6 = SubResource("ShaderMaterial_w874k")
+[node name="Brick5" parent="MultiBrickBatch/Row0" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -3.67943)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.108233, 0.0809813)
+instance_shader_parameters/brick_size = 0.591752
+surface_material_override/0 = SubResource("ShaderMaterial_r5lhl")
+surface_material_override/1 = SubResource("ShaderMaterial_r5lhl")
+surface_material_override/2 = SubResource("ShaderMaterial_ge5d8")
+surface_material_override/3 = SubResource("ShaderMaterial_ge5d8")
+surface_material_override/4 = SubResource("ShaderMaterial_ge5d8")
+surface_material_override/5 = SubResource("ShaderMaterial_r5lhl")
+surface_material_override/6 = SubResource("ShaderMaterial_ge5d8")
 
-[node name="Brick6" type="MeshInstance3D" parent="MultiBrickBatch/Row0" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -4.56283)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.138939, 0.0917115)
-instance_shader_parameters/brick_size = 0.87434
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/2 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_w874k")
-surface_material_override/5 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/6 = SubResource("ShaderMaterial_w874k")
+[node name="Brick6" parent="MultiBrickBatch/Row0" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -4.48765)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.139614, 0.0855212)
+instance_shader_parameters/brick_size = 1.02469
+surface_material_override/0 = SubResource("ShaderMaterial_amugj")
+surface_material_override/1 = SubResource("ShaderMaterial_amugj")
+surface_material_override/2 = SubResource("ShaderMaterial_amugj")
+surface_material_override/3 = SubResource("ShaderMaterial_acjmf")
+surface_material_override/4 = SubResource("ShaderMaterial_acjmf")
+surface_material_override/5 = SubResource("ShaderMaterial_amugj")
+surface_material_override/6 = SubResource("ShaderMaterial_acjmf")
 
 [node name="Row1" type="Node3D" parent="MultiBrickBatch"]
 
-[node name="Brick0" type="MeshInstance3D" parent="MultiBrickBatch/Row1" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -0.323587)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.143687, 0.0850836)
-instance_shader_parameters/brick_size = 0.647174
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_w874k")
-surface_material_override/2 = SubResource("ShaderMaterial_w874k")
-surface_material_override/3 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/4 = SubResource("ShaderMaterial_w874k")
-surface_material_override/5 = SubResource("ShaderMaterial_w874k")
-surface_material_override/6 = SubResource("ShaderMaterial_w874k")
+[node name="Brick0" parent="MultiBrickBatch/Row1" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -0.438495)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.137165, 0.0992844)
+instance_shader_parameters/brick_size = 0.87699
+surface_material_override/0 = SubResource("ShaderMaterial_3685t")
+surface_material_override/1 = SubResource("ShaderMaterial_moouu")
+surface_material_override/2 = SubResource("ShaderMaterial_moouu")
+surface_material_override/3 = SubResource("ShaderMaterial_3685t")
+surface_material_override/4 = SubResource("ShaderMaterial_moouu")
+surface_material_override/5 = SubResource("ShaderMaterial_moouu")
+surface_material_override/6 = SubResource("ShaderMaterial_moouu")
 
-[node name="Brick1" type="MeshInstance3D" parent="MultiBrickBatch/Row1" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -1.13305)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.137207, 0.0629509)
-instance_shader_parameters/brick_size = 0.971761
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_w874k")
-surface_material_override/2 = SubResource("ShaderMaterial_w874k")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_w874k")
-surface_material_override/5 = SubResource("ShaderMaterial_w874k")
-surface_material_override/6 = SubResource("ShaderMaterial_w874k")
+[node name="Brick1" parent="MultiBrickBatch/Row1" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -1.28358)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.117683, 0.055906)
+instance_shader_parameters/brick_size = 0.813171
+surface_material_override/0 = SubResource("ShaderMaterial_vw2j3")
+surface_material_override/1 = SubResource("ShaderMaterial_qgpw1")
+surface_material_override/2 = SubResource("ShaderMaterial_qgpw1")
+surface_material_override/3 = SubResource("ShaderMaterial_qgpw1")
+surface_material_override/4 = SubResource("ShaderMaterial_qgpw1")
+surface_material_override/5 = SubResource("ShaderMaterial_qgpw1")
+surface_material_override/6 = SubResource("ShaderMaterial_qgpw1")
 
-[node name="Brick2" type="MeshInstance3D" parent="MultiBrickBatch/Row1" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -1.96865)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.146234, 0.09291)
-instance_shader_parameters/brick_size = 0.69944
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_w874k")
-surface_material_override/2 = SubResource("ShaderMaterial_w874k")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_w874k")
-surface_material_override/5 = SubResource("ShaderMaterial_w874k")
-surface_material_override/6 = SubResource("ShaderMaterial_w874k")
+[node name="Brick2" parent="MultiBrickBatch/Row1" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -1.99153)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.137159, 0.0881969)
+instance_shader_parameters/brick_size = 0.60273
+surface_material_override/0 = SubResource("ShaderMaterial_6mlqy")
+surface_material_override/1 = SubResource("ShaderMaterial_p2r82")
+surface_material_override/2 = SubResource("ShaderMaterial_p2r82")
+surface_material_override/3 = SubResource("ShaderMaterial_p2r82")
+surface_material_override/4 = SubResource("ShaderMaterial_p2r82")
+surface_material_override/5 = SubResource("ShaderMaterial_p2r82")
+surface_material_override/6 = SubResource("ShaderMaterial_p2r82")
 
-[node name="Brick3" type="MeshInstance3D" parent="MultiBrickBatch/Row1" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -2.5292)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.117406, 0.0781047)
-instance_shader_parameters/brick_size = 0.42166
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_w874k")
-surface_material_override/2 = SubResource("ShaderMaterial_w874k")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_w874k")
-surface_material_override/5 = SubResource("ShaderMaterial_w874k")
-surface_material_override/6 = SubResource("ShaderMaterial_w874k")
+[node name="Brick3" parent="MultiBrickBatch/Row1" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -2.51638)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.131437, 0.0846733)
+instance_shader_parameters/brick_size = 0.446971
+surface_material_override/0 = SubResource("ShaderMaterial_msx43")
+surface_material_override/1 = SubResource("ShaderMaterial_j8hey")
+surface_material_override/2 = SubResource("ShaderMaterial_j8hey")
+surface_material_override/3 = SubResource("ShaderMaterial_j8hey")
+surface_material_override/4 = SubResource("ShaderMaterial_j8hey")
+surface_material_override/5 = SubResource("ShaderMaterial_j8hey")
+surface_material_override/6 = SubResource("ShaderMaterial_j8hey")
 
-[node name="Brick4" type="MeshInstance3D" parent="MultiBrickBatch/Row1" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -3.17941)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.10073, 0.0501527)
-instance_shader_parameters/brick_size = 0.878757
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_w874k")
-surface_material_override/2 = SubResource("ShaderMaterial_w874k")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_w874k")
-surface_material_override/5 = SubResource("ShaderMaterial_w874k")
-surface_material_override/6 = SubResource("ShaderMaterial_w874k")
+[node name="Brick4" parent="MultiBrickBatch/Row1" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -3.02982)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.144633, 0.094194)
+instance_shader_parameters/brick_size = 0.579909
+surface_material_override/0 = SubResource("ShaderMaterial_j0apo")
+surface_material_override/1 = SubResource("ShaderMaterial_oxxj4")
+surface_material_override/2 = SubResource("ShaderMaterial_oxxj4")
+surface_material_override/3 = SubResource("ShaderMaterial_oxxj4")
+surface_material_override/4 = SubResource("ShaderMaterial_oxxj4")
+surface_material_override/5 = SubResource("ShaderMaterial_oxxj4")
+surface_material_override/6 = SubResource("ShaderMaterial_oxxj4")
 
-[node name="Brick5" type="MeshInstance3D" parent="MultiBrickBatch/Row1" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -4.07519)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.142951, 0.0759356)
-instance_shader_parameters/brick_size = 0.912805
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_w874k")
-surface_material_override/2 = SubResource("ShaderMaterial_w874k")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_w874k")
-surface_material_override/5 = SubResource("ShaderMaterial_w874k")
-surface_material_override/6 = SubResource("ShaderMaterial_w874k")
+[node name="Brick5" parent="MultiBrickBatch/Row1" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -3.58187)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.123225, 0.0544261)
+instance_shader_parameters/brick_size = 0.524194
+surface_material_override/0 = SubResource("ShaderMaterial_kf1fv")
+surface_material_override/1 = SubResource("ShaderMaterial_pju6x")
+surface_material_override/2 = SubResource("ShaderMaterial_pju6x")
+surface_material_override/3 = SubResource("ShaderMaterial_pju6x")
+surface_material_override/4 = SubResource("ShaderMaterial_pju6x")
+surface_material_override/5 = SubResource("ShaderMaterial_pju6x")
+surface_material_override/6 = SubResource("ShaderMaterial_pju6x")
 
-[node name="Brick6" type="MeshInstance3D" parent="MultiBrickBatch/Row1" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -4.7658)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.13533, 0.0815863)
-instance_shader_parameters/brick_size = 0.468404
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_w874k")
-surface_material_override/2 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_w874k")
-surface_material_override/5 = SubResource("ShaderMaterial_w874k")
-surface_material_override/6 = SubResource("ShaderMaterial_w874k")
+[node name="Brick6" parent="MultiBrickBatch/Row1" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -4.2437)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.115523, 0.0886043)
+instance_shader_parameters/brick_size = 0.799463
+surface_material_override/0 = SubResource("ShaderMaterial_njb8v")
+surface_material_override/1 = SubResource("ShaderMaterial_odm58")
+surface_material_override/2 = SubResource("ShaderMaterial_odm58")
+surface_material_override/3 = SubResource("ShaderMaterial_odm58")
+surface_material_override/4 = SubResource("ShaderMaterial_odm58")
+surface_material_override/5 = SubResource("ShaderMaterial_odm58")
+surface_material_override/6 = SubResource("ShaderMaterial_odm58")
+
+[node name="Brick7" parent="MultiBrickBatch/Row1" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -4.82172)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.123792, 0.0836628)
+instance_shader_parameters/brick_size = 0.356572
+surface_material_override/0 = SubResource("ShaderMaterial_yoxdy")
+surface_material_override/1 = SubResource("ShaderMaterial_1n482")
+surface_material_override/2 = SubResource("ShaderMaterial_yoxdy")
+surface_material_override/3 = SubResource("ShaderMaterial_1n482")
+surface_material_override/4 = SubResource("ShaderMaterial_1n482")
+surface_material_override/5 = SubResource("ShaderMaterial_1n482")
+surface_material_override/6 = SubResource("ShaderMaterial_1n482")
 
 [node name="Row2" type="Node3D" parent="MultiBrickBatch"]
 
-[node name="Brick0" type="MeshInstance3D" parent="MultiBrickBatch/Row2" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -0.257574)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.112589, 0.0550563)
-instance_shader_parameters/brick_size = 0.515148
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_w874k")
-surface_material_override/2 = SubResource("ShaderMaterial_w874k")
-surface_material_override/3 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/4 = SubResource("ShaderMaterial_w874k")
-surface_material_override/5 = SubResource("ShaderMaterial_w874k")
-surface_material_override/6 = SubResource("ShaderMaterial_w874k")
+[node name="Brick0" parent="MultiBrickBatch/Row2" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -0.31312)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.145353, 0.0674566)
+instance_shader_parameters/brick_size = 0.62624
+surface_material_override/0 = SubResource("ShaderMaterial_mtmak")
+surface_material_override/1 = SubResource("ShaderMaterial_7h0pe")
+surface_material_override/2 = SubResource("ShaderMaterial_7h0pe")
+surface_material_override/3 = SubResource("ShaderMaterial_mtmak")
+surface_material_override/4 = SubResource("ShaderMaterial_7h0pe")
+surface_material_override/5 = SubResource("ShaderMaterial_7h0pe")
+surface_material_override/6 = SubResource("ShaderMaterial_7h0pe")
 
-[node name="Brick1" type="MeshInstance3D" parent="MultiBrickBatch/Row2" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -0.979752)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.135387, 0.0995992)
-instance_shader_parameters/brick_size = 0.929208
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_w874k")
-surface_material_override/2 = SubResource("ShaderMaterial_w874k")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_w874k")
-surface_material_override/5 = SubResource("ShaderMaterial_w874k")
-surface_material_override/6 = SubResource("ShaderMaterial_w874k")
+[node name="Brick1" parent="MultiBrickBatch/Row2" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -1.00763)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.127987, 0.0575611)
+instance_shader_parameters/brick_size = 0.76278
+surface_material_override/0 = SubResource("ShaderMaterial_xnc3p")
+surface_material_override/1 = SubResource("ShaderMaterial_fwxve")
+surface_material_override/2 = SubResource("ShaderMaterial_fwxve")
+surface_material_override/3 = SubResource("ShaderMaterial_fwxve")
+surface_material_override/4 = SubResource("ShaderMaterial_fwxve")
+surface_material_override/5 = SubResource("ShaderMaterial_fwxve")
+surface_material_override/6 = SubResource("ShaderMaterial_fwxve")
 
-[node name="Brick2" type="MeshInstance3D" parent="MultiBrickBatch/Row2" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -1.87349)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.12275, 0.0773786)
-instance_shader_parameters/brick_size = 0.85827
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_w874k")
-surface_material_override/2 = SubResource("ShaderMaterial_w874k")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_w874k")
-surface_material_override/5 = SubResource("ShaderMaterial_w874k")
-surface_material_override/6 = SubResource("ShaderMaterial_w874k")
+[node name="Brick2" parent="MultiBrickBatch/Row2" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -1.6813)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.144589, 0.0803686)
+instance_shader_parameters/brick_size = 0.584567
+surface_material_override/0 = SubResource("ShaderMaterial_sc1ey")
+surface_material_override/1 = SubResource("ShaderMaterial_vubat")
+surface_material_override/2 = SubResource("ShaderMaterial_vubat")
+surface_material_override/3 = SubResource("ShaderMaterial_vubat")
+surface_material_override/4 = SubResource("ShaderMaterial_vubat")
+surface_material_override/5 = SubResource("ShaderMaterial_vubat")
+surface_material_override/6 = SubResource("ShaderMaterial_vubat")
 
-[node name="Brick3" type="MeshInstance3D" parent="MultiBrickBatch/Row2" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -2.76794)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.149577, 0.0626997)
-instance_shader_parameters/brick_size = 0.930632
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_w874k")
-surface_material_override/2 = SubResource("ShaderMaterial_w874k")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_w874k")
-surface_material_override/5 = SubResource("ShaderMaterial_w874k")
-surface_material_override/6 = SubResource("ShaderMaterial_w874k")
+[node name="Brick3" parent="MultiBrickBatch/Row2" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -2.30988)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.130198, 0.0919347)
+instance_shader_parameters/brick_size = 0.672587
+surface_material_override/0 = SubResource("ShaderMaterial_7affn")
+surface_material_override/1 = SubResource("ShaderMaterial_pscuw")
+surface_material_override/2 = SubResource("ShaderMaterial_pscuw")
+surface_material_override/3 = SubResource("ShaderMaterial_pscuw")
+surface_material_override/4 = SubResource("ShaderMaterial_pscuw")
+surface_material_override/5 = SubResource("ShaderMaterial_pscuw")
+surface_material_override/6 = SubResource("ShaderMaterial_pscuw")
 
-[node name="Brick4" type="MeshInstance3D" parent="MultiBrickBatch/Row2" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -3.69381)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.149443, 0.0706548)
-instance_shader_parameters/brick_size = 0.921109
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_w874k")
-surface_material_override/2 = SubResource("ShaderMaterial_w874k")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_w874k")
-surface_material_override/5 = SubResource("ShaderMaterial_w874k")
-surface_material_override/6 = SubResource("ShaderMaterial_w874k")
+[node name="Brick4" parent="MultiBrickBatch/Row2" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -2.92309)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.145073, 0.0882942)
+instance_shader_parameters/brick_size = 0.553838
+surface_material_override/0 = SubResource("ShaderMaterial_efvg6")
+surface_material_override/1 = SubResource("ShaderMaterial_vq3op")
+surface_material_override/2 = SubResource("ShaderMaterial_vq3op")
+surface_material_override/3 = SubResource("ShaderMaterial_vq3op")
+surface_material_override/4 = SubResource("ShaderMaterial_vq3op")
+surface_material_override/5 = SubResource("ShaderMaterial_vq3op")
+surface_material_override/6 = SubResource("ShaderMaterial_vq3op")
 
-[node name="Brick5" type="MeshInstance3D" parent="MultiBrickBatch/Row2" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -4.57718)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.13147, 0.0519855)
-instance_shader_parameters/brick_size = 0.845633
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_w874k")
-surface_material_override/2 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_w874k")
-surface_material_override/5 = SubResource("ShaderMaterial_w874k")
-surface_material_override/6 = SubResource("ShaderMaterial_w874k")
+[node name="Brick5" parent="MultiBrickBatch/Row2" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -3.46563)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.120035, 0.0891066)
+instance_shader_parameters/brick_size = 0.531234
+surface_material_override/0 = SubResource("ShaderMaterial_dteos")
+surface_material_override/1 = SubResource("ShaderMaterial_p0l2c")
+surface_material_override/2 = SubResource("ShaderMaterial_p0l2c")
+surface_material_override/3 = SubResource("ShaderMaterial_p0l2c")
+surface_material_override/4 = SubResource("ShaderMaterial_p0l2c")
+surface_material_override/5 = SubResource("ShaderMaterial_p0l2c")
+surface_material_override/6 = SubResource("ShaderMaterial_p0l2c")
+
+[node name="Brick6" parent="MultiBrickBatch/Row2" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -4.11723)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.126147, 0.0923208)
+instance_shader_parameters/brick_size = 0.771971
+surface_material_override/0 = SubResource("ShaderMaterial_yx3yv")
+surface_material_override/1 = SubResource("ShaderMaterial_rf6tn")
+surface_material_override/2 = SubResource("ShaderMaterial_rf6tn")
+surface_material_override/3 = SubResource("ShaderMaterial_rf6tn")
+surface_material_override/4 = SubResource("ShaderMaterial_rf6tn")
+surface_material_override/5 = SubResource("ShaderMaterial_rf6tn")
+surface_material_override/6 = SubResource("ShaderMaterial_rf6tn")
+
+[node name="Brick7" parent="MultiBrickBatch/Row2" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -4.75161)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.12573, 0.0645361)
+instance_shader_parameters/brick_size = 0.496782
+surface_material_override/0 = SubResource("ShaderMaterial_afjao")
+surface_material_override/1 = SubResource("ShaderMaterial_7n5ta")
+surface_material_override/2 = SubResource("ShaderMaterial_afjao")
+surface_material_override/3 = SubResource("ShaderMaterial_7n5ta")
+surface_material_override/4 = SubResource("ShaderMaterial_7n5ta")
+surface_material_override/5 = SubResource("ShaderMaterial_7n5ta")
+surface_material_override/6 = SubResource("ShaderMaterial_7n5ta")
 
 [node name="Row3" type="Node3D" parent="MultiBrickBatch"]
 
-[node name="Brick0" type="MeshInstance3D" parent="MultiBrickBatch/Row3" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -0.308552)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.124334, 0.0638138)
-instance_shader_parameters/brick_size = 0.617104
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_w874k")
-surface_material_override/2 = SubResource("ShaderMaterial_w874k")
-surface_material_override/3 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/4 = SubResource("ShaderMaterial_w874k")
-surface_material_override/5 = SubResource("ShaderMaterial_w874k")
-surface_material_override/6 = SubResource("ShaderMaterial_w874k")
+[node name="Brick0" parent="MultiBrickBatch/Row3" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -0.377586)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.118796, 0.0602393)
+instance_shader_parameters/brick_size = 0.755173
+surface_material_override/0 = SubResource("ShaderMaterial_jfaif")
+surface_material_override/1 = SubResource("ShaderMaterial_2nr5s")
+surface_material_override/2 = SubResource("ShaderMaterial_2nr5s")
+surface_material_override/3 = SubResource("ShaderMaterial_jfaif")
+surface_material_override/4 = SubResource("ShaderMaterial_2nr5s")
+surface_material_override/5 = SubResource("ShaderMaterial_2nr5s")
+surface_material_override/6 = SubResource("ShaderMaterial_2nr5s")
 
-[node name="Brick1" type="MeshInstance3D" parent="MultiBrickBatch/Row3" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -0.828098)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.113276, 0.0706828)
-instance_shader_parameters/brick_size = 0.421988
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_w874k")
-surface_material_override/2 = SubResource("ShaderMaterial_w874k")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_w874k")
-surface_material_override/5 = SubResource("ShaderMaterial_w874k")
-surface_material_override/6 = SubResource("ShaderMaterial_w874k")
+[node name="Brick1" parent="MultiBrickBatch/Row3" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -1.27423)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.146284, 0.0797923)
+instance_shader_parameters/brick_size = 1.03811
+surface_material_override/0 = SubResource("ShaderMaterial_i1vtl")
+surface_material_override/1 = SubResource("ShaderMaterial_uge27")
+surface_material_override/2 = SubResource("ShaderMaterial_uge27")
+surface_material_override/3 = SubResource("ShaderMaterial_uge27")
+surface_material_override/4 = SubResource("ShaderMaterial_uge27")
+surface_material_override/5 = SubResource("ShaderMaterial_uge27")
+surface_material_override/6 = SubResource("ShaderMaterial_uge27")
 
-[node name="Brick2" type="MeshInstance3D" parent="MultiBrickBatch/Row3" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -1.30674)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.101358, 0.0605813)
-instance_shader_parameters/brick_size = 0.535301
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_w874k")
-surface_material_override/2 = SubResource("ShaderMaterial_w874k")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_w874k")
-surface_material_override/5 = SubResource("ShaderMaterial_w874k")
-surface_material_override/6 = SubResource("ShaderMaterial_w874k")
+[node name="Brick2" parent="MultiBrickBatch/Row3" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -2.15945)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.118944, 0.090968)
+instance_shader_parameters/brick_size = 0.732333
+surface_material_override/0 = SubResource("ShaderMaterial_q8bm8")
+surface_material_override/1 = SubResource("ShaderMaterial_u5yb0")
+surface_material_override/2 = SubResource("ShaderMaterial_u5yb0")
+surface_material_override/3 = SubResource("ShaderMaterial_u5yb0")
+surface_material_override/4 = SubResource("ShaderMaterial_u5yb0")
+surface_material_override/5 = SubResource("ShaderMaterial_u5yb0")
+surface_material_override/6 = SubResource("ShaderMaterial_u5yb0")
 
-[node name="Brick3" type="MeshInstance3D" parent="MultiBrickBatch/Row3" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -2.05369)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.121418, 0.0551541)
-instance_shader_parameters/brick_size = 0.958588
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_w874k")
-surface_material_override/2 = SubResource("ShaderMaterial_w874k")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_w874k")
-surface_material_override/5 = SubResource("ShaderMaterial_w874k")
-surface_material_override/6 = SubResource("ShaderMaterial_w874k")
+[node name="Brick3" parent="MultiBrickBatch/Row3" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -2.98912)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.144913, 0.071673)
+instance_shader_parameters/brick_size = 0.926991
+surface_material_override/0 = SubResource("ShaderMaterial_dxm01")
+surface_material_override/1 = SubResource("ShaderMaterial_w3pf4")
+surface_material_override/2 = SubResource("ShaderMaterial_w3pf4")
+surface_material_override/3 = SubResource("ShaderMaterial_w3pf4")
+surface_material_override/4 = SubResource("ShaderMaterial_w3pf4")
+surface_material_override/5 = SubResource("ShaderMaterial_w3pf4")
+surface_material_override/6 = SubResource("ShaderMaterial_w3pf4")
 
-[node name="Brick4" type="MeshInstance3D" parent="MultiBrickBatch/Row3" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -2.83567)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.118193, 0.087267)
-instance_shader_parameters/brick_size = 0.605379
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_w874k")
-surface_material_override/2 = SubResource("ShaderMaterial_w874k")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_w874k")
-surface_material_override/5 = SubResource("ShaderMaterial_w874k")
-surface_material_override/6 = SubResource("ShaderMaterial_w874k")
+[node name="Brick4" parent="MultiBrickBatch/Row3" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -3.78941)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.109174, 0.0565562)
+instance_shader_parameters/brick_size = 0.673593
+surface_material_override/0 = SubResource("ShaderMaterial_g6iij")
+surface_material_override/1 = SubResource("ShaderMaterial_5rx6y")
+surface_material_override/2 = SubResource("ShaderMaterial_5rx6y")
+surface_material_override/3 = SubResource("ShaderMaterial_5rx6y")
+surface_material_override/4 = SubResource("ShaderMaterial_5rx6y")
+surface_material_override/5 = SubResource("ShaderMaterial_5rx6y")
+surface_material_override/6 = SubResource("ShaderMaterial_5rx6y")
 
-[node name="Brick5" type="MeshInstance3D" parent="MultiBrickBatch/Row3" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -3.56766)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.135431, 0.0635225)
-instance_shader_parameters/brick_size = 0.858591
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_w874k")
-surface_material_override/2 = SubResource("ShaderMaterial_w874k")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_w874k")
-surface_material_override/5 = SubResource("ShaderMaterial_w874k")
-surface_material_override/6 = SubResource("ShaderMaterial_w874k")
-
-[node name="Brick6" type="MeshInstance3D" parent="MultiBrickBatch/Row3" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -4.49848)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.121722, 0.0540572)
-instance_shader_parameters/brick_size = 1.00305
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_w874k")
-surface_material_override/2 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_w874k")
-surface_material_override/5 = SubResource("ShaderMaterial_w874k")
-surface_material_override/6 = SubResource("ShaderMaterial_w874k")
+[node name="Brick5" parent="MultiBrickBatch/Row3" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -4.5631)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.137987, 0.0617454)
+instance_shader_parameters/brick_size = 0.873796
+surface_material_override/0 = SubResource("ShaderMaterial_msbbl")
+surface_material_override/1 = SubResource("ShaderMaterial_v0rq0")
+surface_material_override/2 = SubResource("ShaderMaterial_msbbl")
+surface_material_override/3 = SubResource("ShaderMaterial_v0rq0")
+surface_material_override/4 = SubResource("ShaderMaterial_v0rq0")
+surface_material_override/5 = SubResource("ShaderMaterial_v0rq0")
+surface_material_override/6 = SubResource("ShaderMaterial_v0rq0")
 
 [node name="Row4" type="Node3D" parent="MultiBrickBatch"]
 
-[node name="Brick0" type="MeshInstance3D" parent="MultiBrickBatch/Row4" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, -0.392765)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.147851, 0.0728428)
-instance_shader_parameters/brick_size = 0.785529
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_w874k")
-surface_material_override/2 = SubResource("ShaderMaterial_w874k")
-surface_material_override/3 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/4 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/5 = SubResource("ShaderMaterial_w874k")
-surface_material_override/6 = SubResource("ShaderMaterial_8vc8x")
+[node name="Brick0" parent="MultiBrickBatch/Row4" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, -0.374216)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.129895, 0.0894926)
+instance_shader_parameters/brick_size = 0.748433
+surface_material_override/0 = SubResource("ShaderMaterial_hp1w4")
+surface_material_override/1 = SubResource("ShaderMaterial_h24wl")
+surface_material_override/2 = SubResource("ShaderMaterial_h24wl")
+surface_material_override/3 = SubResource("ShaderMaterial_hp1w4")
+surface_material_override/4 = SubResource("ShaderMaterial_hp1w4")
+surface_material_override/5 = SubResource("ShaderMaterial_h24wl")
+surface_material_override/6 = SubResource("ShaderMaterial_hp1w4")
 
-[node name="Brick1" type="MeshInstance3D" parent="MultiBrickBatch/Row4" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, -1.18869)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.112383, 0.0911518)
-instance_shader_parameters/brick_size = 0.806317
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_w874k")
-surface_material_override/2 = SubResource("ShaderMaterial_w874k")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/5 = SubResource("ShaderMaterial_w874k")
-surface_material_override/6 = SubResource("ShaderMaterial_8vc8x")
+[node name="Brick1" parent="MultiBrickBatch/Row4" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, -1.17225)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.130099, 0.0881607)
+instance_shader_parameters/brick_size = 0.847629
+surface_material_override/0 = SubResource("ShaderMaterial_5g7ul")
+surface_material_override/1 = SubResource("ShaderMaterial_8jjj7")
+surface_material_override/2 = SubResource("ShaderMaterial_8jjj7")
+surface_material_override/3 = SubResource("ShaderMaterial_8jjj7")
+surface_material_override/4 = SubResource("ShaderMaterial_5g7ul")
+surface_material_override/5 = SubResource("ShaderMaterial_8jjj7")
+surface_material_override/6 = SubResource("ShaderMaterial_5g7ul")
 
-[node name="Brick2" type="MeshInstance3D" parent="MultiBrickBatch/Row4" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, -2.04465)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.149109, 0.0688329)
-instance_shader_parameters/brick_size = 0.905604
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_w874k")
-surface_material_override/2 = SubResource("ShaderMaterial_w874k")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/5 = SubResource("ShaderMaterial_w874k")
-surface_material_override/6 = SubResource("ShaderMaterial_8vc8x")
+[node name="Brick2" parent="MultiBrickBatch/Row4" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, -1.92735)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.137619, 0.0825977)
+instance_shader_parameters/brick_size = 0.662574
+surface_material_override/0 = SubResource("ShaderMaterial_ucvql")
+surface_material_override/1 = SubResource("ShaderMaterial_xtjv2")
+surface_material_override/2 = SubResource("ShaderMaterial_xtjv2")
+surface_material_override/3 = SubResource("ShaderMaterial_xtjv2")
+surface_material_override/4 = SubResource("ShaderMaterial_ucvql")
+surface_material_override/5 = SubResource("ShaderMaterial_xtjv2")
+surface_material_override/6 = SubResource("ShaderMaterial_ucvql")
 
-[node name="Brick3" type="MeshInstance3D" parent="MultiBrickBatch/Row4" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, -2.80126)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.102693, 0.090208)
-instance_shader_parameters/brick_size = 0.607613
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_w874k")
-surface_material_override/2 = SubResource("ShaderMaterial_w874k")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/5 = SubResource("ShaderMaterial_w874k")
-surface_material_override/6 = SubResource("ShaderMaterial_8vc8x")
+[node name="Brick3" parent="MultiBrickBatch/Row4" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, -2.67771)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.12378, 0.0639008)
+instance_shader_parameters/brick_size = 0.838141
+surface_material_override/0 = SubResource("ShaderMaterial_lgcrt")
+surface_material_override/1 = SubResource("ShaderMaterial_rwee7")
+surface_material_override/2 = SubResource("ShaderMaterial_rwee7")
+surface_material_override/3 = SubResource("ShaderMaterial_rwee7")
+surface_material_override/4 = SubResource("ShaderMaterial_lgcrt")
+surface_material_override/5 = SubResource("ShaderMaterial_rwee7")
+surface_material_override/6 = SubResource("ShaderMaterial_lgcrt")
 
-[node name="Brick4" type="MeshInstance3D" parent="MultiBrickBatch/Row4" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, -3.36748)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.108737, 0.0819047)
-instance_shader_parameters/brick_size = 0.524825
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_w874k")
-surface_material_override/2 = SubResource("ShaderMaterial_w874k")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/5 = SubResource("ShaderMaterial_w874k")
-surface_material_override/6 = SubResource("ShaderMaterial_8vc8x")
+[node name="Brick4" parent="MultiBrickBatch/Row4" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, -3.5296)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.108152, 0.0865187)
+instance_shader_parameters/brick_size = 0.865654
+surface_material_override/0 = SubResource("ShaderMaterial_p5rtf")
+surface_material_override/1 = SubResource("ShaderMaterial_3hxqo")
+surface_material_override/2 = SubResource("ShaderMaterial_3hxqo")
+surface_material_override/3 = SubResource("ShaderMaterial_3hxqo")
+surface_material_override/4 = SubResource("ShaderMaterial_p5rtf")
+surface_material_override/5 = SubResource("ShaderMaterial_3hxqo")
+surface_material_override/6 = SubResource("ShaderMaterial_p5rtf")
 
-[node name="Brick5" type="MeshInstance3D" parent="MultiBrickBatch/Row4" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, -3.89173)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.121404, 0.0658841)
-instance_shader_parameters/brick_size = 0.523689
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_w874k")
-surface_material_override/2 = SubResource("ShaderMaterial_w874k")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/5 = SubResource("ShaderMaterial_w874k")
-surface_material_override/6 = SubResource("ShaderMaterial_8vc8x")
-
-[node name="Brick6" type="MeshInstance3D" parent="MultiBrickBatch/Row4" instance=ExtResource("2_y0up5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, -4.57679)
-instance_shader_parameters/brick_color = Vector3(0.8, 0.100485, 0.0688239)
-instance_shader_parameters/brick_size = 0.846423
-mesh = ExtResource("3_pn82h")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/1 = SubResource("ShaderMaterial_w874k")
-surface_material_override/2 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/3 = SubResource("ShaderMaterial_w874k")
-surface_material_override/4 = SubResource("ShaderMaterial_8vc8x")
-surface_material_override/5 = SubResource("ShaderMaterial_w874k")
-surface_material_override/6 = SubResource("ShaderMaterial_8vc8x")
+[node name="Brick5" parent="MultiBrickBatch/Row4" instance=ExtResource("2_y0up5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, -4.48122)
+instance_shader_parameters/brick_color = Vector3(0.8, 0.112205, 0.0959006)
+instance_shader_parameters/brick_size = 1.03757
+surface_material_override/0 = SubResource("ShaderMaterial_34j0k")
+surface_material_override/1 = SubResource("ShaderMaterial_agtl4")
+surface_material_override/2 = SubResource("ShaderMaterial_34j0k")
+surface_material_override/3 = SubResource("ShaderMaterial_agtl4")
+surface_material_override/4 = SubResource("ShaderMaterial_34j0k")
+surface_material_override/5 = SubResource("ShaderMaterial_agtl4")
+surface_material_override/6 = SubResource("ShaderMaterial_34j0k")

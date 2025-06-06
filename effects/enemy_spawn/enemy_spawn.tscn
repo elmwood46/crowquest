@@ -1,0 +1,133 @@
+[gd_scene load_steps=21 format=3 uid="uid://dl1dmc5mbdcjm"]
+
+[ext_resource type="Texture2D" uid="uid://du3mftfysjgov" path="res://effects/enemy_spawn/shockwave_albedo.png" id="1_7j5qq"]
+
+[sub_resource type="GDScript" id="GDScript_7j5qq"]
+script/source = "@tool
+extends Node3D
+
+func test_particles():
+	$EnemySpawnEffect.restart()
+	$shockwave.restart()
+
+@export_tool_button(\"Test Particles\", \"Callable\") var button_action := Callable(self, \"test_particles\")
+	
+func _ready() -> void:
+	button_action = Callable(self, \"test_particles\")
+	if (!Engine.is_editor_hint()):
+		$EnemySpawnEffect.emitting = true
+		$shockwave.emitting = true
+
+func _process(_delta:float) -> void:
+	if (!$EnemySpawnEffect.emitting):
+		if (!$shockwave.emitting):
+			finish()
+
+func finish() -> void:
+	if (!Engine.is_editor_hint()):
+		queue_free()
+"
+
+[sub_resource type="Curve" id="Curve_w7gkk"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_7j5qq"]
+curve = SubResource("Curve_w7gkk")
+
+[sub_resource type="Curve" id="Curve_1ha5a"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_b5j1i"]
+curve = SubResource("Curve_1ha5a")
+
+[sub_resource type="Curve" id="Curve_5a41o"]
+_data = [Vector2(0, 1), 0.0, -2.89156, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_0hwwm"]
+curve = SubResource("Curve_5a41o")
+
+[sub_resource type="Curve" id="Curve_3kua7"]
+_limits = [0.0, 3.0, 0.0, 1.0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.210674, 1.48924), 0.0, 0.0, 0, 0, Vector2(1, 0.88307), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_c7nxh"]
+curve = SubResource("Curve_3kua7")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_yauow"]
+direction = Vector3(0, 1, 0)
+spread = 10.0
+initial_velocity_min = 0.2
+initial_velocity_max = 0.3
+radial_velocity_min = 1.99998
+radial_velocity_max = 2.99998
+radial_velocity_curve = SubResource("CurveTexture_b5j1i")
+gravity = Vector3(0, -0.1, 0)
+scale_max = 3.0
+scale_curve = SubResource("CurveTexture_0hwwm")
+scale_over_velocity_curve = SubResource("CurveTexture_c7nxh")
+alpha_curve = SubResource("CurveTexture_7j5qq")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_spucg"]
+transparency = 1
+vertex_color_use_as_albedo = true
+
+[sub_resource type="SphereMesh" id="SphereMesh_6q5jq"]
+material = SubResource("StandardMaterial3D_spucg")
+radial_segments = 8
+rings = 8
+
+[sub_resource type="Curve" id="Curve_7j5qq"]
+_data = [Vector2(0, 1), 0.0, 0.0321699, 0, 0, Vector2(1, 0), -0.769873, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_1ha5a"]
+curve = SubResource("Curve_7j5qq")
+
+[sub_resource type="Curve" id="Curve_b5j1i"]
+_limits = [0.0, 2.0, 0.0, 1.0]
+_data = [Vector2(0, 0.375179), 0.0, 0.0, 0, 0, Vector2(1, 2), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_5a41o"]
+curve = SubResource("Curve_b5j1i")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_0hwwm"]
+gravity = Vector3(0, 0, 0)
+scale_curve = SubResource("CurveTexture_5a41o")
+alpha_curve = SubResource("CurveTexture_1ha5a")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3kua7"]
+transparency = 1
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("1_7j5qq")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_c7nxh"]
+material = SubResource("StandardMaterial3D_3kua7")
+
+[node name="enemy_spawn_particles" type="Node3D"]
+script = SubResource("GDScript_7j5qq")
+
+[node name="EnemySpawnEffect" type="GPUParticles3D" parent="."]
+emitting = false
+amount = 16
+lifetime = 2.0
+one_shot = true
+speed_scale = 2.0
+explosiveness = 1.0
+randomness = 0.87
+process_material = SubResource("ParticleProcessMaterial_yauow")
+draw_pass_1 = SubResource("SphereMesh_6q5jq")
+
+[node name="shockwave" type="GPUParticles3D" parent="."]
+emitting = false
+amount = 1
+lifetime = 2.0
+one_shot = true
+speed_scale = 3.0
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_0hwwm")
+draw_pass_1 = SubResource("PlaneMesh_c7nxh")

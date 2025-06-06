@@ -92,10 +92,7 @@ public partial class BulletManager : Node
         if (_basic_bullets.Count == 0)
         {
             if (Engine.GetPhysicsFrames() % 2ul == 0ul)
-                foreach (var tracker in trackers_list)
-                {
-                    tracker.ManualUpdateTrackerInGrid();
-                }
+            foreach (var tracker in trackers_list) tracker.ManualUpdateTrackerInGrid();
             PhysBodyTracker.ManuallyFlushTrackers();
             return;
         }
@@ -152,6 +149,7 @@ public partial class BulletManager : Node
             // exclusion map
             exclusion_map[i] = [];
             var shooter_id = (PhysicsBody3D)_basic_bullets[i]["shooter_id"];
+            
             if (PhysBodyTracker.TryGetTrackerFromBody(shooter_id, out var shooter_tracker))
             {
                 exclusion_map[i].Add(shooter_tracker);

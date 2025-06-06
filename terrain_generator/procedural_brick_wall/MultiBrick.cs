@@ -15,9 +15,9 @@ public partial class MultiBrick : StaticBody3D
         face_top,
     }
 
-    private static readonly PackedScene BRICK_MESH_SCN = ResourceLoader.Load<PackedScene>("res://terrain_generator/brick_mesh.tscn"); 
-    private static readonly ShaderMaterial GUTTERS_SHADER = ResourceLoader.Load<ShaderMaterial>("res://terrain_generator/brick_shader_gutters.tres");
-    private static readonly ShaderMaterial BRICK_SHADER = ResourceLoader.Load<ShaderMaterial>("res://terrain_generator/brick_shader.tres");
+    private static readonly PackedScene BRICK_MESH_SCN = ResourceLoader.Load<PackedScene>("res://terrain_generator/procedural_brick_wall/brick_mesh.tscn"); 
+    private static readonly ShaderMaterial GUTTERS_SHADER = ResourceLoader.Load<ShaderMaterial>("res://terrain_generator/procedural_brick_wall/materials/brick_shader_gutters.tres");
+    private static readonly ShaderMaterial BRICK_SHADER = ResourceLoader.Load<ShaderMaterial>("res://terrain_generator/procedural_brick_wall/materials/brick_shader.tres");
     private static readonly Vector3 BRICK_SIZE = new(0.32f, 0.4f, 0.8f); 
     private const int MAX_BRICKS_IN_ROW = 100;
 

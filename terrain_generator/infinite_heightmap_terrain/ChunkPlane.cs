@@ -69,6 +69,12 @@ public partial class ChunkPlane : StaticBody3D
     private static readonly PackedScene _sarco_scene = GD.Load<PackedScene>("res://interactables/chest_scenes/stone_sarcophagus.tscn");
 
     // ==================================================================
+    // ====== ENEMY spawning ========
+    // ==================================================================
+    private static readonly HashSet<Vector2I> _track_spawned_enemies = []; // keep track of chunks where enemies already spawned
+    private static readonly PackedScene _enemy_spawn_room_scene = GD.Load<PackedScene>("res://terrain_generator/simple_wfc/enemy_spawn_room.tscn");
+
+    // ==================================================================
     // ====== Particle Effects ========
     // ==================================================================
     private static readonly PackedScene _firefly_particle_scene = GD.Load<PackedScene>("res://effects/gpu_particle_fireflies.tscn");
@@ -238,28 +244,41 @@ public partial class ChunkPlane : StaticBody3D
 
         var chunk_pos = GetChunkPosition();
         var is_starting_chunk = chunk_pos == Vector2I.Zero;
-        var seeded_random = ChunkManager.Instance.NoiseTexture.GetNoise2D(chunk_pos.X*32,chunk_pos.Y*32);
+        var seeded_random = ChunkManager.Instance.NoiseTexture.GetNoise2D(chunk_pos.X*ChunkManager.Instance.ChunkSize,chunk_pos.Y*ChunkManager.Instance.ChunkSize);
         var chunk_rng = new Random(GetCantorPairing(chunk_pos*Mathf.RoundToInt(seeded_random*1000)));
         seeded_random = seeded_random * 0.5f + 0.5f; // remap to 0-1
         var chunk_tile_id = SimpleWfc.GetTileID(chunk_pos);
         var has_diagonal_walls = seeded_random < 0.5 || is_starting_chunk;
 
+        var scale_paths_and_walls = ChunkManager.Instance.ChunkSize == 32 ? 1f : ChunkManager.Instance.ChunkSize / 32f;
+
         if (is_starting_chunk) // spawn starting plinth
         {
             var s = _starting_plinth.Instantiate<StaticBody3D>();
+            s.Scale = Vector3.One * scale_paths_and_walls;
             NavRegion.AddChild(s);
         }
         
         // ====== generate walls =====
-            var chunk_offset = ChunkManager.Instance.ChunkSize * chunk_pos;
+        var chunk_offset = ChunkManager.Instance.ChunkSize * chunk_pos;
         var path_set = SimpleWfc.GetTilePaths(chunk_tile_id);
+        var chunk_already_spawned_enemies = _track_spawned_enemies.Contains(chunk_pos);
 
-        if (!SuperFlatMode)
+        var wall_node = new Node3D
         {
-            var static_wall_set = SimpleWfc.GetTileStaticWall(chunk_tile_id, has_diagonal_walls ? 1:0);
+            Name = "Walls"
+        };
+        NavRegion.AddChild(wall_node);
+
+        if (!SuperFlatMode && !chunk_already_spawned_enemies)
+        {
+            var static_wall_set = SimpleWfc.GetTileStaticWall(chunk_tile_id, has_diagonal_walls ? 1 : 0);
             foreach (var wall in static_wall_set)
             {
                 var wall_copy = wall.Duplicate() as StaticBody3D;
+
+                wall_copy.Scale = Vector3.One * scale_paths_and_walls;
+
                 if (!DisableCSGWallGeneration)
                 {
                     foreach (var child in wall_copy.GetChildren())
@@ -270,8 +289,8 @@ public partial class ChunkPlane : StaticBody3D
                         }
                     }
                 }
-                NavRegion.AddChild(wall_copy);
-                wall_copy.GlobalPosition += Vector3.Down * 3.8f;
+                wall_node.AddChild(wall_copy);
+                wall_copy.GlobalPosition += Vector3.Down * 3.8f * scale_paths_and_walls;
             }
         }
 
@@ -281,25 +300,29 @@ public partial class ChunkPlane : StaticBody3D
             var path_copy = path.Duplicate() as Path3D;
             path_copy.Curve = path.Curve.Duplicate() as Curve3D;
 
+            path_copy.Scale = Vector3.One * scale_paths_and_walls;
+
             NavRegion.AddChild(path_copy);
 
-            if (DisableCSGWallGeneration || SuperFlatMode)
+            // only add the paths (for generating other objects) and then continue
+            if (DisableCSGWallGeneration || SuperFlatMode || chunk_already_spawned_enemies)
             {
                 nodePaths.Add(path_copy.GetPath());
                 path_copy.GlobalPosition *= 0.5f;
                 continue;
             }
 
+            // generate CSG walls if you didn't disable it above
             var wall = _csg_brick_wall_scene.Instantiate<CsgPolygon3D>();
             wall.UseCollision = false;
             if (has_diagonal_walls)
             {
                 wall.PathInterval = 10.0f;
             }
-            path_copy.AddChild(wall);
+            wall_node.AddChild(wall);
             wall.PathNode = path_copy.GetPath();
             nodePaths.Add(wall.PathNode);
-            path_copy.GlobalPosition *= 0.5f; // ???? the global position is doubled for some reason
+            path_copy.GlobalPosition *= 0.5f * scale_paths_and_walls; // ???? the global position of PATH is doubled for some reason
         }
 
         // DEBUG make hedges
@@ -316,9 +339,54 @@ public partial class ChunkPlane : StaticBody3D
         //     hedge.PathNode = path_node.GetPath();
         // }
 
+        // ====== create trigger spawn enemies =====
+        // DEBUG all chunks except starting chunk spawn enemies 
+        var should_spawn_enemies = !chunk_already_spawned_enemies && !is_starting_chunk && seeded_random < 1.0f;
+
+        if (should_spawn_enemies)
+        {
+            var _enemy_spawn_trigger = new Area3D
+            {
+                Name = "EnemySpawnTrigger",
+            };
+            var shape = new CollisionShape3D()
+            {
+                Shape = new BoxShape3D
+                {
+                    Size = new Vector3(ChunkManager.Instance.ChunkSize, 2, ChunkManager.Instance.ChunkSize) * 0.5f
+                }
+            };
+            _enemy_spawn_trigger.AddChild(shape);
+            _enemy_spawn_trigger.BodyEntered += (body) =>
+            {
+                if (body is Player player)
+                {
+                    // spawn enemies
+                    var tweener = wall_node.CreateTween();
+                    tweener.TweenProperty(wall_node, "position:y", -3f, 1.0f)
+                        .SetTrans(Tween.TransitionType.Elastic)
+                        .SetEase(Tween.EaseType.InOut);
+                    tweener.Finished += () =>
+                    {
+                        // spawn enemies in the room
+                        var enemy_spawn_room = _enemy_spawn_room_scene.Instantiate<EnemySpawnRoom>();
+                        enemy_spawn_room.Scale = Vector3.One*scale_paths_and_walls;
+                        NavRegion.AddChild(enemy_spawn_room);
+                        _track_spawned_enemies.Add(chunk_pos);
+                        wall_node.QueueFree();
+                        tweener.Kill();
+                    };
+
+                    // remove trigger
+                    _enemy_spawn_trigger.QueueFree();
+                }
+            };
+            NavRegion.AddChild(_enemy_spawn_trigger);
+        }
+
         //====== generate lamps =====
         var centerPoint = new Vector3(chunk_offset.X,0,chunk_offset.Y);
-        var distance_between_lamps = 16.0f;
+        var distance_between_lamps = 16.0f*1f/scale_paths_and_walls;
         var chunk_has_lamps = seeded_random < 0.4f || is_starting_chunk; 
         var lamp_node = new Node3D();
         NavRegion.AddChild(lamp_node);
@@ -632,7 +700,7 @@ public partial class ChunkPlane : StaticBody3D
                 mesh = GenerateHeightmapMesh(global_xz_offset);
             });
             MeshInstance.Mesh = mesh;
-            CollisionShape.Shape = new BoxShape3D() { Size = new Vector3(32, 1, 32) };//MeshInstance.Mesh.CreateTrimeshShape();
+            CollisionShape.Shape = new BoxShape3D() { Size = new Vector3(ChunkManager.Instance.ChunkSize, 1, ChunkManager.Instance.ChunkSize) };//MeshInstance.Mesh.CreateTrimeshShape();
             CollisionShape.Position = Vector3.Down * 0.5f;
             SetCollisionLayerValue(1, true);
             SetCollisionLayerValue(2, true);
@@ -648,10 +716,12 @@ public partial class ChunkPlane : StaticBody3D
         await Task.Delay(100);
         //if (!IsInGroup(NAV_GROUP_NAME+Name)) AddToGroup(NAV_GROUP_NAME+Name);
         PopulateNavmeshGroupRecursive(NavRegion);
+
+        // add a plane to the navmesh purely for baking, then remove it
         var bigplane = new StaticBody3D();
         var shape = new CollisionShape3D()
         {
-            Shape = new BoxShape3D() {Size = new Vector3(33,1,33)},
+            Shape = new BoxShape3D() {Size = new Vector3(ChunkManager.Instance.ChunkSize+1,1,ChunkManager.Instance.ChunkSize+1)},
             Position = Vector3.Down*0.5f
         };
         NavRegion.AddChild(bigplane);
@@ -663,7 +733,7 @@ public partial class ChunkPlane : StaticBody3D
         bigplane.AddChild(shape);
         bigplane.AddToGroup(NAV_GROUP_NAME+Name);
         NavRegion.BakeNavigationMesh();
-        bigplane.QueueFree();
+        bigplane.CallDeferred(MethodName.QueueFree);
     }
 
     public Vector2I GetChunkPosition()

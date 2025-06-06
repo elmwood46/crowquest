@@ -69,9 +69,11 @@ public partial class Enemy : RigidBody3D, IHurtable
     private Vector3 _base_sprite_position;
     private Vector3 _base_sprite_scale;
     private static readonly Color RED = new(1.0f,0.0f,0.0f);
-    private static readonly ShaderMaterial EnemyHitFlash = ResourceLoader.Load("res://enemies/enemy_hit_flash.tres") as ShaderMaterial;
-    private static readonly PackedScene _death_blood_fountain = ResourceLoader.Load<PackedScene>("res://effects/enemy_die_fx/enemy_die.tscn"); 
-    private static readonly PackedScene _death_smoke = ResourceLoader.Load<PackedScene>("res://effects/enemy_die_fx/enemy_death_smoke.tscn"); 
+    private static readonly ShaderMaterial EnemyHitFlash = GD.Load("res://enemies/enemy_hit_flash.tres") as ShaderMaterial;
+    private static readonly PackedScene _death_blood_fountain = GD.Load<PackedScene>("res://effects/enemy_die_fx/enemy_die.tscn"); 
+    private static readonly PackedScene _death_smoke = GD.Load<PackedScene>("res://effects/enemy_die_fx/enemy_death_smoke.tscn"); 
+    private static readonly PackedScene _stun_stars_scene = GD.Load<PackedScene>("res://effects/stun-stars/stun_stars.tscn");
+    private Node3D _stun_stars;
     private ShaderMaterial _sprite_shader;
     private Timer _stun_timer = new(){WaitTime = 1.0f, OneShot = true};
     public bool IsStunned() { return !_stun_timer.IsStopped(); }
@@ -148,6 +150,12 @@ public partial class Enemy : RigidBody3D, IHurtable
         AddChild(_idle_sound_timer);
         AddChild(_footstep_timer);
         AddChild(_touch_damage_cooldown);
+
+        // stun stars
+        _stun_stars = _stun_stars_scene.Instantiate<Node3D>();
+        _stun_stars.Position = Vector3.Up*2f;
+        AddChild(_stun_stars);
+        _stun_stars.Visible = false;
 
         _footstep_timer.Timeout += () =>
         {
@@ -347,8 +355,11 @@ public partial class Enemy : RigidBody3D, IHurtable
             _sprite_shader.SetShaderParameter("tex", Sprite.SpriteFrames.GetFrameTexture(Sprite.Animation, Sprite.Frame));
         }
 
+        // stun stars
+        _stun_stars.Visible = IsStunned();
+
         // damage flash
-        if (IsStunned())
+        if (_stun_stars.Visible)
         {
             if ((bool)_sprite_shader.GetShaderParameter("flash_enabled") != true) _sprite_shader.SetShaderParameter("flash_enabled", true);
             if ((bool)_sprite_shader.GetShaderParameter("pulse_mode") != true) _sprite_shader.SetShaderParameter("pulse_mode", true);
@@ -418,13 +429,13 @@ public partial class Enemy : RigidBody3D, IHurtable
         
         Health -= damage;
 
-        var _stun = damage > Health / 2 ? 1.0 : PainChance;
+        var stun_chance = damage > Health / 2 ? 1.0 : PainChance;
         if (damage > 0) AudioManager.TryPlay(AttackManager.HitSound, AudioBus.Enemies, GlobalPosition, pitch_scale: 0.9f + 0.2f * Random.Shared.NextSingle());
 
         if (Health > 0)
         {
             
-            if (!IsStunned() && Random.Shared.NextSingle() < _stun)
+            if (!IsStunned() && Random.Shared.NextSingle() < stun_chance)
             {
                 if (_currentAttack == null || (_currentAttack != null && _currentAttack.CanBeInterrupted))
                 {
@@ -438,11 +449,10 @@ public partial class Enemy : RigidBody3D, IHurtable
                     StopIdleSoundTimer();
                     if (PainSounds.Count > 0)
                     {
-                        var stream = PainSounds[Random.Shared.Next(0, PainSounds.Count)];
+                        var stream = PainSounds[Random.Shared.Next(PainSounds.Count)];
                         AudioManager.TryPlay(stream, AudioBus.Enemies, GlobalPosition);
                     }
-                    _stun_timer.WaitTime = StunDuration;
-                    _stun_timer.Start();
+                    SetStun(StunDuration);
                 }
             }
         }

@@ -1,0 +1,35 @@
+[gd_scene load_steps=12 format=3 uid="uid://dkvoar07gxjj5"]
+
+[ext_resource type="Script" uid="uid://cd11pkcimdmbj" path="res://terrain_generator/dungeon_generator/BlockManager.cs" id="1_v0an8"]
+[ext_resource type="Texture2D" uid="uid://dgljosf5clkrr" path="res://terrain_generator/dungeon_generator/block_textures/EMPTY_TEXTURE.png" id="2_evril"]
+[ext_resource type="Script" uid="uid://cqcdyoted6urf" path="res://terrain_generator/dungeon_generator/Block.cs" id="3_un1hw"]
+[ext_resource type="Texture2D" uid="uid://bk8yjtit30xym" path="res://terrain_generator/dungeon_generator/block_textures/DIR4.png" id="4_a7ad4"]
+[ext_resource type="Texture2D" uid="uid://ctwl1cv6duaqn" path="res://terrain_generator/dungeon_generator/block_textures/DIR0.png" id="5_m7fg8"]
+[ext_resource type="Texture2D" uid="uid://dbaamou0tsw0i" path="res://terrain_generator/dungeon_generator/block_textures/DIR5.png" id="6_cc0vs"]
+[ext_resource type="Texture2D" uid="uid://bqrf2s4a6sufy" path="res://terrain_generator/dungeon_generator/block_textures/DIR2.png" id="7_1db4c"]
+[ext_resource type="Texture2D" uid="uid://n4tvh6fodhp3" path="res://terrain_generator/dungeon_generator/block_textures/DIR3.png" id="8_jco46"]
+[ext_resource type="Texture2D" uid="uid://bjeb7iwp4pdwu" path="res://terrain_generator/dungeon_generator/block_textures/DIR1.png" id="9_mruwj"]
+
+[sub_resource type="Resource" id="Resource_cmci1"]
+script = ExtResource("3_un1hw")
+Name = "Air"
+Species = 0
+MidTexture = ExtResource("2_evril")
+metadata/_custom_type_script = "uid://cqcdyoted6urf"
+
+[sub_resource type="Resource" id="Resource_34c0d"]
+script = ExtResource("3_un1hw")
+Name = "Test"
+Species = 3
+BottomTexture = ExtResource("5_m7fg8")
+TopTexture = ExtResource("9_mruwj")
+LeftTexture = ExtResource("7_1db4c")
+RightTexture = ExtResource("8_jco46")
+BackTexture = ExtResource("4_a7ad4")
+FrontTexture = ExtResource("6_cc0vs")
+metadata/_custom_type_script = "uid://cqcdyoted6urf"
+
+[node name="BlockManager" type="Node"]
+script = ExtResource("1_v0an8")
+Blocks = Array[Object]([SubResource("Resource_cmci1"), SubResource("Resource_34c0d")])
+metadata/_custom_type_script = "uid://cd11pkcimdmbj"

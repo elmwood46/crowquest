@@ -4,3 +4,4 @@
 
 [node name="PhysBodyTracker" type="Node"]
 script = ExtResource("1_svhvg")
+metadata/_custom_type_script = "uid://5k80ax4efb6e"

@@ -1,0 +1,12 @@
+[gd_resource type="ShaderMaterial" load_steps=3 format=3 uid="uid://b5bxiodgcxcj0"]
+
+[ext_resource type="Shader" uid="uid://cnhx8v00hlmu1" path="res://terrain_generator/dungeon_generator/shaders/LavaShader.gdshader" id="1_w4pt7"]
+[ext_resource type="Texture2D" uid="uid://bfkkhex3u7nbc" path="res://effects/sampler_textures/T_VFX_Noise_44xainv.png" id="2_x86ou"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_w4pt7")
+shader_parameter/timeScaleFactor = 0.04
+shader_parameter/noise_texture = ExtResource("2_x86ou")
+shader_parameter/emission_color = Color(1, 0.717647, 0, 1)
+shader_parameter/emission_strength = 0.0

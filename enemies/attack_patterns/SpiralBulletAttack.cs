@@ -63,7 +63,7 @@ public partial class SpiralBulletAttack : Node3D, IAttack
                 {
                     if (_bullets_spawned >= _bullet_count) return;
                     var bullet_dir = enemy.XZDirectionToPlayer().Rotated(Vector3.Up,MathF.PI*_bullets_spawned/16);
-                    BulletManager.AddBullet(shooter:enemy, damage:BaseDamage, DamageTypeFlagEnum.Physical, shot_direction:bullet_dir, speed:5.0f, harms_enemies:false,homing_rate:0.01f) ;
+                    BulletManager.AddBullet(shooter:enemy, damage:BaseDamage, DamageTypeFlagEnum.Physical, shot_direction:bullet_dir, speed:5.0f, harms_enemies:false,homing_rate:0.00f) ;
                     if (Mathf.FloorToInt(_bullets_spawned/(float)_bullet_count)*100%10 == 0)
                     {
                         AudioManager.TryPlay(BulletFireSound, AudioBus.Misc, enemy.GlobalPosition);

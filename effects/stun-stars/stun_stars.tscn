@@ -1,0 +1,23 @@
+[gd_scene load_steps=5 format=3 uid="uid://dmj6tuntlp62o"]
+
+[ext_resource type="Shader" uid="uid://vhdil3qi84jf" path="res://effects/stun-stars/stun-star-banner.gdshader" id="1_ov51x"]
+[ext_resource type="Texture2D" uid="uid://bxcbjy2xv16ak" path="res://effects/stun-stars/yellow-star.png" id="2_ihnjn"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_ihnjn"]
+height = 0.5
+radial_segments = 24
+rings = 1
+cap_top = false
+cap_bottom = false
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5crfg"]
+render_priority = 0
+shader = ExtResource("1_ov51x")
+shader_parameter/star_albedo = ExtResource("2_ihnjn")
+
+[node name="StunStars" type="Node3D"]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("CylinderMesh_ihnjn")
+surface_material_override/0 = SubResource("ShaderMaterial_5crfg")
