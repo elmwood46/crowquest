@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://dkvoar07gxjj5"]
+[gd_scene load_steps=18 format=3 uid="uid://dkvoar07gxjj5"]
 
 [ext_resource type="Script" uid="uid://cd11pkcimdmbj" path="res://terrain_generator/dungeon_generator/BlockManager.cs" id="1_v0an8"]
 [ext_resource type="Texture2D" uid="uid://dgljosf5clkrr" path="res://terrain_generator/dungeon_generator/block_textures/EMPTY_TEXTURE.png" id="2_evril"]
@@ -9,6 +9,9 @@
 [ext_resource type="Texture2D" uid="uid://bqrf2s4a6sufy" path="res://terrain_generator/dungeon_generator/block_textures/DIR2.png" id="7_1db4c"]
 [ext_resource type="Texture2D" uid="uid://n4tvh6fodhp3" path="res://terrain_generator/dungeon_generator/block_textures/DIR3.png" id="8_jco46"]
 [ext_resource type="Texture2D" uid="uid://bjeb7iwp4pdwu" path="res://terrain_generator/dungeon_generator/block_textures/DIR1.png" id="9_mruwj"]
+[ext_resource type="Texture2D" uid="uid://dfh1h7kudr6n7" path="res://terrain_generator/dungeon_generator/block_textures/chessTile_0.png" id="10_un1hw"]
+[ext_resource type="Texture2D" uid="uid://ssg60eiqh07n" path="res://terrain_generator/dungeon_generator/block_textures/chessTile_1.png" id="11_a7ad4"]
+[ext_resource type="Texture2D" uid="uid://br7o1hcamaf2j" path="res://terrain_generator/dungeon_generator/block_textures/chessTile_2.png" id="12_a7ad4"]
 
 [sub_resource type="Resource" id="Resource_cmci1"]
 script = ExtResource("3_un1hw")
@@ -29,7 +32,28 @@ BackTexture = ExtResource("4_a7ad4")
 FrontTexture = ExtResource("6_cc0vs")
 metadata/_custom_type_script = "uid://cqcdyoted6urf"
 
+[sub_resource type="Resource" id="Resource_qsp4k"]
+script = ExtResource("3_un1hw")
+Name = "ChessBlack"
+Species = 3
+MidTexture = ExtResource("10_un1hw")
+metadata/_custom_type_script = "uid://cqcdyoted6urf"
+
+[sub_resource type="Resource" id="Resource_kq58d"]
+script = ExtResource("3_un1hw")
+Name = "ChessWhite"
+Species = 3
+MidTexture = ExtResource("11_a7ad4")
+metadata/_custom_type_script = "uid://cqcdyoted6urf"
+
+[sub_resource type="Resource" id="Resource_seu75"]
+script = ExtResource("3_un1hw")
+Name = "ChessRed"
+Species = 3
+MidTexture = ExtResource("12_a7ad4")
+metadata/_custom_type_script = "uid://cqcdyoted6urf"
+
 [node name="BlockManager" type="Node"]
 script = ExtResource("1_v0an8")
-Blocks = Array[Object]([SubResource("Resource_cmci1"), SubResource("Resource_34c0d")])
+Blocks = Array[Object]([SubResource("Resource_cmci1"), SubResource("Resource_34c0d"), SubResource("Resource_qsp4k"), SubResource("Resource_kq58d"), SubResource("Resource_seu75")])
 metadata/_custom_type_script = "uid://cd11pkcimdmbj"

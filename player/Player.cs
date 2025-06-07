@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 
+[GlobalClass]
 public partial class Player : CharacterBody3D, IHurtable
 {
 	[ExportCategory("Player Features")]
@@ -114,6 +115,7 @@ public partial class Player : CharacterBody3D, IHurtable
 
 	// =======================================================================
 	public static Player Instance { get; private set; }
+	public static Player GetInstance() => Instance;
 
 	[ExportCategory("Node References")]
 	[Export] public EnergyShield EnergyShield { get; set; }
@@ -135,7 +137,14 @@ public partial class Player : CharacterBody3D, IHurtable
 	{
 		if (Engine.IsEditorHint()) return;
 
+
+
+		if (GetNodeOrNull("../Chunk3d") is Chunk3d chunk3d)
+		{
+			GlobalPosition = chunk3d.GlobalPosition + new Vector3(chunk3d.ChunkSize / 2, chunk3d.BaseChunkHeight, chunk3d.ChunkSize / 2);
+		}
 		_spawn_positon = GlobalPosition;
+
 
 		Instance = this;
 		HoverText.Text = "";
@@ -259,7 +268,7 @@ public partial class Player : CharacterBody3D, IHurtable
 		AddChild(_footstep_timer);
 		_footstep_timer.Timeout += () =>
 		{
-			if (Velocity.LengthSquared() > 0.1f && IsOnFloor())
+			if (Velocity.LengthSquared() > 0.1f && IsOnFloor() && !_is_rolling)
 			{
 				PlayFootstepSound();
 			}
@@ -658,7 +667,7 @@ public partial class Player : CharacterBody3D, IHurtable
 		if (HasRollIFrames()) return; //{ GD.Print("player has roll iframes"); return; }
 		if (_iFramesStopwatch.ElapsedMilliseconds > _iFramesWaitTime)
 		{
-			AttackManager.DamagePopup(damage, this, targ_scale:Vector3.One*(0.8f + 0.5f*damage / MaxHealth));
+			AttackManager.DamagePopup(damage, this, targ_scale: Vector3.One * (0.8f + 0.5f * damage / MaxHealth));
 			AudioManager.TryPlay(AttackManager.HitSound, AudioBus.Master, GlobalPosition, pitch_scale: 0.9f + 0.2f * Random.Shared.NextSingle());
 			_blood_spray_timer.Start(_blood_spray_duration);
 			var damage_ratio = 1.0f * damage / MaxHealth;
@@ -885,7 +894,7 @@ public partial class Player : CharacterBody3D, IHurtable
 	{
 		return [.. _enemies_non_blocked_in_area.Where(IsInstanceValid)];
 	}
-	
+
 	private void UpdateAutoattackEnemiesList()
 	{
 		_enemies_non_blocked_in_area.Clear();

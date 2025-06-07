@@ -1,0 +1,34 @@
+[gd_scene load_steps=5 format=4 uid="uid://ws4fgie4i2r"]
+
+[ext_resource type="Material" uid="uid://c3dmfyyrtj1nb" path="res://terrain_generator/dungeon_generator/dungeon-wfc/fence/fence_material.tres" id="1_1w0ol"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_20ri4"]
+_surfaces = [{
+"aabb": AABB(-0.1, 0.3, -1, 0.2, 0.6, 1),
+"attribute_data": PackedByteArray("AACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAPwAAgD8AAIA/AAAAAAAAAAAAAAAA"),
+"format": 34359738391,
+"material": ExtResource("1_1w0ol"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 72,
+"vertex_data": PackedByteArray("zczMvQAAAD8AAIC/zczMvZqZmT4AAIC/zczMPZqZmT4AAIC/zczMPZqZmT4AAIC/zczMPZqZmT4AAAAAzczMPQAAAD8AAAAAzczMPQAAAD8AAAAAzczMPZqZmT4AAAAAzczMvZqZmT4AAAAAzczMvZqZmT4AAAAAzczMPZqZmT4AAAAAzczMPZqZmT4AAIC/zczMPQAAAD8AAAAAzczMPQAAAD8AAIC/zczMPZqZmT4AAIC/zczMvQAAAD8AAIC/zczMPQAAAD8AAIC/zczMPQAAAD8AAAAAzczMPZqZmT4AAIC/zczMPQAAAD8AAIC/zczMvQAAAD8AAIC/zczMPQAAAD8AAAAAzczMvQAAAD8AAAAAzczMvQAAAD8AAIC/zczMvZqZmT4AAAAAzczMvQAAAD8AAAAAzczMPQAAAD8AAAAAzczMvQAAAD8AAIC/zczMvQAAAD8AAAAAzczMvZqZmT4AAAAAzczMPZqZmT4AAIC/zczMvZqZmT4AAIC/zczMvZqZmT4AAAAAzczMvZqZmT4AAAAAzczMvZqZmT4AAIC/zczMvQAAAD8AAIC/zczMPTMzMz8AAIC/zczMPTMzMz8AAAAAzczMPWdmZj8AAAAAzczMPTMzMz8AAIC/zczMvTMzMz8AAIC/zczMvTMzMz8AAAAAzczMPWdmZj8AAAAAzczMPTMzMz8AAAAAzczMvTMzMz8AAAAAzczMvTMzMz8AAAAAzczMPTMzMz8AAAAAzczMPTMzMz8AAIC/zczMPWdmZj8AAAAAzczMPWdmZj8AAIC/zczMPTMzMz8AAIC/zczMvWdmZj8AAIC/zczMPWdmZj8AAIC/zczMPWdmZj8AAAAAzczMPTMzMz8AAIC/zczMPWdmZj8AAIC/zczMvWdmZj8AAIC/zczMvTMzMz8AAAAAzczMvTMzMz8AAIC/zczMvWdmZj8AAIC/zczMvTMzMz8AAAAAzczMvWdmZj8AAAAAzczMPWdmZj8AAAAAzczMPWdmZj8AAAAAzczMvWdmZj8AAAAAzczMvWdmZj8AAIC/zczMvWdmZj8AAIC/zczMvWdmZj8AAAAAzczMvTMzMz8AAAAAzczMvWdmZj8AAIC/zczMvTMzMz8AAIC/zczMPTMzMz8AAIC//////wAA/z//////AAD/P/////8AAP8/////f/9//n////9//3/+f////3//f/5//3//fwAA/z//f/9/AAD/P/9//38AAP8//38AAP//AAD/fwAA//8AAP9/AAD//wAA////f/9//n////9//3/+f////3//f/5//3//////AAD/f/////8AAP9//////wAA/////wAA/z//////AAD/P/////8AAP8//3//////AAD/f/////8AAP9//////wAA/3//fwAA/z//f/9/AAD/P/9//38AAP8/AAD/f/9//n8AAP9//3/+fwAA/3//f/5//38AAP//AAD/fwAA//8AAP9/AAD//wAAAAD/f/9//n8AAP9//3/+fwAA/3//f/5/////f/9//n////9//3/+f////3//f/5//38AAP//AAD/fwAA//8AAP9/AAD//wAA/3//fwAA/z//f/9/AAD/P/9//38AAP8//38AAP//AAD/fwAA//8AAP9/AAD//wAA////f/9//n////9//3/+f////3//f/5//3//////AAD/f/////8AAP9//////wAA/////wAA/z//////AAD/P/////8AAP8/AAD/f/9//n8AAP9//3/+fwAA/3//f/5//3//fwAA/z//f/9/AAD/P/9//38AAP8//3//////AAD/f/////8AAP9//////wAAAAD/f/9//n8AAP9//3/+fwAA/3//f/5//////wAA/z//////AAD/P/////8AAP8/")
+}]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_c610o"]
+size = Vector3(0.2, 0.2, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_eiyv7"]
+size = Vector3(0.2, 0.2, 1)
+
+[node name="FenceMiddle" type="StaticBody3D"]
+
+[node name="CSGBakedMeshInstance3D2" type="MeshInstance3D" parent="."]
+mesh = SubResource("ArrayMesh_20ri4")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -0.5)
+shape = SubResource("BoxShape3D_c610o")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, -0.5)
+shape = SubResource("BoxShape3D_eiyv7")

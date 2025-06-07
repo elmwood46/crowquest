@@ -230,6 +230,13 @@ public partial class Enemy : RigidBody3D, IHurtable
         if (GlobalPosition.Y < -100f)
         {
             var min_dist = float.MaxValue;
+
+            if (!IsDead() && ChunkManager.Instance == null || !IsInstanceValid(ChunkManager.Instance))
+            {
+                TakeDamage(99999, DamageTypeFlagEnum.Physical);
+                return;
+            }
+
             var chunks = ChunkManager.Instance.GetChunks();
             ChunkPlane chunk_to_teleport = null;
             foreach (var chunk in chunks)

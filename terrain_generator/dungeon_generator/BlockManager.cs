@@ -58,40 +58,49 @@ public partial class BlockManager : Node
 
 	public Texture2DArray TextureArray = new();
 
-	public int LavaBlockId {get; private set;}
-	public static int StoneBlockId {get; private set;}
-	public static int GrassBlockId {get; private set;}
-	public static int DirtBlockId {get; private set;}
-	
+	public uint LavaBlockId { get; private set; }
+	public static uint StoneBlockId { get; private set; }
+	public static uint GrassBlockId { get; private set; }
+	public static uint DirtBlockId { get; private set; }
+	public static uint ChessBlackBlockId { get; private set; }
+	public static uint ChessWhiteBlockId { get; private set; }
+	public static uint ChessRedBlockId { get; private set; }
+
 	// shader defaults
 	private static readonly NoiseTexture2D noise = ResourceLoader.Load("res://terrain_generator/dungeon_generator/shaders/flamenoise.tres") as NoiseTexture2D;
 	private static readonly NoiseTexture2D spotnoise = ResourceLoader.Load("res://terrain_generator/dungeon_generator/shaders/flame_spotnoise.tres") as NoiseTexture2D;
-	private static readonly Color fire_border_colour = new(1.0f,1.0f,1.0f,1.0f);
-	private static readonly Color fire_emission_colour = new(0.96f,0.35f,0.0f,1.0f);
-	private static readonly Color pulse_colour = new(0.96f,0.88f,0.0f,0.43f);
-	private static readonly Color burned_colour = new(0.2f, 0.09f, 0.03f,1.0f);
+	private static readonly Color fire_border_colour = new(1.0f, 1.0f, 1.0f, 1.0f);
+	private static readonly Color fire_emission_colour = new(0.96f, 0.35f, 0.0f, 1.0f);
+	private static readonly Color pulse_colour = new(0.96f, 0.88f, 0.0f, 0.43f);
+	private static readonly Color burned_colour = new(0.2f, 0.09f, 0.03f, 1.0f);
 	private static readonly Color acid_colour = new(0, 0.9490196078f, 0);
 	private static readonly Color acid_edge = new(0.0509803922f, 0.6980392157f, 0.0470588235f);
-	public static BlockSpecies BlockSpecies(string blockName) {
+	public static BlockSpecies BlockSpecies(string blockName)
+	{
 		return Instance.Blocks[BlockID(blockName)].Species;
 	}
 
-	public static int BlockID(string blockName) {
+	public static int BlockID(string blockName)
+	{
 		return Instance._blockIdLookup[blockName];
 	}
 
-	public static string BlockName(int blockID) {
+	public static string BlockName(int blockID)
+	{
 		return Instance.Blocks[blockID].Name;
 	}
 
-	public static int[] BlockTextureArrayPositions(uint blockID) {
+	public static int[] BlockTextureArrayPositions(uint blockID)
+	{
 		return Instance.Blocks[(int)blockID].BakedTextureArrayPositions;
 	}
 
-	private int[] GetBlockTextureArrayPositions(int blockID) {
+	private int[] GetBlockTextureArrayPositions(int blockID)
+	{
 		var texarray = Instance.Blocks[blockID].Textures;
 		var result = new int[texarray.Length];
-		for (int i=0; i<texarray.Length; i++) {
+		for (int i = 0; i < texarray.Length; i++)
+		{
 			result[i] = _texarraylookup[texarray[i]];
 			//GD.Print($"Block {Blocks[blockID].Name} texture {i} is at array position {result[i]}");
 		}
@@ -100,43 +109,51 @@ public partial class BlockManager : Node
 
 	public override void _Ready()
 	{
-        _texarraylookup.Clear();
-        _blockIdLookup.Clear();
+		SetupBlockManager();
+	}
+
+	public void SetupBlockManager()
+	{
+		_texarraylookup.Clear();
+		_blockIdLookup.Clear();
 
 		Instance = this;
 
 		LavaShader = ResourceLoader.Load("res://terrain_generator/dungeon_generator/shaders/LavaShader.tres") as ShaderMaterial;
 
-		if (Blocks[0].Name != "Air") throw new Exception("Blockmanager blocks array was set up incorrectly: block 0 must be the air block.");	
+		if (Blocks[0].Name != "Air") throw new Exception("Blockmanager blocks array was set up incorrectly: block 0 must be the air block.");
 
-		var enumerable = Blocks.Select(block => {block.SetTextures(); return block;}).SelectMany(block => block.Textures).Where(texture => texture != null).Distinct();
+		var enumerable = Blocks.Select(block => { block.SetTextures(); return block; }).SelectMany(block => block.Textures).Where(texture => texture != null).Distinct();
 		var blockTextures = enumerable.ToArray();
-        var blockImages = new Array<Image> (enumerable.Select(texture =>
+		var blockImages = new Array<Image>(enumerable.Select(texture =>
 				{
 					var image = texture.GetImage(); // Create an Image object from the texture
 					return image;
 				})
 			);
 
-        //var tex_array = new Texture2DArray();
+		//var tex_array = new Texture2DArray();
 		for (int i = 0; i < blockTextures.Length; i++)
-        {
-            var texture = blockTextures[i];
-            _texarraylookup.Add(texture, i);    // map texture to position in texture array
-        }
+		{
+			var texture = blockTextures[i];
+			_texarraylookup.Add(texture, i);    // map texture to position in texture array
+		}
 		TextureArray.CreateFromImages(blockImages);
 
-        // get the ordered texture array positions for each block's texture
-        // and store them in the block
-        for (int i = 0; i < Blocks.Count; i++)
-        {
-            _blockIdLookup.Add(Blocks[i].Name, i);
-            if (Blocks[i].Name == "Lava") LavaBlockId = i;
-            if (Blocks[i].Name == "Stone") StoneBlockId = i;
-            if (Blocks[i].Name == "Grass") GrassBlockId = i;
-            if (Blocks[i].Name == "Dirt") DirtBlockId = i;
-            Instance.Blocks[i].BakedTextureArrayPositions = GetBlockTextureArrayPositions(i);
-        }
+		// get the ordered texture array positions for each block's texture
+		// and store them in the block
+		for (int i = 0; i < Blocks.Count; i++)
+		{
+			_blockIdLookup.Add(Blocks[i].Name, i);
+			if (Blocks[i].Name == "Lava") LavaBlockId = (uint)i;
+			if (Blocks[i].Name == "Stone") StoneBlockId = (uint)i;
+			if (Blocks[i].Name == "Grass") GrassBlockId = (uint)i;
+			if (Blocks[i].Name == "Dirt") DirtBlockId = (uint)i;
+			if (Blocks[i].Name == "ChessBlack") ChessBlackBlockId = (uint)i;
+			if (Blocks[i].Name == "ChessWhite") ChessWhiteBlockId = (uint)i;
+			if (Blocks[i].Name == "ChessRed") ChessRedBlockId = (uint)i;
+			Instance.Blocks[i].BakedTextureArrayPositions = GetBlockTextureArrayPositions(i);
+		}
 
 		// setup shader defaults
 		ChunkMaterial = ResourceLoader.Load("res://terrain_generator/dungeon_generator/shaders/chunk_uv_shader.tres") as ShaderMaterial;
@@ -177,7 +194,7 @@ public partial class BlockManager : Node
 		BrokenBlockShader.SetShaderParameter("_burncol", burned_colour);
 		BrokenBlockShader.SetShaderParameter("_acidcol", acid_colour);
 		BrokenBlockShader.SetShaderParameter("_acidedge", acid_edge);
-		
+
 		CellFractureBlockShader = ResourceLoader.Load("res://terrain_generator/dungeon_generator/shaders/RIGID_BREAK_SHADER.tres") as ShaderMaterial;
 		CellFractureBlockShader.SetShaderParameter("_albedo", TextureArray);
 		CellFractureBlockShader.SetShaderParameter("_displacement", ResourceLoader.Load("res://terrain_generator/dungeon_generator/block_textures/damaged_blocks/Ground_Dirt_006_DISPa.png"));
@@ -194,7 +211,7 @@ public partial class BlockManager : Node
 		CellFractureBlockShader.SetShaderParameter("_acidcol", acid_colour);
 		CellFractureBlockShader.SetShaderParameter("_acidedge", acid_edge);
 
-        DestructibleObjectShader = ResourceLoader.Load("res://terrain_generator/dungeon_generator/shaders/breakable_object.tres") as ShaderMaterial;
+		DestructibleObjectShader = ResourceLoader.Load("res://terrain_generator/dungeon_generator/shaders/breakable_object.tres") as ShaderMaterial;
 		DestructibleObjectShader.SetShaderParameter("_displacement", ResourceLoader.Load("res://terrain_generator/dungeon_generator/block_textures/damaged_blocks/Ground_Dirt_006_DISPa.png"));
 		DestructibleObjectShader.SetShaderParameter("_roughness", ResourceLoader.Load("res://terrain_generator/dungeon_generator/block_textures/damaged_blocks/Ground_Dirt_006_ROUGH.jpg"));
 		DestructibleObjectShader.SetShaderParameter("_normalmap", ResourceLoader.Load("res://terrain_generator/dungeon_generator/block_textures/damaged_blocks/Ground_Dirt_006_NORM.jpg"));
@@ -213,16 +230,16 @@ public partial class BlockManager : Node
 		DestructibleObjectShader.SetShaderParameter("_fuse_ratio", 0.0f);
 		DestructibleObjectShader.SetShaderParameter("_fuse_is_active", false);
 
-		 // Save the image to a file (PNG format)
-        
+		// Save the image to a file (PNG format)
+
 		// GD.Print($"Block textures: {blockTextures.Length}");
 		// GD.Print($"Block images: {blockImages.Count}");
 		// GD.Print($"Texture array size: {TextureArray.GetLayers()}");
 		// GD.Print($"Done loading {blockTextures.Length} images to make {TextureArray.GetLayers()} sized texture array");
 
-        // GD.Print(Godot.OS.GetDataDir());
+		// GD.Print(Godot.OS.GetDataDir());
 		// for (int i=0; i< TextureArray.GetLayers(); i++)
-        // {
+		// {
 		// 	GD.Print(TextureArray.GetLayerData(i));
 		// 	string path = $"user://texture_for_array_layer_{i}.png";
 		// 	var error = TextureArray.GetLayerData(i).SavePng(path);

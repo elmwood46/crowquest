@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://cjuyf5e0504qj"]
+
+[ext_resource type="Script" uid="uid://do31wh2b6ux16" path="res://terrain_generator/dungeon_generator/EnemySpawnZone.cs" id="1_24n1o"]
+
+[node name="EnemySpawnZone" type="Node3D"]
+script = ExtResource("1_24n1o")
+metadata/_custom_type_script = "uid://do31wh2b6ux16"

@@ -44,7 +44,7 @@ void fragment() {
 
 	// sample from texture array
 	vec4 basecol = texture(_albedo,coords);
-	
+
 	// calculate damages
 	int damagedata = int(metadata.a);
 	float damageratio = float(damagedata&0x1f)/31.0;

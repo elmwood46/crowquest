@@ -7,7 +7,6 @@
 [ext_resource type="Script" uid="uid://d3ddw82qrorxr" path="res://enemies/bullets/BulletManager.cs" id="3_4c57u"]
 [ext_resource type="MultiMesh" uid="uid://b78qnlijvoxe2" path="res://enemies/attack_patterns/bullet_multimesh.tres" id="4_efxa6"]
 [ext_resource type="Script" uid="uid://nsjwgmlaejks" path="res://terrain_generator/infinite_heightmap_terrain/ChunkManager.cs" id="4_w48qg"]
-[ext_resource type="PackedScene" uid="uid://d244kn7ol7u4g" path="res://terrain_generator/dungeon_generator/dungeon-wfc/chunk3d.tscn" id="9_4c57u"]
 [ext_resource type="Script" uid="uid://bcfs86hg1i20j" path="res://enemies/EnemySpawner.cs" id="9_kek77"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_0xm2m"]
@@ -61,6 +60,15 @@ albedo_color = Color(0.952738, 0, 0.101958, 1)
 [sub_resource type="BoxMesh" id="BoxMesh_h2yge"]
 material = SubResource("StandardMaterial3D_lquwl")
 size = Vector3(0.5, 0.5, 10)
+
+[sub_resource type="GDScript" id="GDScript_5vw27"]
+script/source = "extends Node3D
+
+func _ready() -> void:
+	var start_chunk = Chunk3d.CreateStartRoom()
+	add_child(start_chunk)
+	Player.GetInstance().global_position = Vector3(start_chunk.ChunkSize/2, start_chunk.BaseChunkHeight, start_chunk.ChunkSize/2)
+"
 
 [node name="Main" type="Node3D"]
 
@@ -189,13 +197,8 @@ transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 5, 0, 
 mesh = SubResource("BoxMesh_h2yge")
 skeleton = NodePath("../..")
 
-[node name="Chunk3d" parent="." node_paths=PackedStringArray("Doors") instance=ExtResource("9_4c57u")]
-Doors = {
-0: NodePath("Doors/Door_0"),
-1: NodePath("Doors/Door_1"),
-2: NodePath("Doors/Door_2"),
-3: NodePath("Doors/Door_3")
-}
+[node name="SetupStartingChunk" type="Node3D" parent="."]
+script = SubResource("GDScript_5vw27")
 
 [connection signal="value_changed" from="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer/HSlider" to="WorldEnvironment/DirectionalLight3D" method="_set_light_energy"]
 [connection signal="value_changed" from="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer/HSlider" to="Player/Control2/PanelContainer/VBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer/Label" method="change_label_text"]

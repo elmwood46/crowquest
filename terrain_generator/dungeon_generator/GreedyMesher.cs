@@ -5,13 +5,6 @@ using System.Collections.Generic;
 
 public partial class GreedyMesher : Node
 {
-    public const int CHUNK_SIZE = 16;
-    public const int CSP = CHUNK_SIZE + 2;
-    public const int CSP2 = CSP * CSP;
-    public const int CSP3 = CSP2 * CSP;
-
-    private static readonly ConcurrentDictionary<Vector3I, uint[]> _blockCache = new();
-
     private struct GreedyQuad
     {
         public int col; // column offset
@@ -63,55 +56,19 @@ public partial class GreedyMesher : Node
         Vector3.Back     // +z
     ];
 
-    public static void ClearBlockCache()
+    public static uint[] GenBlocks(Vector3I chunkPosition, int CHUNK_SIZE, Noise sample_noise = default)
     {
-        _blockCache.Clear();
-    }
+        int CSP = CHUNK_SIZE + 2; // chunk size with padding
+        int CSP2 = CSP * CSP; // chunk size squared with padding
+        int CSP3 = CSP2 * CSP; // chunk size cubed with padding
 
-    public static int BlockIndex(Vector3I blockPaddedPosition)
-    {
-        return blockPaddedPosition.X + blockPaddedPosition.Z * CSP + blockPaddedPosition.Y * CSP2;
-    }
-
-    public static uint GetBlockID(uint blockInfo)
-    {
-        return blockInfo & 0xffffu;
-    }
-
-    // check for block empty
-    public static bool IsBlockEmpty(uint blockinfo)
-    {
-        return blockinfo == 0;
-    }
-
-    // TODO change the way we do slopes
-    public static bool IsBlockSloped(uint blockinfo) => false;
-
-    public static bool SetBlocks(Vector3I index, uint[] blocks)
-    {
-        if (!_blockCache.TryGetValue(index, out var chunk_blocks))
+        int BlockIndex(Vector3I blockPaddedPosition)
         {
-            chunk_blocks = new uint[CSP3];
-            _blockCache.TryAdd(index, chunk_blocks);
+            return blockPaddedPosition.X + blockPaddedPosition.Z * CSP + blockPaddedPosition.Y * CSP2;
         }
 
-        if (blocks.Length != CSP3) return false;
+        var chunk_blocks = new uint[CSP3];
 
-        for (int i = 0; i < CSP3; i++)
-        {
-            chunk_blocks[i] = blocks[i];
-        }
-
-        return true;
-    }
-
-    public static void GenBlocks(Vector3I chunk, Noise sample_noise = default)
-    {
-        if (!_blockCache.TryGetValue(chunk, out var chunk_blocks))
-        {
-            chunk_blocks = new uint[CSP3];
-            _blockCache.TryAdd(chunk, chunk_blocks);
-        }
 
         if (sample_noise == default)
         {
@@ -123,7 +80,6 @@ public partial class GreedyMesher : Node
         }
         else
         {
-            var chunkPosition = chunk;
             for (int x = 0; x < CSP; x++)
             {
                 for (int y = 0; y < CSP; y++)
@@ -148,16 +104,19 @@ public partial class GreedyMesher : Node
                 }
             }
         }
+        return chunk_blocks;
     }
 
-    public static void ChunkSpatialMap(Dictionary<uint, Dictionary<int, uint[]>>[] data, Vector3I chunk_index)
+    public static void ChunkSpatialMap(int CHUNK_SIZE, Dictionary<uint, Dictionary<int, uint[]>>[] data, uint[] chunk_blocks)
     {
-        // we expect blocks generated before attempting to mesh
-        if (!_blockCache.TryGetValue(chunk_index, out var chunk_blocks))
-        {
-            GD.PushError($"Chunk at {chunk_index} not found in block cache. Please generate blocks before meshing.");
-            return;
-        }
+        int CSP = CHUNK_SIZE + 2; // chunk size with padding
+        int CSP2 = CSP * CSP; // chunk size squared with padding
+        int CSP3 = CSP2 * CSP; // chunk size cubed with padding
+
+        int BlockIndex(Vector3I blockPaddedPosition) => blockPaddedPosition.X + blockPaddedPosition.Z * CSP + blockPaddedPosition.Y * CSP2;
+        
+        // check for block empty
+        bool IsBlockEmpty(uint blockinfo) => blockinfo == 0;
 
         var axis_cols = new uint[CSP3 * 3];
         var col_face_masks = new uint[CSP3 * 6];
@@ -165,55 +124,21 @@ public partial class GreedyMesher : Node
 
         // generate binary 0 1 voxel representation for each axis
         // central chunk loop
-        int dx, dy, dz;
-        dx = dy = dz = 0;
-        var delta = new Vector3I(dx, dy, dz);
-        Vector3I prev_delta;
-        var targ_chunk = chunk_blocks;
         for (int x = 0; x < CSP; x++)
         {
             for (int y = 0; y < CSP; y++)
             {
                 for (int z = 0; z < CSP; z++)
                 {
-                    // read padded blocks from neighboring chunks
-                    prev_delta = delta;
-                    dx = x > CHUNK_SIZE ? 1 : x < 1 ? -1 : 0;
-                    dy = y > CHUNK_SIZE ? 1 : y < 1 ? -1 : 0;
-                    dz = z > CHUNK_SIZE ? 1 : z < 1 ? -1 : 0;
-                    delta = new Vector3I(dx, dy, dz);
+                    var idx = BlockIndex(new Vector3I(x, y, z));
 
-                    if (prev_delta != delta)
-                    {
-                        if (!_blockCache.TryGetValue(chunk_index + delta, out var new_chunk))
-                        {
-                            new_chunk = chunk_blocks;
-                        }
-                        targ_chunk = new_chunk;
-                    }
-
-                    var islocal = targ_chunk == chunk_blocks;
-
-                    var block_pos = new Vector3I(x, y, z) - (islocal ? Vector3I.Zero : delta * CHUNK_SIZE);
-                    var idx = BlockIndex(block_pos);
-
-                    var blockinfo = targ_chunk[idx];
+                    var blockinfo = chunk_blocks[idx];
 
                     // HACK set blockinfo to zero to prevent sloped air blocks bug
                     if (IsBlockEmpty(blockinfo)) blockinfo = 0;
-                    chunk_blocks[BlockIndex(new Vector3I(x, y, z))] = blockinfo;
+                    chunk_blocks[idx] = blockinfo;
 
-                    if (IsBlockSloped(blockinfo))
-                    {
-                        if (dx != 0 || dy != 0 || dz != 0) continue;  // don't add sloped blocks if we are in padded space, this causes overlap in world space
-                        // add sloped blocks and IDs to a separate list
-                        idx = BlockIndex(new Vector3I(x, y, z));
-                        if (!slope_blocks.TryGetValue(idx, out _))
-                        {
-                            slope_blocks.Add(idx, [blockinfo]);
-                        }
-                    }
-                    else if (!IsBlockEmpty(blockinfo))
+                    if (!IsBlockEmpty(blockinfo))
                     { // if block is solid
                         axis_cols[x + z * CSP] |= 1u << y;           // y axis defined by x,z
                         axis_cols[z + y * CSP + CSP2] |= 1u << x;    // x axis defined by z,y
@@ -285,19 +210,37 @@ public partial class GreedyMesher : Node
                         }
                         data_entry[j] |= 1u << i;     // push the "row" bit into the "column" UInt32
                         planeSet[k] = data_entry;
+
+                        // =========================================
+                        // store the combined mesh (diregarding block type) with blockinfo of uint.MaxValue
+                        // use this to make the physics shape
+                        // =========================================
+                        if (!data[axis].TryGetValue(uint.MaxValue, out var planeSet2))
+                        {
+                            planeSet2 = [];
+                            data[axis].Add(uint.MaxValue, planeSet2);
+                        }
+
+                        if (!planeSet2.TryGetValue(k, out var data_entry2))
+                        {
+                            data_entry2 = new uint[CHUNK_SIZE];
+                            planeSet2.Add(k, data_entry2);
+                        }
+                        data_entry2[j] |= 1u << i;
+                        planeSet2[k] = data_entry2;
                     }
                 }
             }
         }
     }
 
-    public static ChunkMeshData BuildChunkMesh(Vector3I chunk_index)
+    public static ChunkMeshData BuildChunkMesh(int CHUNK_SIZE, uint[] chunk_blocks)
     {
         var chunk_mesh_data = new ChunkMeshData
         {
             StaticBody = new StaticBody3D
             {
-                Name = $"Chunk_{chunk_index.X}_{chunk_index.Y}_{chunk_index.Z}_StaticBody"
+                Name = $"Chunk_StaticBody"
             }
         };
         var checked_positions = new HashSet<Vector3I>();
@@ -328,6 +271,12 @@ public partial class GreedyMesher : Node
             */
         }
 
+        static uint GetBlockID(uint blockInfo)
+        {
+            return blockInfo & 0xffffu;
+        }
+
+
         // data is an array of dictionaries, one for each axis
         // each dictionary is a hash map of block types to a set binary planes
         // we need to group by block type like this so we can batch the meshing and texture blocks correctly
@@ -337,7 +286,7 @@ public partial class GreedyMesher : Node
         data[i] = []; // an extra one for sloped blocks
 
         // do binary face culling and construct the binary planes
-        ChunkSpatialMap(data, chunk_index);
+        ChunkSpatialMap(CHUNK_SIZE, data, chunk_blocks);
 
         // construct mesh
         var surfToolArray = new SurfaceTool[ChunkMeshData.ALL_SURFACES];
@@ -346,8 +295,6 @@ public partial class GreedyMesher : Node
             surfToolArray[s] = new();
             surfToolArray[s].Begin(Mesh.PrimitiveType.Triangles);
         }
-
-
 
         for (int axis = 0; axis < 6; axis++)
         {
@@ -358,7 +305,7 @@ public partial class GreedyMesher : Node
                     var blockId = GetBlockID(blockinfo);
 
                     // sloped blocks are not greedy meshed
-                    var greedy_quads = GreedyMeshBinaryPlane(binary_plane);
+                    var greedy_quads = GreedyMeshBinaryPlane(CHUNK_SIZE, binary_plane);
 
                     foreach (GreedyQuad quad in greedy_quads)
                     {
@@ -384,113 +331,115 @@ public partial class GreedyMesher : Node
                             _ => new Vector3I(quad.delta_col, quad.delta_row, 0),       // back, front (xy -> z axis)
                         };
 
-                        uv_offset = axis switch
-                        {
-                            0 => new Vector2(quad_delta.X, quad_delta.Z), // down, up    (xz -> y axis)
-                            1 => new Vector2(quad_delta.Z, quad_delta.X), // for some reason y is flipped on the top face???? :( 
-                            2 or 3 => new Vector2(quad_delta.Z, quad_delta.Y), // right, left (zy -> x axis)
-                            _ => new Vector2(quad_delta.X, quad_delta.Y),      // back, front (xy -> z axis)
-                        };
-
-                        // construct vertices and normals for mesh
-                        Vector3[] verts = new Vector3[4];
-                        for (i = 0; i < 4; i++)
-                        {
-                            verts[i] = quad_offset + (Vector3)CUBE_VERTS[CUBE_AXIS[axis, i]] * quad_delta;
-                        }
-
-                        Vector3[] triangle1 = [verts[0], verts[1], verts[2]];
-                        Vector3[] triangle2 = [verts[0], verts[2], verts[3]];
                         var normal = AXIS_NORMALS[axis];
                         Vector3[] normals = [normal, normal, normal];
 
-
-                        var uvA = Vector2.Zero;
-                        var uvB = new Vector2(0, 1);
-                        var uvC = Vector2.One;
-                        var uvD = new Vector2(1, 0);
-                        var uvTriangle1 = new Vector2[] { uvA, uvB, uvC };
-                        var uvTriangle2 = new Vector2[] { uvA, uvC, uvD };
-
-                        var surfidx = get_surface_tool_index(blockinfo, axis);
-                        if (surfidx == ChunkMeshData.LAVA_SURFACE)
+                        if (blockinfo == uint.MaxValue) // we stored this specifically to make the collision shape 
                         {
-                            // lava surface has no metadata
-                            surfToolArray[surfidx].AddTriangleFan(triangle1, uvTriangle1, normals: normals);
-                            surfToolArray[surfidx].AddTriangleFan(triangle2, uvTriangle2, normals: normals);
-                        }
-                        else
-                        {
-                            // TODO set block data properly
-                            var blockDamage = 0; //GetBlockDamageData(blockinfo);
-                            var block_face_texture_idx = BlockManager.BlockTextureArrayPositions(blockId)[axis];
-                            var notacolour = new Color(block_face_texture_idx, uv_offset.X, uv_offset.Y, blockDamage) * (1 / 255f);
-                            var metadata = new Color[] { notacolour, notacolour, notacolour };
-                            surfToolArray[surfidx].AddTriangleFan(triangle1, uvTriangle1, colors: metadata, normals: normals);
-                            surfToolArray[surfidx].AddTriangleFan(triangle2, uvTriangle2, colors: metadata, normals: normals);
-                        }
+                            // generate collision shape by adding greedy meshed boxes for all blocks
+                            // you only need to do this for one axis
+                            // (sloped and stair blocks you will need to handle differently)
+                            var halfstep = (quad_delta - normal).Sign() * 0.5f;
+                            var start = (Vector3I)(quad_offset + halfstep);
+                            var end = (Vector3I)(quad_offset + quad_delta - normal - halfstep);
 
-                        // generate collision shape by adding greedy meshed boxes for all blocks
-                        // you only need to do this for one axis
-                        // (sloped and stair blocks you will need to handle differently)
+                            if (end.X < start.X) (start.X, end.X) = (end.X, start.X);
+                            if (end.Y < start.Y) (start.Y, end.Y) = (end.Y, start.Y);
+                            if (end.Z < start.Z) (start.Z, end.Z) = (end.Z, start.Z);
 
-                        // var test = new MeshInstance3D()
-                        // {
-                        //     Mesh = new BoxMesh
-                        //     {
-                        //         Size = quad_delta + normal.Abs(),
-                        //         Material = new StandardMaterial3D
-                        //         {
-                        //             AlbedoColor = new Color(axis == 0 || axis == 1 ? 1 : 0, axis == 2 || axis == 3 ? 1 : 0, axis == 4 || axis == 5 ? 1 : 0, 0.5f),
-                        //             Transparency = BaseMaterial3D.TransparencyEnum.Alpha
-                        //         }
-                        //     },
-                        //     Position = quad_offset + (quad_delta - normal) * 0.5f,
-                        // };
-                        // test.Scale *= 0.95f;
+                            var should_add = false;
 
-
-                        var halfstep = (quad_delta - normal).Sign() * 0.5f;
-                        var start = (Vector3I)(quad_offset + halfstep);
-                        var end = (Vector3I)(quad_offset + quad_delta - normal - halfstep);
-
-                        if (end.X < start.X) (start.X, end.X) = (end.X, start.X);
-                        if (end.Y < start.Y) (start.Y, end.Y) = (end.Y, start.Y);
-                        if (end.Z < start.Z) (start.Z, end.Z) = (end.Z, start.Z);
-
-                        var should_add = false;
-
-                        for (int x = start.X; x <= end.X; x++)
-                        {
-                            for (int y = start.Y; y <= end.Y; y++)
+                            for (int x = start.X; x <= end.X; x++)
                             {
-                                for (int z = start.Z; z <= end.Z; z++)
+                                for (int y = start.Y; y <= end.Y; y++)
                                 {
-                                    var pos = new Vector3I(x, y, z);
-                                    if (!checked_positions.Contains(pos))
+                                    for (int z = start.Z; z <= end.Z; z++)
                                     {
-                                        should_add = true;
-                                        checked_positions.Add(pos);
+                                        var pos = new Vector3I(x, y, z);
+                                        if (!checked_positions.Contains(pos))
+                                        {
+                                            should_add = true;
+                                            checked_positions.Add(pos);
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                        // if (should_add) chunk_mesh_data.StaticBody.AddChild(test);
-
-                        if (should_add)
-                        {
-                            var shape = new CollisionShape3D()
+                            if (should_add)
                             {
-                                Shape = new BoxShape3D
+                                // // test mesh instance 3d -- uncomment to visualize the collision shapes
+                                // var test = new MeshInstance3D()
+                                // {
+                                //     Mesh = new BoxMesh
+                                //     {
+                                //         Size = quad_delta + normal.Abs(),
+                                //         Material = new StandardMaterial3D
+                                //         {
+                                //             AlbedoColor = new Color(axis == 0 || axis == 1 ? 1 : 0, axis == 2 || axis == 3 ? 1 : 0, axis == 4 || axis == 5 ? 1 : 0, 0.5f),
+                                //             Transparency = BaseMaterial3D.TransparencyEnum.Alpha
+                                //         }
+                                //     },
+                                //     Position = quad_offset + (quad_delta - normal) * 0.5f,
+                                // };
+                                // test.Scale *= 0.95f;
+                                // chunk_mesh_data.StaticBody.AddChild(test);
+
+                                var shape = new CollisionShape3D()
                                 {
-                                    Size = quad_delta + normal.Abs()
-                                },
-                                Position = quad_offset + (quad_delta - normal) * 0.5f,
-                                DebugFill = true,
-                                DebugColor = new Color(axis == 0 || axis == 1 ? 1 : 0, axis == 2 || axis == 3 ? 1 : 0, axis == 4 || axis == 5 ? 1 : 0, 0.5f)
+                                    Shape = new BoxShape3D
+                                    {
+                                        Size = quad_delta + normal.Abs()
+                                    },
+                                    Position = quad_offset + (quad_delta - normal) * 0.5f,
+                                    DebugFill = true,
+                                    DebugColor = new Color(axis == 0 || axis == 1 ? 1 : 0, axis == 2 || axis == 3 ? 1 : 0, axis == 4 || axis == 5 ? 1 : 0, 0.5f)
+                                };
+                                chunk_mesh_data.StaticBody.AddChild(shape);
+                            }
+                        }
+                        else // if not the key uint.MaxValue, then we are dealing with a regular block and we add it with the surface tool
+                        {
+                            // construct vertices for mesh
+                            Vector3[] verts = new Vector3[4];
+                            for (i = 0; i < 4; i++)
+                            {
+                                verts[i] = quad_offset + (Vector3)CUBE_VERTS[CUBE_AXIS[axis, i]] * quad_delta;
+                            }
+
+                            Vector3[] triangle1 = [verts[0], verts[1], verts[2]];
+                            Vector3[] triangle2 = [verts[0], verts[2], verts[3]];
+
+                            uv_offset = axis switch
+                            {
+                                0 => new Vector2(quad_delta.X, quad_delta.Z), // down, up    (xz -> y axis)
+                                1 => new Vector2(quad_delta.Z, quad_delta.X), // for some reason y is flipped on the top face???? :( 
+                                2 or 3 => new Vector2(quad_delta.Z, quad_delta.Y), // right, left (zy -> x axis)
+                                _ => new Vector2(quad_delta.X, quad_delta.Y),      // back, front (xy -> z axis)
                             };
-                            chunk_mesh_data.StaticBody.AddChild(shape);
+                            
+                            Vector2 uvA, uvB, uvC, uvD;
+                            (uvA, uvB, uvC, uvD) = (Vector2.Zero, new Vector2(0, 1), Vector2.One, new Vector2(1, 0));
+
+                            var uvTriangle1 = new Vector2[] { uvA, uvB, uvC };
+                            var uvTriangle2 = new Vector2[] { uvA, uvC, uvD };
+
+                            var surfidx = get_surface_tool_index(blockinfo, axis);
+                            if (surfidx == ChunkMeshData.LAVA_SURFACE)
+                            {
+                                // lava surface has no metadata
+                                surfToolArray[surfidx].AddTriangleFan(triangle1, uvTriangle1, normals: normals);
+                                surfToolArray[surfidx].AddTriangleFan(triangle2, uvTriangle2, normals: normals);
+                            }
+                            else
+                            {
+                                // TODO set block data properly
+                                var blockDamage = 0; //GetBlockDamageData(blockinfo);
+                                var block_face_texture_idx = BlockManager.BlockTextureArrayPositions(blockId)[axis];
+                                var notacolour = new Color(block_face_texture_idx, uv_offset.X, uv_offset.Y, blockDamage) * (1 / 255f);
+                                var metadata = new Color[] { notacolour, notacolour, notacolour };
+                                surfToolArray[surfidx].AddTriangleFan(triangle1, uvTriangle1, colors: metadata, normals: normals);
+                                surfToolArray[surfidx].AddTriangleFan(triangle2, uvTriangle2, colors: metadata, normals: normals);
+                            }
                         }
                     }
                 }
@@ -668,7 +617,7 @@ public partial class GreedyMesher : Node
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    private static List<GreedyQuad> GreedyMeshBinaryPlane(uint[] data)
+    private static List<GreedyQuad> GreedyMeshBinaryPlane(int CHUNK_SIZE, uint[] data)
     { // modify this so chunks are 30 and padded 1 on each side to 32
         List<GreedyQuad> greedy_quads = [];
         int data_length = data.Length;

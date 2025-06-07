@@ -1,0 +1,27 @@
+[gd_scene load_steps=4 format=4 uid="uid://cs5tpss08tifb"]
+
+[ext_resource type="Material" uid="uid://c3dmfyyrtj1nb" path="res://terrain_generator/dungeon_generator/dungeon-wfc/fence/fence_material.tres" id="1_5kni3"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_h26it"]
+_surfaces = [{
+"aabb": AABB(-0.1, 0, -0.1, 0.2, 1, 0.2),
+"attribute_data": PackedByteArray("AACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/"),
+"format": 34359738391,
+"material": ExtResource("1_5kni3"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 36,
+"vertex_data": PackedByteArray("zczMvQAAAADNzMw9zczMvQAAAADNzMy9zczMvQAAgD/NzMy9zczMPQAAAADNzMy9zczMvQAAAADNzMy9zczMvQAAAADNzMw9zczMvQAAgD/NzMy9zczMvQAAAADNzMy9zczMPQAAAADNzMy9zczMvQAAgD/NzMy9zczMvQAAgD/NzMw9zczMvQAAAADNzMw9zczMvQAAAADNzMw9zczMvQAAgD/NzMw9zczMPQAAgD/NzMw9zczMPQAAgD/NzMw9zczMvQAAgD/NzMw9zczMvQAAgD/NzMy9zczMvQAAAADNzMw9zczMPQAAAADNzMw9zczMPQAAAADNzMy9zczMPQAAgD/NzMw9zczMPQAAAADNzMw9zczMvQAAAADNzMw9zczMPQAAAADNzMy9zczMPQAAAADNzMw9zczMPQAAgD/NzMw9zczMPQAAAADNzMy9zczMPQAAgD/NzMy9zczMvQAAgD/NzMy9zczMvQAAgD/NzMy9zczMPQAAgD/NzMy9zczMPQAAgD/NzMw9zczMPQAAgD/NzMw9zczMPQAAgD/NzMy9zczMPQAAAADNzMy9AAD/f/9//n8AAP9//3/+fwAA/3//f/5//38AAP//AAD/fwAA//8AAP9/AAD//wAA/////wAA/z//////AAD/P/////8AAP8/AAD/f/9//n8AAP9//3/+fwAA/3//f/5//3//fwAA/z//f/9/AAD/P/9//38AAP8//3//////AAD/f/////8AAP9//////wAA/38AAP//AAD/fwAA//8AAP9/AAD//wAA/3//fwAA/z//f/9/AAD/P/9//38AAP8/////f/9//n////9//3/+f////3//f/5//////wAA/z//////AAD/P/////8AAP8//3//////AAD/f/////8AAP9//////wAA////f/9//n////9//3/+f////3//f/5/")
+}]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_gnpee"]
+size = Vector3(0.2, 1, 0.2)
+
+[node name="FencePost" type="StaticBody3D"]
+
+[node name="CSGBakedMeshInstance3D3" type="MeshInstance3D" parent="."]
+mesh = SubResource("ArrayMesh_h26it")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("BoxShape3D_gnpee")
