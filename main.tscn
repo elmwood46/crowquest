@@ -189,7 +189,8 @@ transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 5, 0, 
 mesh = SubResource("BoxMesh_h2yge")
 skeleton = NodePath("../..")
 
-[node name="Chunk3d" parent="." node_paths=PackedStringArray("Doors") instance=ExtResource("9_4c57u")]
+[node name="Chunk3d" parent="." node_paths=PackedStringArray("LocalBlockManager", "Doors") instance=ExtResource("9_4c57u")]
+LocalBlockManager = NodePath("../BlockManager")
 Doors = {
 0: NodePath("Doors/Door_0"),
 1: NodePath("Doors/Door_1"),

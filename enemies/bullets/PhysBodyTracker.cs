@@ -148,6 +148,11 @@ public partial class PhysBodyTracker : Node
         tracker.QueueFree();
     }
 
+    public void UpdateThisTrackerInGrid()
+    {
+        UpdateTrackerInGrid(this);
+    }
+
     private static void UpdateTrackerInGrid(PhysBodyTracker tracker)
     {
         RemoveTrackerFromGrid(tracker);

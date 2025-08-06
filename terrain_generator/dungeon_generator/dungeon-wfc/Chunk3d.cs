@@ -21,6 +21,8 @@ public partial class Chunk3d : Node3D
     private static readonly Noise NoiseTexture = new FastNoiseLite();
     public static bool IsFirstChunk = true; // used to determine if this is the starting chunk, which has special rules for treasure generation
 
+    public MultiChunk3d ParentMultiChunk { get; set; } // reference to the parent MultiChunk3d node, if this chunk is part of a MultiChunk3d
+
     // ==================================================================
     // ====== Treasure ========
     // ==================================================================
@@ -77,7 +79,7 @@ public partial class Chunk3d : Node3D
 
     private const float _HALF_PI = Mathf.Pi / 2f;
 
-    public static readonly Dictionary<Vector3I, Chunk3d> CreatedRooms = [];
+    public static readonly Dictionary<Vector3I, Chunk3d> CreatedChunks = [];
 
     [Export] public PackedScene DoorScene = GD.Load<PackedScene>("res://terrain_generator/dungeon_generator/dungeon-wfc/Door/door.tscn");
     public static readonly PackedScene Chunk3dScene = GD.Load<PackedScene>("res://terrain_generator/dungeon_generator/dungeon-wfc/chunk3d.tscn");
@@ -103,7 +105,7 @@ public partial class Chunk3d : Node3D
 
         if (IsFirstChunk)
         {
-            CreatedRooms.TryAdd(Vector3I.Zero, this); // add the starting chunk to the created rooms
+            CreatedChunks.TryAdd(Vector3I.Zero, this); // add the starting chunk to the created rooms
             IsFirstChunk = false;
         }
 
@@ -122,7 +124,9 @@ public partial class Chunk3d : Node3D
         {
             if (child is StaticBody3D)
             {
-                child.AddChild(PhysTrackerScene.Instantiate<PhysBodyTracker>());
+                var pb = PhysTrackerScene.Instantiate<PhysBodyTracker>();
+                child.AddChild(pb);
+                FinishedLoading += pb.UpdateThisTrackerInGrid;
             }
         }
     }
@@ -386,12 +390,12 @@ public partial class Chunk3d : Node3D
         NavRegion.AddChild(features_container);
 
         static void add_chest(Node3D treasure_chest_parent_node, TreasureChest chest, Transform3D transform)
-            {
-                chest.Transform = transform;
-                if (chest.Type != ChestType.BasicWooden) chest.AddChild(PhysTrackerScene.Instantiate<PhysBodyTracker>());
-                treasure_chest_parent_node.AddChild(chest);
-                if (_opened_chests.Contains(chest.GlobalPosition)) chest.ForceStateOpen();
-            }
+        {
+            chest.Transform = transform;
+            if (chest.Type != ChestType.BasicWooden) chest.AddChild(PhysTrackerScene.Instantiate<PhysBodyTracker>());
+            treasure_chest_parent_node.AddChild(chest);
+            if (_opened_chests.Contains(chest.GlobalPosition)) chest.ForceStateOpen();
+        }
 
         var chunk_pos = RoomToChunkPos(GlobalPosition);
         var chunk_offset = ChunkSize * chunk_pos;
@@ -550,10 +554,10 @@ public partial class Chunk3d : Node3D
                     var next_pos = GlobalPosition + door_normal * ChunkSize;
 
                     // skip generation if the next room position is already created
-                    if (CreatedRooms.ContainsKey(RoomToChunkPos(next_pos))) return;
+                    if (CreatedChunks.ContainsKey(RoomToChunkPos(next_pos))) return;
 
                     AddSibling(nextRoom);
-                    CreatedRooms.TryAdd(RoomToChunkPos(next_pos), nextRoom);
+                    CreatedChunks.TryAdd(RoomToChunkPos(next_pos), nextRoom);
                     nextRoom.GlobalPosition = next_pos + Vector3.Down * ChunkSize * 2; // set spawn position
                     nextRoom.EmitSignal(SignalName.StartedLoading);
 
@@ -564,7 +568,7 @@ public partial class Chunk3d : Node3D
                     {
                         var neighbor_chunk_pos = RoomToChunkPos(next_pos + DoorNormals[neighbor_idx] * ChunkSize);
 
-                        if (CreatedRooms.TryGetValue(neighbor_chunk_pos, out Chunk3d neighbor_chunk))
+                        if (CreatedChunks.TryGetValue(neighbor_chunk_pos, out Chunk3d neighbor_chunk))
                         {
                             next_doors[neighbor_idx].QueueFree();
                             if (neighbor_chunk.Doors.TryGetValue((neighbor_idx + 2) % 4, out var neigh_door))
@@ -587,7 +591,7 @@ public partial class Chunk3d : Node3D
                     tween.Parallel().TweenProperty(nextRoom, "global_position", next_pos, 1.0)
                         .SetEase(Tween.EaseType.InOut)
                         .SetTrans(Tween.TransitionType.Bounce);
-                    foreach (Node3D feature in features.Cast<Node3D>())
+                    foreach (var feature in features.Cast<Node3D>())
                     {
                         var feature_targ_pos = feature.GlobalPosition + Vector3.Up * ChunkSize *2f;;
                         feature.GlobalPosition += Vector3.Up * ChunkSize * 3f; // start above the ground

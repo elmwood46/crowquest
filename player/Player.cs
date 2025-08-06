@@ -525,18 +525,19 @@ public partial class Player : CharacterBody3D, IHurtable
 			if (Input.IsActionJustPressed("Jump"))
 			{
 				//velocity.Y = JumpVelocity;
-				if (_can_roll)
-				{
-					if (direction != Vector3.Zero) _saved_roll_dir = direction;
-					else _saved_roll_dir = _player_model.GlobalBasis * Vector3.Back;
+				// HACK disable rolling
+				// if (_can_roll)
+				// {
+				// 	if (direction != Vector3.Zero) _saved_roll_dir = direction;
+				// 	else _saved_roll_dir = _player_model.GlobalBasis * Vector3.Back;
 
-					_is_rolling = true;
-					_can_roll = false;
-					_velocity_sq_last_frame = 0.0f;
-					PlayFootstepSound();
-					_anim_state_machine.Travel("Roll");
-					_roll_iframe_counter = _roll_iframes + 1;
-				}
+				// 	_is_rolling = true;
+				// 	_can_roll = false;
+				// 	_velocity_sq_last_frame = 0.0f;
+				// 	PlayFootstepSound();
+				// 	_anim_state_machine.Travel("Roll");
+				// 	_roll_iframe_counter = _roll_iframes + 1;
+				// }
 			}
 
 			// play footstep sound if landing or if just starting to move
