@@ -97,7 +97,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.06829, 18.4691, 9.61406)
 MaxHealth = 10000
 MinCameraSize = 10.0
 MaxCameraSize = 15.0
-ForceAutoAttackNumber = 30
 
 [node name="Control2" type="Control" parent="Player" groups=["debug_overlay"]]
 layout_mode = 3

@@ -1,4 +1,4 @@
-[gd_scene load_steps=37 format=4 uid="uid://d244kn7ol7u4g"]
+[gd_scene load_steps=39 format=4 uid="uid://d244kn7ol7u4g"]
 
 [ext_resource type="Script" uid="uid://croddbk05g6tw" path="res://terrain_generator/dungeon_generator/dungeon-wfc/Chunk3d.cs" id="1_dpvtb"]
 [ext_resource type="PackedScene" uid="uid://detrvp0t5teeu" path="res://enemies/bullets/PhysBodyTracker.tscn" id="2_fs2ev"]
@@ -6,7 +6,9 @@
 [ext_resource type="PackedScene" uid="uid://b34syp7j4jcrx" path="res://terrain_generator/dungeon_generator/dungeon-wfc/Door/door.tscn" id="5_j57cn"]
 [ext_resource type="PackedScene" uid="uid://cs5tpss08tifb" path="res://terrain_generator/dungeon_generator/dungeon-wfc/fence/fence_post.tscn" id="7_sn0uo"]
 [ext_resource type="Material" uid="uid://c3dmfyyrtj1nb" path="res://terrain_generator/dungeon_generator/dungeon-wfc/fence/fence_material.tres" id="8_12edc"]
+[ext_resource type="PackedScene" uid="uid://dcyv0jjt08ld8" path="res://enemies/enemy_instances/elijah/elijah.tscn" id="8_dpvtb"]
 [ext_resource type="PackedScene" uid="uid://ws4fgie4i2r" path="res://terrain_generator/dungeon_generator/dungeon-wfc/fence/fence_middle.tscn" id="9_e6f4o"]
+[ext_resource type="PackedScene" uid="uid://bm8d0at72lm43" path="res://enemies/enemy_instances/storm/storm.tscn" id="9_fs2ev"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_dpvtb"]
 size = Vector3(4, 1, 12)
@@ -484,3 +486,9 @@ mesh = SubResource("ArrayMesh_h26it")
 [node name="FencePost_10_10_Collision_1" type="CollisionShape3D" parent="NavRegion/Fence/FencePost_10_10/FencePost_10_10_StaticBody4"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 shape = SubResource("BoxShape3D_gnpee")
+
+[node name="Elijah" parent="." instance=ExtResource("8_dpvtb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.24955, 2.42908, 8.65295)
+
+[node name="Storm" parent="." instance=ExtResource("9_fs2ev")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.31391, 2.20743, 6.08144)
